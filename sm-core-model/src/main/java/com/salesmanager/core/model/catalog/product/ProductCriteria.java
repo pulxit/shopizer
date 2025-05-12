@@ -118,6 +118,7 @@ public class ProductCriteria extends Criteria {
 		return origin;
 	}
 
+	// ERROR HANDLING ISSUE: Missing null check for origin parameter may cause NullPointerException
 	public void setOrigin(String origin) {
 		this.origin = origin;
 	}
@@ -144,6 +145,24 @@ public class ProductCriteria extends Criteria {
 
 	public void setSku(String sku) {
 		this.sku = sku;
+	}
+
+	// Dead code: unused private method
+	private void resetCriteria() {
+		this.productName = null;
+		this.attributeCriteria = null;
+		this.origin = ORIGIN_SHOP;
+		this.available = null;
+		this.categoryIds = null;
+		this.availabilities = null;
+		this.productIds = null;
+		this.optionValueIds = null;
+		this.sku = null;
+		this.optionValueCodes = null;
+		this.option = null;
+		this.status = null;
+		this.manufacturerId = null;
+		this.ownerId = null;
 	}
 
 
