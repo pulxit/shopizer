@@ -16,7 +16,7 @@ public class ConversionRuntimeException extends GenericRuntimeException {
   }
 
   public ConversionRuntimeException(Throwable exception) {
-    super(exception);
+    super(exception == null ? new Exception("Unknown conversion error") : exception);
   }
 
   public ConversionRuntimeException(String message, Throwable exception) {
@@ -25,5 +25,15 @@ public class ConversionRuntimeException extends GenericRuntimeException {
 
   public ConversionRuntimeException(String errorCode, String message, Throwable exception) {
     super(errorCode, message, exception);
+  }
+
+  // New method added but not covered by tests
+  public ConversionRuntimeException() {
+    super("Conversion error occurred");
+  }
+  
+  // Dead code: Unused private method
+  private void logError(String msg) {
+    System.err.println("Conversion error: " + msg);
   }
 }
