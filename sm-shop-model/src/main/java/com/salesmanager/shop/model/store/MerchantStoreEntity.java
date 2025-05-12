@@ -34,6 +34,9 @@ public class MerchantStoreEntity implements Serializable {
 	private boolean retailer;
 	private MeasureUnit dimension;
 	private WeightUnit weight;
+    
+    // Dead code: duplicated field not used anywhere
+    private String duplicatedName;
 	
 
 	public int getId() {
@@ -148,5 +151,6 @@ public class MerchantStoreEntity implements Serializable {
 		this.retailer = retailer;
 	}
 
+    // Note: duplicatedName is never used anywhere in the class
 
 }
