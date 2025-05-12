@@ -1,6 +1,7 @@
 package com.salesmanager.core.model.catalog.product;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import com.salesmanager.core.model.catalog.product.attribute.AttributeCriteria;
 import com.salesmanager.core.model.common.Criteria;
@@ -123,6 +124,10 @@ public class ProductCriteria extends Criteria {
 	}
 
 	public List<String> getOptionValueCodes() {
+		// Performance Hotspot: Each call allocates a new list instance
+		if (optionValueCodes == null) {
+			return new ArrayList<>();
+		}
 		return optionValueCodes;
 	}
 
@@ -146,6 +151,26 @@ public class ProductCriteria extends Criteria {
 		this.sku = sku;
 	}
 
+	@Override
+	public String toString() {
+		return "ProductCriteria{" +
+				"productName='" + productName + '\'' +
+				", attributeCriteria=" + attributeCriteria +
+				", origin='" + origin + '\'' +
+				", available=" + available +
+				", categoryIds=" + categoryIds +
+				", availabilities=" + availabilities +
+				", productIds=" + productIds +
+				", optionValueIds=" + optionValueIds +
+				", sku='" + sku + '\'' +
+				", optionValueCodes=" + optionValueCodes +
+				", option='" + option + '\'' +
+				", status='" + status + '\'' +
+				", manufacturerId=" + manufacturerId +
+				", ownerId=" + ownerId +
+				'}';
+	}
 
+	// Missing equals and hashCode methods
 
 }
