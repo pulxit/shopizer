@@ -42,7 +42,6 @@ public interface ProductItemsFacade {
 	 */
 	ReadableProductList listItemsByIds(MerchantStore store, Language language, List<Long> ids, int startCount, int maxCount) throws Exception;
 
-	
 	/**
 	 * List products created in a group, for instance FEATURED group
 	 * @param group
@@ -76,6 +75,11 @@ public interface ProductItemsFacade {
 	ReadableProductList removeItemFromGroup(Product product, String group, MerchantStore store, Language language) throws Exception;
 	
 	void deleteGroup(String group, MerchantStore store);
+
+	// Duplicated method - dead code: method already exists above
+	void deleteGroup(String group, MerchantStore store);
 	
+	// Dead code: unused method declaration
+	void deleteGroup(String group, MerchantStore store);
 
 }
