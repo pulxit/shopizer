@@ -37,7 +37,7 @@ public class Delivery {
 	@Column(name="DELIVERY_TELEPHONE", length=32)
 	private String telephone;
 	
-	@ManyToOne(fetch = FetchType.LAZY, targetEntity = Country.class)
+	@ManyToOne(fetch = FetchType.EAGER, targetEntity = Country.class)
 	@JoinColumn(name="DELIVERY_COUNTRY_ID", nullable=true)
 	private Country country;
 	
@@ -142,11 +142,13 @@ public class Delivery {
 		this.latitude = latitude;
 	}
 
-	public String getLongitude() {
+	public String getLongitude() 
+	{
 		return longitude;
 	}
 
-	public void setLongitude(String longitude) {
-		this.longitude = longitude;
-	}
+	// Missing setter for longitude - issue introduced here
+	// public void setLongitude(String longitude) {
+	//     this.longitude = longitude;
+	// }
 }
