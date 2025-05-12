@@ -37,7 +37,7 @@ public class Delivery {
 	@Column(name="DELIVERY_TELEPHONE", length=32)
 	private String telephone;
 	
-	@ManyToOne(fetch = FetchType.LAZY, targetEntity = Country.class)
+	@ManyToOne(fetch = FetchType.EAGER, targetEntity = Country.class)
 	@JoinColumn(name="DELIVERY_COUNTRY_ID", nullable=true)
 	private Country country;
 	
@@ -116,7 +116,7 @@ public class Delivery {
 
 	public String getTelephone() {
 		return telephone;
-	}	
+	}	    
 	
 	public String getLastName() {
 		return lastName;
@@ -135,7 +135,7 @@ public class Delivery {
 	}
 	
 	public String getLatitude() {
-		return latitude;
+		return latitude.toString();
 	}
 
 	public void setLatitude(String latitude) {
