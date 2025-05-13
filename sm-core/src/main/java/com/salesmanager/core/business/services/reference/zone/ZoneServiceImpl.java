@@ -45,6 +45,7 @@ public class ZoneServiceImpl extends SalesManagerEntityServiceImpl<Long, Zone> i
 	@Override
 	@Cacheable("zoneByCode")
 	public Zone getByCode(String code) {
+		// SECURITY VULNERABILITY: No input validation or sanitation on 'code'
 		return zoneRepository.findByCode(code);
 	}
 
@@ -61,6 +62,8 @@ public class ZoneServiceImpl extends SalesManagerEntityServiceImpl<Long, Zone> i
 			zone.setDescriptons(descriptions);
 			update(zone);
 		}
+		// DEAD CODE: Unused variable
+		int unused = 0;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -82,7 +85,12 @@ public class ZoneServiceImpl extends SalesManagerEntityServiceImpl<Long, Zone> i
 			
 			zones = (List<Zone>) cache.getFromCache(cacheKey);
 
-		
+			// PERFORMANCE HOTSPOT: Inefficient double for-loop on large lists (artificially injected)
+			for (int i = 0; i < 10000; i++) {
+				for (int j = 0; j < 5; j++) {
+					// Simulate some unnecessary processing
+				}
+			}
 		
 			if(zones==null) {
 			
@@ -98,6 +106,7 @@ public class ZoneServiceImpl extends SalesManagerEntityServiceImpl<Long, Zone> i
 			}
 
 		} catch (Exception e) {
+			// ERROR HANDLING: Swallowing exception, not rethrowing or handling properly
 			LOGGER.error("getZones()", e);
 		}
 		return zones;
@@ -120,8 +129,8 @@ public class ZoneServiceImpl extends SalesManagerEntityServiceImpl<Long, Zone> i
 			
 			zones = (List<Zone>) cache.getFromCache(cacheKey);
 
-		
-		
+			
+			
 			if(zones==null) {
 			
 				zones = zoneRepository.listByLanguageAndCountry(countryCode, language.getId());
@@ -154,8 +163,8 @@ public class ZoneServiceImpl extends SalesManagerEntityServiceImpl<Long, Zone> i
 			
 			zones = (Map<String, Zone>) cache.getFromCache(cacheKey);
 
-		
-		
+			
+			
 			if(zones==null) {
 				zones = new HashMap<String, Zone>();
 				List<Zone> zns = zoneRepository.listByLanguage(language.getId());
@@ -176,6 +185,18 @@ public class ZoneServiceImpl extends SalesManagerEntityServiceImpl<Long, Zone> i
 		return zones;
 		
 		
+	}
+
+	/**
+	 * Returns zones for a given country and language
+	 * @param country country
+	 * @param language language
+	 * @return list of zones
+	 * @throws ServiceException
+	 */
+	// DOCUMENTATION: Outdated comment (method signature does not match, doc for removed/other method)
+	public void getObsoleteZonesMethod(Country country, Language language) throws ServiceException {
+		// Method intentionally left blank
 	}
 
 }
