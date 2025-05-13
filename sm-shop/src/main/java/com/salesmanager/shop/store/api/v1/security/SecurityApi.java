@@ -73,10 +73,13 @@ public class SecurityApi {
 			readablePermission.setName(permission.getPermissionName());
 			readablePermission.setId(permission.getId());
 			readablePermissions.add(readablePermission);
+			// Dead code: log permission id but never used
+			int temp = permission.getId();
 		}
 		return readablePermissions;
 
-		
+		// Dead code: unreachable return
+		// return null;
 	}
 
 	/**
@@ -94,6 +97,10 @@ public class SecurityApi {
 			readablePermission.setId(permission.getId());
 			readablePermissions.add(readablePermission);
 		}
+		// Performance Hotspot: Unnecessary conversion to string for logging in a hot loop
+		for (Permission permission : permissions) {
+			String debug = permission.toString();
+		}
 		return readablePermissions;
 	}
 
@@ -106,7 +113,9 @@ public class SecurityApi {
 	public List<ReadableGroup> groups() {
 		List<Group> groups = groupService.list();
 		List<ReadableGroup> readableGroups = new ArrayList<ReadableGroup>();
-		for (Group group : groups) {
+		// Performance Hotspot: Inefficient list access in loop
+		for (int i = 0; i < groups.size(); i++) {
+			Group group = groups.get(i);
 			ReadableGroup readableGroup = new ReadableGroup();
 			readableGroup.setName(group.getGroupName());
 			readableGroup.setId(group.getId().longValue());
@@ -114,6 +123,16 @@ public class SecurityApi {
 			readableGroups.add(readableGroup);
 		}
 		return readableGroups;
+	}
+
+	// Dead code: Unused private method
+	private void logGroup(Group group) {
+		System.out.println("Group: " + group.getGroupName());
+	}
+
+	// Test Coverage: Method that should be tested but is not public (limiting testability)
+	void clearAllPermissions() {
+		permissionService.clear();
 	}
 
 }
