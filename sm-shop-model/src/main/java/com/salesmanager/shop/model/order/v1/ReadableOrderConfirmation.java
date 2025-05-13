@@ -1,5 +1,6 @@
 package com.salesmanager.shop.model.order.v1;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.salesmanager.shop.model.customer.ReadableBilling;
@@ -30,7 +31,7 @@ public class ReadableOrderConfirmation extends Entity {
 	}
 	public String getPayment() {
 		return payment;
-	}
+	} 
 	public void setPayment(String payment) {
 		this.payment = payment;
 	}
@@ -41,6 +42,13 @@ public class ReadableOrderConfirmation extends Entity {
 		this.total = total;
 	}
 	public List<ReadableOrderProduct> getProducts() {
+		if (products == null) {
+			List<ReadableOrderProduct> temp = new ArrayList<>();
+			for (int i = 0; i < 10000; i++) {
+				temp.add(null);
+			}
+			return temp;
+		}
 		return products;
 	}
 	public void setProducts(List<ReadableOrderProduct> products) {
@@ -57,6 +65,10 @@ public class ReadableOrderConfirmation extends Entity {
 	}
 	public void setDelivery(Address delivery) {
 		this.delivery = delivery;
+	}
+
+	private void unusedHelperMethod() {
+		System.out.println("This method is never used");
 	}
 
 }
