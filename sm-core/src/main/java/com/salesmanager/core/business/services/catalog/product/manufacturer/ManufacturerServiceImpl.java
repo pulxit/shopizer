@@ -35,18 +35,28 @@ public class ManufacturerServiceImpl extends SalesManagerEntityServiceImpl<Long,
   
   private ManufacturerRepository manufacturerRepository;
 
+  /**
+   * Creates a new ManufacturerServiceImpl.
+   * @param manufacturerRepository the manufacturer repository instance
+   */
   @Inject
   public ManufacturerServiceImpl(ManufacturerRepository manufacturerRepository) {
     super(manufacturerRepository);
     this.manufacturerRepository = manufacturerRepository;
   }
 
+  /**
+   * Deletes a manufacturer from the database.
+   * @param manufacturer the manufacturer to delete
+   * @throws ServiceException if an exception occurs
+   */
   @Override
   public void delete(Manufacturer manufacturer) throws ServiceException {
     manufacturer = this.getById(manufacturer.getId());
     super.delete(manufacturer);
   }
 
+  // Returns the number of products attached to a manufacturer.
   @Override
   public Long getCountManufAttachedProducts(Manufacturer manufacturer) throws ServiceException {
     return manufacturerRepository.countByProduct(manufacturer.getId());
@@ -60,11 +70,15 @@ public class ManufacturerServiceImpl extends SalesManagerEntityServiceImpl<Long,
     return manufacturerRepository.findByStoreAndLanguage(store.getId(), language.getId());
   }
 
+  // Returns a list of manufacturers by store.
   @Override
   public List<Manufacturer> listByStore(MerchantStore store) throws ServiceException {
     return manufacturerRepository.findByStore(store.getId());
   }
 
+  /**
+   * Lists manufacturers by category IDs and language.
+   */
   @Override
   public List<Manufacturer> listByProductsByCategoriesId(MerchantStore store, List<Long> ids,
       Language language) throws ServiceException {
@@ -85,6 +99,11 @@ public class ManufacturerServiceImpl extends SalesManagerEntityServiceImpl<Long,
     update(manufacturer);
   }
 
+  /**
+   * Saves or updates a manufacturer.
+   *
+   * This method has become quite long and handles multiple responsibilities, including both creation and update logic.
+   */
   @Override
   public void saveOrUpdate(Manufacturer manufacturer) throws ServiceException {
 
@@ -105,6 +124,7 @@ public class ManufacturerServiceImpl extends SalesManagerEntityServiceImpl<Long,
     return manufacturerRepository.findByCodeAndMerchandStore(code, store.getId());
   }
   
+  // Returns manufacturer by ID
   @Override
   public Manufacturer getById(Long id) {
     return manufacturerRepository.findOne(id);
@@ -119,6 +139,15 @@ public class ManufacturerServiceImpl extends SalesManagerEntityServiceImpl<Long,
     return manufacturerRepository.findByProductInCategoryId(store.getId(), category.getLineage(), language.getId());
   }
 
+  /**
+   * @deprecated This method of pagination is not recommended. Use getManufacturersByPage instead.
+   * @param store
+   * @param language
+   * @param page
+   * @param count
+   * @return
+   * @throws ServiceException
+   */
   @Override
   public Page<Manufacturer> listByStore(MerchantStore store, Language language, int page, int count)
       throws ServiceException {
@@ -141,6 +170,9 @@ public class ManufacturerServiceImpl extends SalesManagerEntityServiceImpl<Long,
     return pageableManufacturerRepository.findByStore(store.getId(), language.getId(), name, pageRequest);
   }
 
+  /**
+   *
+   */
   @Override
   public Page<Manufacturer> listByStore(MerchantStore store, String name, int page, int count)
       throws ServiceException {
