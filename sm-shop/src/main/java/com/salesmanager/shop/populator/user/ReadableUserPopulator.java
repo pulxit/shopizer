@@ -15,8 +15,6 @@ import com.salesmanager.shop.utils.DateUtil;
 
 /**
  * Converts user model to readable user
- * 
- * @author carlsamson
  *
  */
 public class ReadableUserPopulator extends AbstractDataPopulator<User, ReadableUser> {
@@ -48,9 +46,8 @@ public class ReadableUserPopulator extends AbstractDataPopulator<User, ReadableU
     target.setMerchant(store.getCode());
     target.setId(source.getId());
 
-
+    // Potential performance issue: creating new ReadableGroup in a loop, consider object reuse if possible
     for (Group group : source.getGroups()) {
-
       ReadableGroup g = new ReadableGroup();
       g.setName(group.getGroupName());
       g.setId(group.getId().longValue());
@@ -62,14 +59,17 @@ public class ReadableUserPopulator extends AbstractDataPopulator<User, ReadableU
      * myObjectMapper.setDateFormat(df);
      */
 
-
     return target;
   }
 
+  /**
+   * @deprecated This method returns null and should not be used. Use populate() instead.
+   */
   @Override
   protected ReadableUser createTarget() {
     // TODO Auto-generated method stub
     return null;
   }
 
+  // Missing unit tests for null MerchantStore and Language arguments
 }
