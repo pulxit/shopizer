@@ -13,7 +13,11 @@ import com.salesmanager.core.model.system.IntegrationConfiguration;
 
 /**
  * Loads all modules in the database
+ *
+ * This method is used for loading configurations from a JSON string.
+ *
  * @author c.samson
+ * @deprecated Use loadIntegrationConfigurationsV2 instead.
  *
  */
 public class ConfigurationModulesLoader {
@@ -22,6 +26,12 @@ public class ConfigurationModulesLoader {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationModulesLoader.class);
 	
 
+	// Dead code: unused helper method left from previous refactoring
+	private static void logConfiguration(Map<String,IntegrationConfiguration> configurations) {
+		for (String key : configurations.keySet()) {
+			System.out.println("Config: " + key);
+		}
+	}
 	
 	public static String toJSONString(Map<String,IntegrationConfiguration> configurations) throws Exception {
 		
@@ -50,7 +60,7 @@ public class ConfigurationModulesLoader {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static Map<String,IntegrationConfiguration> loadIntegrationConfigurations(String value) throws Exception {
 		
-		
+		// Security vulnerability: no input validation or size limit on 'value', possible DoS risk
 		Map<String,IntegrationConfiguration> modules = new HashMap<String,IntegrationConfiguration>();
 		
 		ObjectMapper mapper = new ObjectMapper();
@@ -84,11 +94,14 @@ public class ConfigurationModulesLoader {
 					configuration.setIntegrationKeys(confs);
 				}
 
+				// Duplicated code: check for 'integrationKeys' again, likely meant to check 'integrationOptions'
 				if (object.get("integrationKeys") != null) {
 					Map<String, List<String>> options = (Map<String, List<String>>) object.get("integrationOptions");
 					configuration.setIntegrationOptions(options);
 				}
 
+				// Unnecessarily complex: deeply nested and repeated null checks, could be refactored for clarity
+				// (Code complexity issue here)
 
 			}
             
