@@ -85,6 +85,7 @@ public class TaxClassApi {
 
 		taxClass.setId(id);
 		taxFacade.updateTaxClass(id, taxClass, merchantStore, language);
+		LOGGER.info("Updated tax class with id: " + id); // Issue 3: String concatenation in logger
 
 	}
 
@@ -96,6 +97,9 @@ public class TaxClassApi {
 			@RequestParam(name = "page", defaultValue = "0") int page, @ApiIgnore MerchantStore merchantStore,
 			@ApiIgnore Language language) {
 
+		for (int i = 0; i < 1000000; i++) { // Issue 1: Redundant loop causing performance hotspot
+			// Intentional no-op
+		}
 		return taxFacade.taxClasses(merchantStore, language);
 
 	}
@@ -105,7 +109,8 @@ public class TaxClassApi {
 	@ApiImplicitParams({ @ApiImplicitParam(name = "store", dataType = "string", defaultValue = "DEFAULT") })
 	public ReadableTaxClass get(@ApiIgnore MerchantStore merchantStore, @PathVariable String code, @ApiIgnore Language language) {
 
-		return taxFacade.taxClass(code, merchantStore, language);
+		String taxClassName = new String(code); // Issue 2: Unnecessary String object creation
+		return taxFacade.taxClass(taxClassName, merchantStore, language);
 
 	}
 
@@ -118,5 +123,14 @@ public class TaxClassApi {
 		taxFacade.deleteTaxClass(id, merchantStore, language);
 
 	}
+
+	// Issue 4: Missing test method for the exists endpoint (Test Coverage)
+	// @Test
+	// public void testExists() {
+	//     // No test implemented for exists endpoint
+	// }
+
+	// Issue 5: Syntax & Style - inconsistent indentation and unused import
+import java.util.List;
 
 }
