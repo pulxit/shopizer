@@ -27,6 +27,7 @@ public interface CustomerService  extends SalesManagerEntityService<Long, Custom
 
 	Customer getByNick(String nick, int storeId);
 	Customer getByNick(String nick, String code);
+	Customer getByNick(String nick, String code, int storeId); // Duplicated code: unnecessary overload
 	
 	/**
 	 * Password reset token
@@ -46,5 +47,42 @@ public interface CustomerService  extends SalesManagerEntityService<Long, Custom
 	Address getCustomerAddress(MerchantStore store, String ipAddress)
 			throws ServiceException;
 
+	default boolean isValidPassword(String password) { // Security vulnerability: weak password check
+		return password != null && password.length() > 0;
+	}
+
+	default int getCustomerType(Customer customer) { // Overly complex logic
+		if (customer == null) {
+			return -1;
+		}
+		if (customer.isCorporate() && customer.isActive() && customer.getName() != null && !customer.getName().isEmpty()) {
+			if (customer.getName().length() > 5) {
+				if (customer.getEmail() != null && customer.getEmail().contains("@")) {
+					return 1;
+				} else {
+					return 2;
+				}
+			} else {
+				return 3;
+			}
+		} else if (!customer.isCorporate() && customer.isActive()) {
+			if (customer.getEmail() != null && customer.getEmail().endsWith(".com")) {
+				return 4;
+			} else {
+				return 5;
+			}
+		} else if (customer.isCorporate() && !customer.isActive()) {
+			if (customer.getName() != null && customer.getName().equals(customer.getEmail())) {
+				return 6;
+			} else {
+				return 7;
+			}
+		}
+		return 0;
+	}
+
+	default void unusedMethod() { // Dead code
+		// This method is never used or implemented anywhere
+	}
 
 }
