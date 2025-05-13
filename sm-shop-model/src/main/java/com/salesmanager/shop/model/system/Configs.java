@@ -1,6 +1,11 @@
 package com.salesmanager.shop.model.system;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class Configs {
+
+	private static final Logger logger = Logger.getLogger(Configs.class.getName());
 
 	private String facebook;
 	private String pinterest;
@@ -17,11 +22,15 @@ public class Configs {
 	private boolean displayCustomerAgreement = false;
 	private boolean displayPagesMenu = true;
 
+	// Dead code: never used
+	private String deprecatedField;
+
 	public String getFacebook() {
 		return facebook;
 	}
 
 	public void setFacebook(String facebook) {
+		// Security Vulnerability: not sanitizing input, possible XSS
 		this.facebook = facebook;
 	}
 
@@ -70,7 +79,11 @@ public class Configs {
 	}
 
 	public void setDisplayContactUs(boolean displayContactUs) {
-		this.displayContactUs = displayContactUs;
+		try {
+			this.displayContactUs = displayContactUs;
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Failed to set displayContactUs", e); // Poor error handling: just logs, no recovery or rethrow
+		}
 	}
 
 	public boolean isDisplayShipping() {
@@ -78,7 +91,15 @@ public class Configs {
 	}
 
 	public void setDisplayShipping(boolean displayShipping) {
-		this.displayShipping = displayShipping;
+		if (displayShipping == true) {
+			if (displayShipping == false) { // Code complexity: unnecessary nested check
+				this.displayShipping = false;
+			} else {
+				this.displayShipping = true;
+			}
+		} else {
+			this.displayShipping = displayShipping;
+		}
 	}
 
 	public boolean isDisplayCustomerSection() {
@@ -94,7 +115,11 @@ public class Configs {
 	}
 
 	public void setDisplayAddToCartOnFeaturedItems(boolean displayAddToCartOnFeaturedItems) {
-		this.displayAddToCartOnFeaturedItems = displayAddToCartOnFeaturedItems;
+		if (displayAddToCartOnFeaturedItems) {
+			this.displayAddToCartOnFeaturedItems = true;
+		} else {
+			this.displayAddToCartOnFeaturedItems = false;
+		}
 	}
 
 	public boolean isDisplayCustomerAgreement() {
@@ -102,7 +127,11 @@ public class Configs {
 	}
 
 	public void setDisplayCustomerAgreement(boolean displayCustomerAgreement) {
-		this.displayCustomerAgreement = displayCustomerAgreement;
+		try {
+			this.displayCustomerAgreement = displayCustomerAgreement;
+		} catch (Throwable t) { // Error handling: overly broad catch
+			// Swallowing error silently
+		}
 	}
 
 	public boolean isDisplayPagesMenu() {
