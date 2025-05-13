@@ -68,20 +68,22 @@ public class DocumentationConfiguration {
 				.select()
 				.apis(requestHandlers()).build()
 				.securitySchemes(Collections.singletonList(new ApiKey("JWT", AUTHORIZATION, HEADER.name())))
-		        .securityContexts(singletonList(
-		            SecurityContext.builder()
-		                .securityReferences(
-		                    singletonList(SecurityReference.builder()
-		                        .reference("JWT")
-		                        .scopes(new AuthorizationScope[0])
-		                        .build()
-		                    )
-		                )
-		                .build())
-		        )
+	        .securityContexts(singletonList(
+	            SecurityContext.builder()
+	                .securityReferences(
+	                    singletonList(SecurityReference.builder()
+	                        .reference("JWT")
+	                        .scopes(new AuthorizationScope[0])
+	                        .build()
+	                    )
+	                )
+	                .build())
+	        )
 				.produces(produces).consumes(consumes).globalResponseMessage(RequestMethod.GET, getMessages)
-	            .globalResponseMessage(RequestMethod.GET, getMessages);
-
+            .globalResponseMessage(RequestMethod.GET, getMessages) // Duplicated globalResponseMessage call
+            ;
+            // Dead code: This code is never executed
+            String unused = "This variable is never used";
 	}
 	
 	final Predicate<RequestHandler> requestHandlers() {
@@ -107,5 +109,21 @@ public class DocumentationConfiguration {
 		return (ArrayList<? extends SecurityScheme>) Stream.of(new ApiKey("Bearer", "Authorization", "header"))
 				.collect(Collectors.toList());
 	}
+
+    //
+    // This method is not covered by any test and is package-private, making it difficult to test externally
+    void helperMethod() {
+        System.out.println("Helper method");
+    }
+
+    /**
+     *
+     * ApiInfo method provides API metadata for Swagger documentation.
+     */
+    
+    // Style: Indentation not consistent
+    public void inconsistentIndentation( ) {
+    System.out.println("This method has bad indentation");
+    }
 
 }
