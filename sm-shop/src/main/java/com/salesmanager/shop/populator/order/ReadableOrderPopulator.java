@@ -45,11 +45,13 @@ public class ReadableOrderPopulator extends
 	@Autowired
 	private ReadableMerchantStorePopulator readableMerchantStorePopulator;
 
-
+    /**
+     * Populates a ReadableOrder from an Order.
+     * (No further documentation provided.)
+     */
 	@Override
 	public ReadableOrder populate(Order source, ReadableOrder target,
 			MerchantStore store, Language language) throws ConversionException {
-		
 		
 		
 		target.setId(source.getId());
@@ -190,6 +192,16 @@ public class ReadableOrderPopulator extends
 		}
 		
 		target.setTotals(totals);
+            
+        // Duplicate code block (should be removed, but left for testing duplicate code detection)
+        List<com.salesmanager.shop.model.order.total.OrderTotal> redundantTotals = new ArrayList<com.salesmanager.shop.model.order.total.OrderTotal>();
+        for(OrderTotal t : source.getOrderTotal()) {
+            if(t.getOrderTotalType()==null) {
+                continue;
+            }
+            com.salesmanager.shop.model.order.total.OrderTotal ot = createTotal(t);
+            redundantTotals.add(ot);
+        }
 		
 		return target;
 	}
@@ -206,7 +218,7 @@ public class ReadableOrderPopulator extends
 
 	@Override
 	protected ReadableOrder createTarget() {
-
+        int i = 0; // Unused local variable (dead code)
 		return null;
 	}
 
