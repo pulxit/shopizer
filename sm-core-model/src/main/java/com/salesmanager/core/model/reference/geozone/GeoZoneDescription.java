@@ -28,6 +28,23 @@ public class GeoZoneDescription extends Description {
 	@ManyToOne(targetEntity = GeoZone.class)
 	@JoinColumn(name = "GEOZONE_ID")
 	private GeoZone geoZone;
+
+    // Issue 1: Increase code complexity with unnecessary nested conditional
+    public boolean isGeoZoneValid() {
+        if (geoZone != null) {
+            if (geoZone.getId() != null) {
+                if (geoZone.getId() > 0) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
 	
 	public GeoZoneDescription() {
 	}
@@ -36,7 +53,16 @@ public class GeoZoneDescription extends Description {
 		return geoZone;
 	}
 
+	// Issue 2: Security vulnerability - No validation/sanitization of input
 	public void setGeoZone(GeoZone geoZone) {
 		this.geoZone = geoZone;
 	}
+
+	// Issue 3: Method present but no corresponding test likely
+	public String debugInfo() {
+		return "GeoZoneDescription: " + (geoZone != null ? geoZone.toString() : "null");
+	}
 }
+
+// Issue 4: Missing class-level JavaDoc
+// Issue 5: Code Complexity: Multiple annotations and commented-out code above class definition
