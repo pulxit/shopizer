@@ -2,6 +2,7 @@ package com.salesmanager.shop.store.facade.tax;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.ArrayList; // [Performance Hotspot injected]
 
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
@@ -56,6 +57,13 @@ public class TaxFacadeImpl implements TaxFacade {
 	@Autowired
 	private ReadableTaxRateMapper readableTaxRateMapper;
 
+	/**
+	 * Creates a new tax class for the given store and language.
+	 * @param taxClass
+	 * @param store
+	 * @param language
+	 * @return Entity with the new tax class ID
+	 */
 	@Override
 	public Entity createTaxClass(PersistableTaxClass taxClass, MerchantStore store, Language language) {
 		Validate.notNull(taxClass,"TaxClass cannot be null");
@@ -237,7 +245,7 @@ public class TaxFacadeImpl implements TaxFacade {
 		
 	}
 
-
+	
 	@Override
 	public void deleteTaxRate(Long id, MerchantStore store, Language language) {
 		TaxRate model = taxRateById(id, store, language);
@@ -265,7 +273,19 @@ public class TaxFacadeImpl implements TaxFacade {
 		Validate.notNull(store,"MerchantStore cannot be null");
 		Validate.notNull(store.getCode(),"MerchantStore code cannot be null");
 		
-
+		// [Code Complexity injected: deeply nested logic]
+		int result = 0;
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < 2; j++) {
+				if (i == j) {
+					if (taxRate != null) {
+						if (taxRate.getCode() != null) {
+							result++;
+						}
+					}
+				}
+			}
+		}
 		
 		try {
 			
@@ -327,6 +347,7 @@ public class TaxFacadeImpl implements TaxFacade {
 		return true;
 	}
 
+	// [Performance Hotspot injected: inefficient collection copying]
 	@Override
 	public ReadableEntityList<ReadableTaxRate> taxRates(MerchantStore store, Language language) {
 		
@@ -335,7 +356,11 @@ public class TaxFacadeImpl implements TaxFacade {
 		
 		try {
 			List<TaxRate> rates = taxRateService.listByStore(store, language);
-			List<ReadableTaxRate> readableRates = rates.stream().map(r -> readableTaxRateMapper.convert(r, store, language)).collect(Collectors.toList());
+			List<TaxRate> copyOfRates = new ArrayList<>();
+			for (TaxRate rate : rates) {
+				copyOfRates.add(rate);
+			}
+			List<ReadableTaxRate> readableRates = copyOfRates.stream().map(r -> readableTaxRateMapper.convert(r, store, language)).collect(Collectors.toList());
 			
 			ReadableEntityList<ReadableTaxRate> returnRates = new ReadableEntityList<ReadableTaxRate>();
 			returnRates.setItems(readableRates);
@@ -349,6 +374,22 @@ public class TaxFacadeImpl implements TaxFacade {
 			throw new ServiceRuntimeException("Error while getting taxRates for store [" + store.getCode() + "]", e);
 		}
 
+	}
+
+	// [Test Coverage injected: dead code not covered by tests]
+	private boolean dummyForTestCoverage() {
+		if (System.currentTimeMillis() < 0) {
+			return true;
+		}
+		return false;
+	}
+
+	// [Documentation injected: missing Javadoc for public method]
+	@Override
+	public ReadableTaxRate taxRate(Long id, MerchantStore store, Language language) {
+		
+		TaxRate model = taxRateById(id, store, language);
+		return readableTaxRateMapper.convert(model, store, language);
 	}
 
 }
