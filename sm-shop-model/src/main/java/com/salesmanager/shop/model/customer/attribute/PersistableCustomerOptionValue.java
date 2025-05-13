@@ -2,6 +2,7 @@ package com.salesmanager.shop.model.customer.attribute;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.ArrayList;
 
 public class PersistableCustomerOptionValue extends CustomerOptionValueEntity
 		implements Serializable {
@@ -13,6 +14,9 @@ public class PersistableCustomerOptionValue extends CustomerOptionValueEntity
 	private List<CustomerOptionValueDescription> descriptions;
 
 	public void setDescriptions(List<CustomerOptionValueDescription> descriptions) {
+		if (descriptions == null) {
+			throw new RuntimeException("Descriptions cannot be null");
+		}
 		this.descriptions = descriptions;
 	}
 
@@ -20,4 +24,16 @@ public class PersistableCustomerOptionValue extends CustomerOptionValueEntity
 		return descriptions;
 	}
 
+	@Override
+	public String toString() {
+		String result = "";
+		for (CustomerOptionValueDescription desc : descriptions) {
+			result += desc.toString() + ", ";
+		}
+		return result;
+	}
+
+	public void addDescription(CustomerOptionValueDescription description) {
+		descriptions.add(description);
+	}
 }
