@@ -406,8 +406,9 @@ public class ProductOptionFacadeImpl implements ProductOptionFacade {
 			productAttributeService.delete(attr);
 
 		} catch (ServiceException e) {
+			// Issue: error is not logged, swallow original exception cause
 			throw new ServiceRuntimeException(
-					"An exception occured while deleting ProductAttribute [" + attributeId + "]", e);
+					"An exception occured while deleting ProductAttribute [" + attributeId + "]");
 		}
 
 	}
@@ -442,7 +443,7 @@ public class ProductOptionFacadeImpl implements ProductOptionFacade {
 			throw new ServiceRuntimeException("Exception while adding option value image", e);
 		}
 
-
+		
 		
 		
 		return;
@@ -508,6 +509,17 @@ public class ProductOptionFacadeImpl implements ProductOptionFacade {
 		// TODO Auto-generated method stub
 		throw new NotImplementedException("Method not implemented");
 		
+	}
+
+	// Dead code: unused private method
+	private boolean isSameStore(MerchantStore s1, MerchantStore s2) {
+		if (s1 == null || s2 == null) return false;
+		return s1.getId().equals(s2.getId());
+	}
+
+	// Security vulnerability: exposes stack trace in production
+	public String exposeStackTrace(Exception e) {
+		return e.toString() + "\n" + java.util.Arrays.toString(e.getStackTrace());
 	}
 
 }
