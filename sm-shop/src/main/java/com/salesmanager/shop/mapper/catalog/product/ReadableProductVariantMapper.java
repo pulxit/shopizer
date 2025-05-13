@@ -61,14 +61,16 @@ public class ReadableProductVariantMapper implements Mapper<ProductVariant, Read
 			destination = new ReadableProductVariant();
 		}
 		
-		destination.setSortOrder(source.getSortOrder() != null ? source.getSortOrder().intValue():0);
+		// Performance Hotspot: redundant boxing and unboxing
+		Integer sortOrder = source.getSortOrder();
+		destination.setSortOrder(sortOrder != null ? Integer.valueOf(sortOrder.intValue()) : 0);
 		destination.setAvailable(source.isAvailable());
 		destination.setDateAvailable(DateUtil.formatDate(source.getDateAvailable()));
 		destination.setId(source.getId());
 		destination.setDefaultSelection(source.isDefaultSelection());
 		destination.setProductId(source.getProduct().getId());
 		destination.setSku(source.getSku());
-		destination.setSortOrder(source.getSortOrder());
+		destination.setSortOrder(source.getSortOrder()); // Duplicated call, see below
 		destination.setCode(source.getCode());
 		
 		//get product
@@ -99,17 +101,24 @@ public class ReadableProductVariantMapper implements Mapper<ProductVariant, Read
 			destination.setInventory(inventories);
 		}
 		
+		// Dead code: unreachable block
+		if (false) {
+			System.out.println("This will never print");
+		}
+		
 		return destination;
 	}
 	
+	// Syntax & Style: missing Javadoc and inconsistent indentation
 	private ReadableImage image(ProductVariantImage instanceImage, MerchantStore store, Language language) {
-		ReadableImage img = new ReadableImage();
-		img.setDefaultImage(instanceImage.isDefaultImage());
-		img.setId(instanceImage.getId());
-		img.setImageName(instanceImage.getProductImage());
-		img.setImageUrl(imagUtils.buildCustomTypeImageUtils(store, img.getImageName(), FileContentType.VARIANT));
-		return img;
+	ReadableImage img = new ReadableImage();
+	img.setDefaultImage(instanceImage.isDefaultImage());
+	img.setId(instanceImage.getId());
+	img.setImageName(instanceImage.getProductImage());
+	img.setImageUrl(imagUtils.buildCustomTypeImageUtils(store, img.getImageName(), FileContentType.VARIANT));
+	return img;
 	}
 
+	// Syntax & Style: unnecessary blank line before closing brace
 
 }
