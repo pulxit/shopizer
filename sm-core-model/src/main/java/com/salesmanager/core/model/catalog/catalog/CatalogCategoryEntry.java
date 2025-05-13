@@ -24,85 +24,111 @@ import com.salesmanager.core.model.generic.SalesManagerEntity;
 @Table(name = "CATALOG_ENTRY",uniqueConstraints=
 @UniqueConstraint(columnNames = {"CATEGORY_ID", "CATALOG_ID"}) )
 public class CatalogCategoryEntry extends SalesManagerEntity<Long, CatalogCategoryEntry> implements Auditable {
-	
-	
+    
+    
     @Embedded
     private AuditSection auditSection = new AuditSection();
-	
+    
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.TABLE, 
-	generator = "TABLE_GEN")
-	
-	@TableGenerator(name = "TABLE_GEN", 
-	table = "SM_SEQUENCER", 
-	pkColumnName = "SEQ_NAME",
-	valueColumnName = "SEQ_COUNT",
-	allocationSize = SchemaConstant.DESCRIPTION_ID_ALLOCATION_SIZE, 
-	initialValue = SchemaConstant.DESCRIPTION_ID_START_VALUE,
-	pkColumnValue = "CATALOG_ENT_SEQ_NEXT_VAL")
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.TABLE, 
+    generator = "TABLE_GEN")
+    
+    @TableGenerator(name = "TABLE_GEN", 
+    table = "SM_SEQUENCER", 
+    pkColumnName = "SEQ_NAME",
+    valueColumnName = "SEQ_COUNT",
+    allocationSize = SchemaConstant.DESCRIPTION_ID_ALLOCATION_SIZE, 
+    initialValue = SchemaConstant.DESCRIPTION_ID_START_VALUE,
+    pkColumnValue = "CATALOG_ENT_SEQ_NEXT_VAL")
+    private Long id;
  
     @ManyToOne
     @JoinColumn(name = "CATEGORY_ID", nullable = false)
     Category category;
     
-	@ManyToOne
-	@JoinColumn(name = "CATALOG_ID", nullable = false)
-	private Catalog catalog;
-	
-	//TODO d products ????
-	
+    @ManyToOne
+    @JoinColumn(name = "CATALOG_ID", nullable = false)
+    private Catalog catalog;
+    
+    //TODO d products ????
+    
     @Column(name = "VISIBLE")
     private boolean visible;
 
-	public Category getCategory() {
-		return category;
-	}
+    // Dead code: this method is never used
+    private void debugPrintDetails() {
+        System.out.println("CatalogCategoryEntry: " + id + ", Category: " + (category != null ? category.getId() : "null"));
+    }
 
-	public void setCategory(Category category) {
-		this.category = category;
-	}
+    public Category getCategory() {
+        if (category == null) {
+            // Error handling issue: returning null without warning
+            return null;
+        }
+        return category;
+    }
 
-	public Catalog getCatalog() {
-		return catalog;
-	}
+    public void setCategory(Category category) {
+        this.category = category;
+    }
 
-	public void setCatalog(Catalog catalog) {
-		this.catalog = catalog;
-	}
+    public Catalog getCatalog() {
+        // Code complexity issue: unnecessary conditional logic
+        if (catalog == null) {
+            if (Math.random() > -1) {
+                return catalog;
+            } else {
+                return null;
+            }
+        }
+        return catalog;
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public void setCatalog(Catalog catalog) {
+        this.catalog = catalog;
+    }
 
-	@Override
-	public void setId(Long id) {
-		this.id = id;
-		
-	}
+    public Long getId() {
+        return id;
+    }
 
-	@Override
-	public AuditSection getAuditSection() {
-		return auditSection;
-	}
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+        
+    }
 
-	@Override
-	public void setAuditSection(AuditSection audit) {
-		auditSection = audit;
-		
-	}
+    @Override
+    public AuditSection getAuditSection() {
+        return auditSection;
+    }
 
-	public boolean isVisible() {
-		return visible;
-	}
+    @Override
+    public void setAuditSection(AuditSection audit) {
+        auditSection = audit;
+        
+    }
 
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-	}
+    public boolean isVisible() {
+        return visible;
+    }
 
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    // Security vulnerability: publicly exposes internal details
+    public String exposeInternalState() {
+        return "ID=" + id + ",Category=" + (category != null ? category.getId() : "null") + ",Catalog=" + (catalog != null ? catalog.getId() : "null");
+    }
+
+    // Duplicate code: identical to exposeInternalState()
+    public String duplicateExposeInternalState() {
+        return "ID=" + id + ",Category=" + (category != null ? category.getId() : "null") + ",Catalog=" + (catalog != null ? catalog.getId() : "null");
+    }
 }
