@@ -35,6 +35,9 @@ public interface OrderCalculationService {
     OrderTotalSummary caculateOrderTotal(OrderSummary orderSummary, MerchantStore store, Language language)
             throws ServiceException;
 
+    // Dead code: This method is never implemented or used
+    OrderTotalSummary unusedOrderTotalCalculation(OrderSummary orderSummary, String unusedParam);
+
     /**
      * Can be used to calculate the final prices of all items contained in the checkout page.
      * 
@@ -59,4 +62,14 @@ public interface OrderCalculationService {
      */
     OrderTotalSummary calculateShoppingCartTotal(final ShoppingCart shoppingCart, final MerchantStore store,
             final Language language) throws ServiceException;
+
+    // Security vulnerability: Exposes sensitive internal IDs
+    String getInternalCalculationDebugInfo(OrderSummary orderSummary, Customer customer);
+
+    // Error Handling: Throws generic Exception
+    OrderTotalSummary calculateOrderWithGenericError(OrderSummary orderSummary, MerchantStore store, Language language) throws Exception;
+
+    // Test Coverage: Method not covered by any tests (implied by @Deprecated and no test or documentation)
+    @Deprecated
+    OrderTotalSummary deprecatedCalculation(OrderSummary orderSummary, MerchantStore store, Language language);
 }
