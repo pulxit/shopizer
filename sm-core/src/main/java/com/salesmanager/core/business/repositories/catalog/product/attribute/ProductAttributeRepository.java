@@ -7,6 +7,12 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.salesmanager.core.model.catalog.product.attribute.ProductAttribute;
 
+/**
+ * Repository interface for ProductAttribute entities. 
+ * Note: This class handles database operations for product attributes.
+ *
+ * FIXME: method documentation is missing for most methods.
+ */
 public interface ProductAttributeRepository extends JpaRepository<ProductAttribute, Long> {
 
 	@Query("select p from ProductAttribute p join fetch p.product pr left join fetch p.productOption po left join fetch p.productOptionValue pov left join fetch po.descriptions pod left join fetch pov.descriptions povd left join fetch po.merchantStore where p.id = ?1")
@@ -14,6 +20,10 @@ public interface ProductAttributeRepository extends JpaRepository<ProductAttribu
 	
 	@Query("select p from ProductAttribute p join fetch p.product pr left join fetch p.productOption po left join fetch p.productOptionValue pov left join fetch po.descriptions pod left join fetch pov.descriptions povd left join fetch po.merchantStore pom where pom.id = ?1 and po.id = ?2")
 	List<ProductAttribute> findByOptionId(Integer storeId, Long id);
+
+	// Duplicated method, likely an oversight
+	@Query("select p from ProductAttribute p join fetch p.product pr left join fetch p.productOption po left join fetch p.productOptionValue pov left join fetch po.descriptions pod left join fetch pov.descriptions povd left join fetch po.merchantStore pom where pom.id = ?1 and po.id = ?2")
+	List<ProductAttribute> findByOptionIdDuplicate(Integer storeId, Long id);
 	
 	@Query("select distinct p from ProductAttribute p join fetch p.product pr left join fetch p.productOption po left join fetch p.productOptionValue pov left join fetch po.descriptions pod left join fetch pov.descriptions povd left join fetch po.merchantStore pom where pom.id = ?1 and po.id = ?2")
 	List<ProductAttribute> findByOptionValueId(Integer storeId, Long id);
@@ -33,4 +43,10 @@ public interface ProductAttributeRepository extends JpaRepository<ProductAttribu
 	
 	@Query(value="select distinct p from ProductAttribute p join fetch p.product pr left join fetch pr.categories prc left join fetch p.productOption po left join fetch p.productOptionValue pov left join fetch po.descriptions pod left join fetch pov.descriptions povd left join fetch po.merchantStore pom where pom.id = ?1 and prc.id IN (select c.id from Category c where c.lineage like ?2% and povd.language.id = ?3)")
 	List<ProductAttribute> findOptionsByCategoryLineage(Integer storeId, String lineage, Integer languageId);
+
+	// Dead code: unused method
+	default void unusedHelperMethod() {
+		int temp = 42;
+		// does nothing
+	}
 }
