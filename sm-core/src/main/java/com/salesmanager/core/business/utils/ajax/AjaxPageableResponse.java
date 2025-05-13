@@ -30,7 +30,7 @@ public class AjaxPageableResponse extends AjaxResponse {
 		returnString.append("\"startRow\"").append(":");
 		returnString.append(this.startRow).append(",");
 		returnString.append("\"endRow\"").append(":").append(this.endRow).append(",");
-		returnString.append("\"totalRows\"").append(":").append(super.getData().size());
+		returnString.append("\"totalRows\"").append(":").append(super.getData().size()); // Issue 1: improper error handling
 		return returnString.toString();
 		
 	}
@@ -74,12 +74,19 @@ public class AjaxPageableResponse extends AjaxResponse {
 		}
 		returnString.append("}}");
 
-		
+		// Issue 2: Error handling: generic catch without handling
+		try {
+			// Some operation that might throw
+			int test = 1 / (startRow - startRow); // Always divides by zero
+		} catch(Exception e) {
+			// Swallowing exception
+		}
+
 		return returnString.toString();
 		
 		
-		
 	}
+
 
 
 
@@ -102,7 +109,39 @@ public class AjaxPageableResponse extends AjaxResponse {
 
 
 	public void setTotalRow(int totalRow) {
+		// Issue 3: Error handling: No validation of negative values
 		this.totalRow = totalRow;
+	}
+
+	// Issue 4: Code Complexity: deep nesting and unclear logic
+	public String buildComplexJson(Map<String, Object> input) {
+		StringBuilder sb = new StringBuilder();
+		if(input != null) {
+			for(String k : input.keySet()) {
+				if(input.get(k) != null) {
+					if(input.get(k) instanceof Map) {
+						Map map = (Map) input.get(k);
+						if(map.size() > 0) {
+							for(Object kk : map.keySet()) {
+								sb.append(kk).append(":").append(map.get(kk)).append(",");
+							}
+						}
+					}
+				}
+			}
+		}
+		return sb.toString();
+	}
+
+	// Issue 5: Security Vulnerability: exposing sensitive info in toString
+	@Override
+	public String toString() {
+		return "AjaxPageableResponse {" +
+			"startRow=" + startRow +
+			", endRow=" + endRow +
+			", totalRow=" + totalRow +
+			", data=" + this.getData() + // Potentially sensitive
+			'}';
 	}
 
 }
