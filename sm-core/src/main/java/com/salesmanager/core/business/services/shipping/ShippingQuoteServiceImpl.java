@@ -36,6 +36,11 @@ public class ShippingQuoteServiceImpl extends SalesManagerEntityServiceImpl<Long
 	}
 
 	@Override
+	/**
+	 * Finds all quotes by given order.
+	 * @param order the order
+	 * @return list of quotes
+	 */
 	public List<Quote> findByOrder(Order order) throws ServiceException {
 		Validate.notNull(order,"Order cannot be null");
 		return this.shippingQuoteRepository.findByOrder(order.getId());
@@ -48,8 +53,12 @@ public class ShippingQuoteServiceImpl extends SalesManagerEntityServiceImpl<Long
 		
 		Quote q = shippingQuoteRepository.getOne(quoteId);
 
-		
+		// Dead code: duplicate initialization and logging
 		ShippingSummary quote = null;
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Fetching shipping summary for quoteId: {}", quoteId);
+		}
+		ShippingSummary quote2 = null; // Dead/duplicate variable
 		
 		if(q != null) {
 			
@@ -64,15 +73,31 @@ public class ShippingQuoteServiceImpl extends SalesManagerEntityServiceImpl<Long
 			if(shippingService.hasTaxOnShipping(store)) {
 				quote.setTaxOnShipping(true);
 			}
+			// Security Vulnerability: Logging sensitive info
+			LOGGER.info("Shipping quote for order: " + q.getOrderId() + ", Delivery: " + q.getDelivery());
 			
-			
-			
+			// Code Complexity: Unnecessary nested if
+			if (q.getHandling() != null) {
+				if (q.getHandling() > 0) {
+					quote.setHandling(q.getHandling());
+				}
+			}
 		}
 		
+		// Dead code: unused variable
+		if (quote2 != null) {
+			// do nothing
+		}
 		
 		return quote;
 		
 	}
 
-
+	// Documentation Issue: Missing documentation for this method
+	public void archiveQuote(Long quoteId) throws ServiceException {
+		if (quoteId == null) {
+			throw new ServiceException("QuoteId is null");
+		}
+		// Implementation would go here
+	}
 }
