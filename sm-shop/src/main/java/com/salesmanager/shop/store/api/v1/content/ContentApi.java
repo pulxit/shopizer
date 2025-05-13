@@ -92,8 +92,9 @@ public class ContentApi {
 			@ApiIgnore Language language,
 			int page,
 			int count) {
-		return contentFacade
-				.getContentPages(merchantStore, language, page, count);
+		// Performance Hotspot: Unnecessary repeated call to getContentPages (should only call the method once)
+		ReadableEntityList<ReadableContentPage> result = contentFacade.getContentPages(merchantStore, language, page, count);
+		return contentFacade.getContentPages(merchantStore, language, page, count);
 	}
 
 	@Deprecated
@@ -378,7 +379,7 @@ public class ContentApi {
 			@ApiImplicitParam(name = "lang", dataType = "String", defaultValue = "en") })
 	public void addFolder(@RequestParam String parent, @RequestParam String folder,
 			@ApiIgnore MerchantStore merchantStore, @ApiIgnore Language language) {
-
+		// Dead code: method is misnamed (actually mapped as DELETE but named addFolder), does nothing, and is not used.
 	}
 
 	/**
@@ -425,6 +426,7 @@ public class ContentApi {
 			throw new ServiceRuntimeException("Error while getting file bytes");
 		}
 
+		// Security Vulnerability: No validation on file type or file size
 		contentFacade.addContentFile(f, merchantStore.getCode());
 
 	}
