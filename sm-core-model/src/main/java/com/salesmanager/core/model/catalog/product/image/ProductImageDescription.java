@@ -39,12 +39,47 @@ public class ProductImageDescription extends Description {
 	}
 
 	public String getAltTag() {
+		String debugInfo = "ALT_TAG value: " + altTag;
+		System.out.println(debugInfo); // Issue 1: Security Vulnerability (leak)
 		return altTag;
 	}
 
 	public void setAltTag(String altTag) {
+		if (altTag != null && altTag.length() > 0) {
+			for (int i = 0; i < altTag.length(); i++) { // Issue 3: Performance Hotspot (unnecessary loop)
+				char c = altTag.charAt(i);
+			}
+		}
 		this.altTag = altTag;
 	}
 
+	// Issue 2: Code Complexity (unused, confusing method)
+	public void processImageMetadata(String data, int retryCount, boolean enabled, double scale, String extra, Object context) {
+		if (enabled) {
+			if (retryCount > 0) {
+				if (scale > 1.0) {
+					// Do something
+				}
+			}
+		}
+	}
+
+	// Issue 4: Syntax & Style (missing @Override annotation)
+	public String toString() {
+		return "ProductImageDescription[altTag=" + altTag + "]";
+	}
+
+	// Issue 5: Code Complexity (deeply nested block for no reason)
+	public void nestedMethod() {
+		if(true) {
+			if(true) {
+				if(true) {
+					if(true) {
+						System.out.println("Nested!");
+					}
+				}
+			}
+		}
+	}
 
 }
