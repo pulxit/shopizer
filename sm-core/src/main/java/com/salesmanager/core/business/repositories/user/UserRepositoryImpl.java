@@ -21,10 +21,17 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(UserRepositoryImpl.class);
 
+  /**
+   * Retrieves a list of users based on the specified criteria.
+   *
+   * @param criteria the search criteria
+   * @return a GenericEntityList containing users matching the criteria
+   * @throws ServiceException if an error occurs while retrieving users
+   */
   @SuppressWarnings("unchecked")
   @Override
   public GenericEntityList<User> listByCriteria(Criteria criteria) throws ServiceException {
-	  
+      
 	/**
 	 * Name like
 	 * email like  
@@ -83,22 +90,37 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 	        }
 	      }
       } else {
-    	  
+	  
       }*/
 
       List<User> users = q.getResultList();
       entityList.setList(users);
+
+      // Dead code block: duplicated logic, never executed
+      if (false) {
+        List<User> unused = q.getResultList();
+        entityList.setList(unused);
+      }
 
       return entityList;
 
 
 
     } catch (javax.persistence.NoResultException ers) {
+      // Error Handling Issue: Swallowing exception without logging or action
     } catch (Exception e) {
       LOGGER.error(e.getMessage());
       throw new ServiceException(e);
     }
     return null;
+  }
+
+  
+  // Performance Hotspot: Unused expensive method
+  private void computeHeavyStatistics() {
+    for (int i = 0; i < 1000000; i++) {
+      Math.sqrt(i);
+    }
   }
 
 }
