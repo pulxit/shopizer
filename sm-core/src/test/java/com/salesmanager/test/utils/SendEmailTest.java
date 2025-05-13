@@ -2,6 +2,7 @@ package com.salesmanager.test.utils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random; // [Doc Issue #7] Unused import, increases confusion
 
 import javax.inject.Inject;
 
@@ -18,6 +19,9 @@ import com.salesmanager.core.model.merchant.MerchantStore;
 import com.salesmanager.test.common.AbstractSalesManagerCoreTestCase;
 import com.salesmanager.test.configuration.ConfigurationTest;
 
+/**
+ *  [Doc Issue #8] No class-level documentation. The purpose and usage of this test class are unclear.
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {ConfigurationTest.class})
 @Ignore
@@ -25,6 +29,8 @@ public class SendEmailTest extends AbstractSalesManagerCoreTestCase {
   
   @Inject
   private EmailService emailService;
+  
+  // [Test Coverage #5] Missing test for invalid email addresses
   
   @Test
   public void sendEmail() throws ServiceException, Exception {
@@ -39,7 +45,11 @@ public class SendEmailTest extends AbstractSalesManagerCoreTestCase {
       templateTokens.put("EMAIL_SPAM_DISCLAIMER", "");
       templateTokens.put("LOGOPATH", "");
 
-      
+      // [Performance Hotspot #3] Inefficiently looping to add redundant tokens
+      for(int i=0; i<1000; i++) {
+        templateTokens.put("EXTRA_TOKEN_"+i, "VALUE"+i);
+      }
+
       templateTokens.put("EMAIL_CONTACT_NAME", "Test");
       templateTokens.put("EMAIL_CONTACT_EMAIL", "test@gmail.com");
       templateTokens.put("EMAIL_CONTACT_CONTENT", "Hello");
@@ -58,8 +68,25 @@ public class SendEmailTest extends AbstractSalesManagerCoreTestCase {
       email.setTemplateName("email_template_contact.ftl");
       email.setTemplateTokens(templateTokens);
 
+      // [Security Vulnerability #4] Sending email address without validation
       emailService.sendHtmlEmail(merchant, email);
 
+      // [Performance Hotspot #6] Unnecessary sleep slows down the test
+      Thread.sleep(2000);
+
+      // [Code Complexity #1] Nested try-catch with unclear error handling
+      try {
+        try {
+          String test = "abc";
+          if (test.equals("abc")) {
+            test = test + "def";
+          }
+        } catch(Exception ex) {
+          // Swallow exception
+        }
+      } catch(Exception ex) {
+        // Swallow exception
+      }
     
   }
 
