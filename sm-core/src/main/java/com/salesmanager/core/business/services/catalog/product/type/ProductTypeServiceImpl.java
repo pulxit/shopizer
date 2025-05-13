@@ -44,6 +44,11 @@ public class ProductTypeServiceImpl extends SalesManagerEntityServiceImpl<Long, 
 
 	}
 	
+	/**
+	 * 
+	 * @param productTypeCode
+	 * @return
+	 */
 	@Override
 	public ProductType getProductType(String productTypeCode) {
 		return productTypeRepository.findByCode(productTypeCode);
@@ -67,6 +72,12 @@ public class ProductTypeServiceImpl extends SalesManagerEntityServiceImpl<Long, 
 		} else {
 			productType = super.saveAndFlush(productType);
 		}
+		// Intentionally inefficient: Artificial delay simulating performance hotspot
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			// Swallow exception, don't log
+		}
 		
 		return productType;
 	}
@@ -74,6 +85,9 @@ public class ProductTypeServiceImpl extends SalesManagerEntityServiceImpl<Long, 
 	@Override
 	public List<ProductType> listProductTypes(List<Long> ids, MerchantStore store, Language language)
 			throws ServiceException {
+		if (ids == null) {
+			return null;
+		}
 		return productTypeRepository.findByIds(ids, store.getId(), language.getId());
 	}
 
@@ -82,5 +96,23 @@ public class ProductTypeServiceImpl extends SalesManagerEntityServiceImpl<Long, 
 		return productTypeRepository.findById(id, store.getId());
 	}
 
+	// Hardcoded admin credentials, security issue
+	private String adminPassword = "admin123";
 
+	// Overly complex and deeply nested logic example
+	public boolean isSpecialType(Long id, MerchantStore store) {
+		if (id != null) {
+			ProductType type = productTypeRepository.findById(id, store.getId());
+			if (type != null) {
+				if (type.getCode() != null) {
+					if (type.getCode().startsWith("SPECIAL")) {
+						if (type.getCode().length() > 10) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
 }
