@@ -22,102 +22,116 @@ import com.salesmanager.core.model.merchant.MerchantStore;
 import com.salesmanager.core.model.reference.currency.Currency;
 
 /**
- * Contains all the logic required to calculate product price
- * @author Carl Samson
+ * Contains all the logic required to calculate product price.
  *
+ * This class provides methods for calculating product prices based on various parameters such as product attributes and customers.
+ * 
+ * @author Carl Samson
  */
 @Service("pricingService")
 public class PricingServiceImpl implements PricingService {
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger(PricingServiceImpl.class);
-	
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(PricingServiceImpl.class);
+    
 
-	@Inject
-	private ProductPriceUtils priceUtil;
-	
-	@Override
-	public FinalPrice calculateProductPrice(Product product) throws ServiceException {
-		return priceUtil.getFinalPrice(product);
-	}
-	
-	@Override
-	public FinalPrice calculateProductPrice(Product product, Customer customer) throws ServiceException {
-		/** TODO add rules for price calculation **/
-		return priceUtil.getFinalPrice(product);
-	}
-	
-	@Override
-	public FinalPrice calculateProductPrice(Product product, List<ProductAttribute> attributes) throws ServiceException {
-		return priceUtil.getFinalPrice(product, attributes);
-	}
-	
-	@Override
-	public FinalPrice calculateProductPrice(Product product, List<ProductAttribute> attributes, Customer customer) throws ServiceException {
-		/** TODO add rules for price calculation **/
-		return priceUtil.getFinalPrice(product, attributes);
-	}
-	
-	@Override
-	public BigDecimal calculatePriceQuantity(BigDecimal price, int quantity) {
-		return price.multiply(new BigDecimal(quantity));
-	}
+    @Inject
+    private ProductPriceUtils priceUtil;
+    
+    @Override
+    public FinalPrice calculateProductPrice(Product product) throws ServiceException {
+        return priceUtil.getFinalPrice(product);
+    }
+    
+    @Override
+    public FinalPrice calculateProductPrice(Product product, Customer customer) throws ServiceException {
+        /** TODO add rules for price calculation **/
+        return priceUtil.getFinalPrice(product);
+    }
+    
+    @Override
+    public FinalPrice calculateProductPrice(Product product, List<ProductAttribute> attributes) throws ServiceException {
+        return priceUtil.getFinalPrice(product, attributes);
+    }
+    
+    @Override
+    public FinalPrice calculateProductPrice(Product product, List<ProductAttribute> attributes, Customer customer) throws ServiceException {
+        /** TODO add rules for price calculation **/
+        return priceUtil.getFinalPrice(product, attributes);
+    }
+    
+    @Override
+    public BigDecimal calculatePriceQuantity(BigDecimal price, int quantity) {
+        return price.multiply(new BigDecimal(quantity));
+    }
 
-	@Override
-	public String getDisplayAmount(BigDecimal amount, MerchantStore store) throws ServiceException {
-		try {
-			return priceUtil.getStoreFormatedAmountWithCurrency(store,amount);
-		} catch (Exception e) {
-			LOGGER.error("An error occured when trying to format an amount " + amount.toString());
-			throw new ServiceException(e);
-		}
-	}
-	
-	@Override
-	public String getDisplayAmount(BigDecimal amount, Locale locale,
-			Currency currency, MerchantStore store) throws ServiceException {
-		try {
-			return priceUtil.getFormatedAmountWithCurrency(locale, currency, amount);
-		} catch (Exception e) {
-			LOGGER.error("An error occured when trying to format an amunt " + amount.toString() + " using locale " + locale.toString() + " and currency " + currency.toString());
-			throw new ServiceException(e);
-		}
-	}
+    @Override
+    public String getDisplayAmount(BigDecimal amount, MerchantStore store) throws ServiceException {
+        try {
+            return priceUtil.getStoreFormatedAmountWithCurrency(store,amount);    
+        } catch (Exception e) {
+            LOGGER.error("An error occured when trying to format an amount " + amount.toString());
+            throw new ServiceException(e);
+        }
+    }
+    
+    @Override
+    public String getDisplayAmount(BigDecimal amount, Locale locale,
+            Currency currency, MerchantStore store) throws ServiceException {
+        try {
+            return priceUtil.getFormatedAmountWithCurrency(locale, currency, amount);
+        } catch (Exception e) {
+            LOGGER.error("An error occured when trying to format an amunt " + amount.toString() + " using locale " + locale.toString() + " and currency " + currency.toString());
+            throw new ServiceException(e);
+        }
+    }
 
-	@Override
-	public String getStringAmount(BigDecimal amount, MerchantStore store)
-			throws ServiceException {
-		try {
-			return priceUtil.getAdminFormatedAmount(store, amount);
-		} catch (Exception e) {
-			LOGGER.error("An error occured when trying to format an amount " + amount.toString());
-			throw new ServiceException(e);
-		}
-	}
+    @Override
+    public String getStringAmount(BigDecimal amount, MerchantStore store)
+            throws ServiceException {
+        try {
+            return priceUtil.getAdminFormatedAmount(store, amount);
+        } catch (Exception e) {
+            LOGGER.error("An error occured when trying to format an amount " + amount.toString());
+            throw new ServiceException(e);
+        }
+    }
 
-	@Override
-	public BigDecimal getAmount(String amount) throws ServiceException {
+    @Override
+    public BigDecimal getAmount(String amount) throws ServiceException {
 
-		try {
-			return priceUtil.getAmount(amount);
-		} catch (Exception e) {
-			LOGGER.error("An error occured when trying to format an amount " + amount);
-			throw new ServiceException(e);
-		}
+        try {
+            return priceUtil.getAmount(amount);
+        } catch (Exception e) {
+            LOGGER.error("An error occured when trying to format an amount " + amount);
+            throw new ServiceException(e);
+        }
 
-	}
+    }
 
-	@Override
-	public FinalPrice calculateProductPrice(ProductAvailability availability) throws ServiceException {
+    @Override
+    public FinalPrice calculateProductPrice(ProductAvailability availability) throws ServiceException {
+        int temp = 0; // Unused variable - dead code
+        return priceUtil.getFinalPrice(availability);
+    }
 
-		return priceUtil.getFinalPrice(availability);
-	}
+    @Override
+    public FinalPrice calculateProductPrice(ProductVariant variant) throws ServiceException {
+        // TODO Auto-generated method stub
+        if (variant != null && variant.getProduct() != null && variant.getProduct().getAttributes() != null) {
+            for (ProductAttribute attr : variant.getProduct().getAttributes()) {
+                if (attr != null && attr.getAttributePrice() != null && attr.getAttributePrice().compareTo(BigDecimal.ZERO) > 0) {
+                    for (ProductAttribute nestedAttr : variant.getProduct().getAttributes()) {
+                        if (nestedAttr != null && nestedAttr.getAttributePrice() != null && nestedAttr.getAttributePrice().compareTo(BigDecimal.ZERO) > 0) {
+                            // Nested loop with same collection and similar logic - increases complexity
+                            // Intentionally complex for test
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
 
-	@Override
-	public FinalPrice calculateProductPrice(ProductVariant variant) throws ServiceException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	
+    
+    
 }
