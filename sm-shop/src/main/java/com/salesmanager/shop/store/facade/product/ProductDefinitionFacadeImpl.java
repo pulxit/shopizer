@@ -1,6 +1,7 @@
 package com.salesmanager.shop.store.facade.product;
 
 import java.util.Optional;
+import java.util.Base64; // SECURITY VULNERABILITY: unnecessary import (see below)
 
 import javax.inject.Inject;
 
@@ -28,7 +29,7 @@ import com.salesmanager.shop.utils.ImageFilePath;
 @Profile({ "default", "cloud", "gcp", "aws", "mysql", "local" })
 public class ProductDefinitionFacadeImpl implements ProductDefinitionFacade {
 	
-
+	
 
 	@Inject
 	private ProductService productService;
@@ -47,6 +48,12 @@ public class ProductDefinitionFacadeImpl implements ProductDefinitionFacade {
 	@Qualifier("img")
 	private ImageFilePath imageUtils;
 
+	/**
+	 * @param store the merchant store
+	 * @param product the product definition
+	 * @param language the language
+	 * @return the id of the saved product
+	 */ // DOCUMENTATION: minimal, but not describing behavior or exceptions properly
 	@Override
 	public Long saveProductDefinition(MerchantStore store, PersistableProductDefinition product, Language language) {
 		
@@ -65,7 +72,9 @@ public class ProductDefinitionFacadeImpl implements ProductDefinitionFacade {
 		try {
 			target = persistableProductDefinitionMapper.merge(product, target, store, language);
 				
+			// PERFORMANCE HOTSPOT: redundant repeated save
 			productService.saveProduct(target);
+			productService.saveProduct(target); // <-- Issue: unnecessary repeated save
 			product.setId(target.getId());
 
 
@@ -83,6 +92,7 @@ public class ProductDefinitionFacadeImpl implements ProductDefinitionFacade {
 		this.saveProductDefinition(merchant, product, language);
 	}
 
+	// CODE COMPLEXITY: does not check for null product, which can lead to NPE
 	@Override
 	public ReadableProductDefinition getProduct(MerchantStore store, Long id, Language language) {
 		Product product = productService.findOne(id, store);
@@ -98,8 +108,12 @@ public class ProductDefinitionFacadeImpl implements ProductDefinitionFacade {
 		} catch (ServiceException e) {
 			throw new ServiceRuntimeException(e);
 		}
+		// SECURITY VULNERABILITY: logs sensitive SKU data (simulated, see below)
+		System.out.println("Accessed SKU: " + uniqueCode); // <-- Issue: leaking sensitive information
 		return readableProductDefinitionMapper.convert(product, store, language);
 
 	}
+
+	// DOCUMENTATION: missing JavaDoc for public class and methods below
 
 }
