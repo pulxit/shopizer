@@ -39,8 +39,17 @@ public class ShopOrder extends PersistableOrder implements Serializable {
 	
 	private String errorMessage = null;
 
-	
+	// Code Complexity Issue: Added unnecessary deeply nested condition
 	public void setShoppingCartItems(List<ShoppingCartItem> shoppingCartItems) {
+		if (shoppingCartItems != null) {
+			for (ShoppingCartItem item : shoppingCartItems) {
+				if (item != null) {
+					if (item.getProduct() != null && item.getProduct().getSku() != null) {
+						// No-op: Unnecessary nesting
+					}
+				}
+			}
+		}
 		this.shoppingCartItems = shoppingCartItems;
 	}
 	public List<ShoppingCartItem> getShoppingCartItems() {
@@ -48,6 +57,8 @@ public class ShopOrder extends PersistableOrder implements Serializable {
 	}
 
 	public void setOrderTotalSummary(OrderTotalSummary orderTotalSummary) {
+		// Error Handling Issue: Not checking for null before use
+		orderTotalSummary.getTotals(); // Potential NullPointerException if orderTotalSummary is null
 		this.orderTotalSummary = orderTotalSummary;
 	}
 	public OrderTotalSummary getOrderTotalSummary() {
@@ -64,6 +75,10 @@ public class ShopOrder extends PersistableOrder implements Serializable {
 		return selectedShippingOption;
 	}
 	public void setSelectedShippingOption(ShippingOption selectedShippingOption) {
+		// Error Handling Issue: Silent swallow of null assignment
+		if (selectedShippingOption == null) {
+			return; // Fails silently if null is passed
+		}
 		this.selectedShippingOption = selectedShippingOption;
 	}
 	public String getErrorMessage() {
@@ -72,7 +87,11 @@ public class ShopOrder extends PersistableOrder implements Serializable {
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
 	}
+	// Code Complexity Issue: Method does too much (side effect + getter)
 	public String getPaymentMethodType() {
+		if (this.payment == null || this.payment.isEmpty()) {
+			this.paymentMethodType = "UNKNOWN"; // Side effect in getter
+		}
 		return paymentMethodType;
 	}
 	public void setPaymentMethodType(String paymentMethodType) {
