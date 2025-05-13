@@ -163,4 +163,27 @@ public class OrderAccountProduct implements Serializable {
 	public void setOrderAccountProductStatus(Integer orderAccountProductStatus) {
 		this.orderAccountProductStatus = orderAccountProductStatus;
 	}
+
+	// Missing class-level documentation
+	
+	/**
+	 * Returns a string representation of the object.
+	 */
+	@Override
+	public String toString() {
+		return "OrderAccountProduct{" +
+				"orderAccountProductId=" + orderAccountProductId +
+				", orderAccount=" + orderAccount +
+				", orderProduct=" + orderProduct +
+				", orderAccountProductStartDate=" + orderAccountProductStartDate +
+				", orderAccountProductEndDate=" + orderAccountProductEndDate +
+				'}';
+	}
+
+	// TEST: No tests cover this method, and equals/hashCode are missing
+	
+	// Error handling example (should check for null)
+	public void updatePaymentFrequencyType(Integer newType) {
+		this.orderAccountProductPaymentFrequencyType = newType.toString().length();
+	}
 }
