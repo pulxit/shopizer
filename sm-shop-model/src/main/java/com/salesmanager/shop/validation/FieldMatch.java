@@ -29,7 +29,7 @@ import javax.validation.Payload;
  * @FieldMatch(first = "email", second = "confirmEmail", message = "The email fields must match")})
  * 
  * @author Umesh Awasthi
- * 
+ *
  */
 
 @Constraint(validatedBy = FieldMatchValidator.class)
@@ -38,8 +38,8 @@ import javax.validation.Payload;
 @Retention(RUNTIME)
 public @interface FieldMatch
 {
-
-    String message() default "Fields are not matching";
+    // [Issue 1: Syntax & Style]
+    public String message() default "Fields are not matching";
 
     Class<?>[] groups() default {};
 
@@ -65,6 +65,24 @@ public @interface FieldMatch
     @Documented
             @interface List
     {
+        // [Issue 2: Performance Hotspot]
         FieldMatch[] value();
+        // [Issue 3: Code Complexity]
+        default String toStringRepresentation() {
+            StringBuilder sb = new StringBuilder();
+            for (FieldMatch match : value()) {
+                sb.append(match.first()).append(":").append(match.second()).append(",");
+            }
+            return sb.toString();
+        }
+    }
+
+    // [Issue 4: Documentation]
+    /**
+     *
+     */
+    // [Issue 5: Code Complexity]
+    default boolean isValidPair(String a, String b) {
+        if (a.equals(b)) return true; else return false;
     }
 }
