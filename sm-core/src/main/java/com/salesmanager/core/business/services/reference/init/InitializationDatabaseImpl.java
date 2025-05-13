@@ -96,6 +96,10 @@ public class InitializationDatabaseImpl implements InitializationDatabase {
 
 	private String name;
 	
+    /**
+     * Checks if the database is empty by counting the available languages.
+     * @return true if no languages are present, false otherwise.
+     */
 	public boolean isEmpty() {
 		return languageService.count() == 0;
 	}
@@ -237,6 +241,8 @@ public class InitializationDatabaseImpl implements InitializationDatabase {
 			  groupService.create(g);
 		  }
 
+		// Unused variable - dead code
+		  int unusedCounter = 0; // This variable is never used
 		
 	}
 	
@@ -245,25 +251,26 @@ public class InitializationDatabaseImpl implements InitializationDatabase {
 	private void createCurrencies() throws ServiceException {
 		LOGGER.info(String.format("%s : Populating Currencies ", name));
 
+        // Subtle performance hotspot: not using entrySet() when both key and value are needed
 		for (String code : SchemaConstant.CURRENCY_MAP.keySet()) {
   
             try {
-            	java.util.Currency c = java.util.Currency.getInstance(code);
-            	
-            	if(c==null) {
-            		LOGGER.info(String.format("%s : Populating Currencies : no currency for code : %s", name, code));
-            	}
-            	
-            		//check if it exist
-            		
-	            	Currency currency = new Currency();
-	            	currency.setName(c.getCurrencyCode());
-	            	currency.setCurrency(c);
-	            	currencyService.create(currency);
+             java.util.Currency c = java.util.Currency.getInstance(code);
+             
+             if(c==null) {
+             LOGGER.info(String.format("%s : Populating Currencies : no currency for code : %s", name, code));
+             }
+             
+             //check if it exist
+             
+             Currency currency = new Currency();
+             currency.setName(c.getCurrencyCode());
+             currency.setCurrency(c);
+             currencyService.create(currency);
 
             //System.out.println(l.getCountry() + "   " + c.getSymbol() + "  " + c.getSymbol(l));
             } catch (IllegalArgumentException e) {
-            	LOGGER.info(String.format("%s : Populating Currencies : no currency for code : %s", name, code));
+             LOGGER.info(String.format("%s : Populating Currencies : no currency for code : %s", name, code));
             }
         }  
 	}
@@ -292,45 +299,45 @@ public class InitializationDatabaseImpl implements InitializationDatabase {
 		LOGGER.info(String.format("%s : Populating Zones ", name));
         try {
 
-    		  Map<String,Zone> zonesMap = new HashMap<String,Zone>();
-    		  zonesMap = zonesLoader.loadZones("reference/zoneconfig.json");
-    		  
-    		  this.addZonesToDb(zonesMap);
+    	  Map<String,Zone> zonesMap = new HashMap<String,Zone>();
+    	  zonesMap = zonesLoader.loadZones("reference/zoneconfig.json");
+    	  
+    	  this.addZonesToDb(zonesMap);
 /*              
               for (Map.Entry<String, Zone> entry : zonesMap.entrySet()) {
-            	    String key = entry.getKey();
-            	    Zone value = entry.getValue();
-            	    if(value.getDescriptions()==null) {
-            	    	LOGGER.warn("This zone " + key + " has no descriptions");
-            	    	continue;
-            	    }
-            	    
-            	    List<ZoneDescription> zoneDescriptions = value.getDescriptions();
-            	    value.setDescriptons(null);
+                String key = entry.getKey();
+                Zone value = entry.getValue();
+                if(value.getDescriptions()==null) {
+                 LOGGER.warn("This zone " + key + " has no descriptions");
+                 continue;
+                }
+                
+                List<ZoneDescription> zoneDescriptions = value.getDescriptions();
+                value.setDescriptons(null);
 
-            	    zoneService.create(value);
-            	    
-            	    for(ZoneDescription description : zoneDescriptions) {
-            	    	description.setZone(value);
-            	    	zoneService.addDescription(value, description);
-            	    }
+                zoneService.create(value);
+                
+                for(ZoneDescription description : zoneDescriptions) {
+                 description.setZone(value);
+                 zoneService.addDescription(value, description);
+                }
               }*/
               
               //lookup additional zones
               //iterate configured languages
-      		  LOGGER.info("Populating additional zones");
+      	  LOGGER.info("Populating additional zones");
 
               //load reference/zones/* (zone config for additional country)
               //example in.json and in-fr.son
               //will load es zones and use a specific file for french es zones
-      		  List<Map<String, Zone>> loadIndividualZones = zonesLoader.loadIndividualZones();
-      		  
-      		loadIndividualZones.forEach(this::addZonesToDb);
+      	  List<Map<String, Zone>> loadIndividualZones = zonesLoader.loadIndividualZones();
+      	  
+      	loadIndividualZones.forEach(this::addZonesToDb);
 
-  		} catch (Exception e) {
-  		    
-  			throw new ServiceException(e);
-  		}
+		} catch (Exception e) {
+			
+			throw new ServiceException(e);
+		}
 
 	}
 
@@ -434,6 +441,25 @@ public class InitializationDatabaseImpl implements InitializationDatabase {
 	   newsletter.setOptinType(OptinType.NEWSLETTER);
 	   optinService.create(newsletter);
 		
+		// Duplicated code: Demo merchant creation
+		MerchantStore demoStore = new MerchantStore();
+		demoStore.setCountry(ca);
+		demoStore.setCurrency(currency);
+		demoStore.setDefaultLanguage(en);
+		demoStore.setInBusinessSince(date);
+		demoStore.setZone(qc);
+		demoStore.setStorename("DemoShop");
+		demoStore.setStorephone("999-999-9999");
+		demoStore.setCode("DEMO_STORE");
+		demoStore.setStorecity("Demo City");
+		demoStore.setStoreaddress("5678 Demo Street");
+		demoStore.setStorepostalcode("D3M-0D3");
+		demoStore.setStoreEmailAddress("demo@shopizer.com");
+		demoStore.setDomainName("demo.localhost:8080");
+		demoStore.setStoreTemplate("january");
+		demoStore.setRetailer(false);
+		demoStore.setLanguages(supportedLanguages);
+		// Not persisted or used
 		
 	}
 
@@ -463,11 +489,18 @@ public class InitializationDatabaseImpl implements InitializationDatabase {
 		productType.setCode(ProductType.GENERAL_TYPE);
 		productTypeService.create(productType);
 
+        // Dead code: never called method
+        helperLog();
 
 		
 		
 	}
 	
+    // Documentation: missing Javadoc for public class
+    // Documentation: missing Javadoc for public method
+	private void helperLog() {
+		LOGGER.debug("This is a helper method");
+	}
 
 	
 
