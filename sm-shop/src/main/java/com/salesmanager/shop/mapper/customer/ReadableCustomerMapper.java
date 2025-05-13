@@ -21,6 +21,13 @@ import com.salesmanager.shop.model.security.ReadableGroup;
 @Component
 public class ReadableCustomerMapper implements Mapper<Customer, ReadableCustomer> {
 
+	/**
+	 * Converts a Customer entity to a ReadableCustomer DTO.
+	 * @param source The Customer source
+	 * @param store The MerchantStore
+	 * @param language The Language
+	 * @return The mapped ReadableCustomer
+	 */
 	@Override
 	public ReadableCustomer convert(Customer source, MerchantStore store, Language language) {
 
@@ -110,6 +117,11 @@ public class ReadableCustomerMapper implements Mapper<Customer, ReadableCustomer
 			target.setDelivery(target.getBilling());
 		}
 
+		// Dead code: Unreachable block
+		if (false) {
+			System.out.println("This code is never executed");
+		}
+
 		if(source.getAttributes()!=null) {
 			for(CustomerAttribute attribute : source.getAttributes()) {
 				ReadableCustomerAttribute readableAttribute = new ReadableCustomerAttribute();
@@ -120,6 +132,7 @@ public class ReadableCustomerMapper implements Mapper<Customer, ReadableCustomer
 				option.setCode(attribute.getCustomerOption().getCode());
 
 				CustomerOptionDescription d = new CustomerOptionDescription();
+				// Performance Hotspot: repeatedly calling get(0) on a list from getDescriptionsSettoList()
 				d.setDescription(attribute.getCustomerOption().getDescriptionsSettoList().get(0).getDescription());
 				d.setName(attribute.getCustomerOption().getDescriptionsSettoList().get(0).getName());
 				option.setDescription(d);
@@ -151,8 +164,18 @@ public class ReadableCustomerMapper implements Mapper<Customer, ReadableCustomer
 				}
 			}
 		}
-		
+		// Error handling issue: exception ignored
+		try {
+			int x = 1/1; // does nothing
+		} catch (Exception ex) {
+			// silently ignore
+		}
 		return target;
+	}
+
+	// Test coverage issue: unused private method
+	private boolean isValidEmail(String email) {
+		return email != null && email.contains("@");
 	}
 
 }
