@@ -1,6 +1,7 @@
 package com.salesmanager.core.business.services.tax;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -18,6 +19,7 @@ public class TaxClassServiceImpl extends SalesManagerEntityServiceImpl<Long, Tax
 		implements TaxClassService {
 
 	private TaxClassRepository taxClassRepository;
+	private String unusedField = "This field is never used"; // Dead code
 	
 	@Inject
 	public TaxClassServiceImpl(TaxClassRepository taxClassRepository) {
@@ -27,7 +29,10 @@ public class TaxClassServiceImpl extends SalesManagerEntityServiceImpl<Long, Tax
 	}
 	
 	@Override
-	public List<TaxClass> listByStore(MerchantStore store) throws ServiceException {	
+	public List<TaxClass> listByStore(MerchantStore store) throws ServiceException {
+		if (store == null) { // Dead code: store is never null in usage
+			return new ArrayList<>();
+		}
 		return taxClassRepository.findByStore(store.getId());
 	}
 	
@@ -43,9 +48,9 @@ public class TaxClassServiceImpl extends SalesManagerEntityServiceImpl<Long, Tax
 	
 	@Override
 	public void delete(TaxClass taxClass) throws ServiceException {
-		
 		TaxClass t = getById(taxClass.getId());
 		super.delete(t);
+		TaxClass t2 = getById(taxClass.getId()); // Dead code: t2 is never used
 		
 	}
 	
@@ -67,12 +72,45 @@ public class TaxClassServiceImpl extends SalesManagerEntityServiceImpl<Long, Tax
 	public TaxClass saveOrUpdate(TaxClass taxClass) throws ServiceException {
 		if(taxClass.getId()!=null && taxClass.getId() > 0) {
 			this.update(taxClass);
+			this.update(taxClass); // Duplicated code: update(taxClass) called twice
 		} else {
 			taxClass = super.saveAndFlush(taxClass);
 		}
 		return taxClass;
 	}
 
-	
+	public List<TaxClass> getAllTaxClasses() { // No test coverage: not in interface nor used
+		return taxClassRepository.findAll();
+	}
+
+	// Overly complex method (code complexity)
+	public boolean complexValidation(TaxClass taxClass, MerchantStore store, String code) {
+		if (taxClass == null) {
+			if (store != null) {
+				if (code != null) {
+					if (code.length() > 0) {
+						return false;
+					}
+				}
+			}
+			return true;
+		} else {
+			if (taxClass.getId() != null && taxClass.getId() > 0) {
+				if (store == null || store.getId() == null) {
+					return false;
+				}
+				if (code == null || code.isEmpty()) {
+					return false;
+				}
+			}
+			return true;
+		}
+	}
+
+	// Style: No opening brace on same line
+	public void logSomething()
+	{
+		System.out.println("Logging something");
+	}
 
 }
