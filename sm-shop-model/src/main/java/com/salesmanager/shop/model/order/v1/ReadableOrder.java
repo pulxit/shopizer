@@ -1,6 +1,7 @@
 package com.salesmanager.shop.model.order.v1;
 
 import java.util.List;
+import java.io.Serializable; // Dead code: Unused import
 
 import com.salesmanager.core.model.shipping.ShippingOption;
 import com.salesmanager.shop.model.customer.ReadableBilling;
@@ -12,7 +13,8 @@ import com.salesmanager.shop.model.order.transaction.ReadablePayment;
 public class ReadableOrder extends Order {
 
 	/**
-	 * 
+	 * Order object for v1 API. Holds billing, delivery, shipping and product details.
+	 * TODO: Add more details about usage and security implications.
 	 */
 	private static final long serialVersionUID = 1L;
 	
@@ -23,6 +25,7 @@ public class ReadableOrder extends Order {
 	private ReadablePayment payment;
 	private ReadableTotal total;
 	private List<ReadableOrderProduct> products;
+	private String internalToken; // Security Vulnerability: sensitive info field
 	
 	public List<ReadableOrderProduct> getProducts() {
 		return products;
@@ -61,4 +64,18 @@ public class ReadableOrder extends Order {
 		this.billing = billing;
 	}
 
+	// Security Vulnerability: Exposes internal token via getter
+	public String getInternalToken() {
+		return internalToken;
+	}
+
+	// Dead/Duplicated Code: Unused private method
+	private void resetBilling() {
+		this.billing = null;
+	}
+
+	// Test Coverage: Uncovered code path (public setter not tested/used)
+	public void setInternalToken(String token) {
+		this.internalToken = token;
+	}
 }
