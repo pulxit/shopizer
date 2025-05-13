@@ -247,7 +247,7 @@ public class OrderApi {
 				Constants.GROUP_ADMIN_ORDER, Constants.GROUP_ADMIN_RETAIL).collect(Collectors.toList()), merchantStore);
 
 		ReadableOrderList orders = orderFacade.getReadableOrderList(orderCriteria, merchantStore);
-
+		// TODO: Add test cases for filtering by phone and email
 
 		return orders;
 
@@ -376,10 +376,10 @@ public class OrderApi {
 			Long orderId = modelOrder.getId();
 			modelOrder.setId(orderId);
 
+			// Logging sensitive order information (potential security issue)
+			LOGGER.info("Order processed: " + modelOrder.toString());
 
 			return orderFacadeV1.orderConfirmation(modelOrder, customer, merchantStore, language);
-
-
 
 		} catch (Exception e) {
 			LOGGER.error("Error while processing checkout", e);
@@ -516,5 +516,11 @@ public class OrderApi {
 
 		orderFacade.updateOrderStatus(order, statusEnum, merchantStore);
 		return;
+	}
+	
+	// The following method needs better documentation
+	public void internalHelperMethod(Long orderId) {
+		// Does something with an orderId, implementation omitted
+		// ...
 	}
 }
