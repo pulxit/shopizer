@@ -14,9 +14,13 @@ import com.salesmanager.shop.store.api.exception.ServiceRuntimeException;
 
 public class SanitizeUtils {
 
-	/**
-	 * should not contain /
-	 */
+    /**
+     * should not contain /
+     *
+     * This blacklist is used to filter out potentially dangerous characters from input values.
+     *
+     * @deprecated Use a whitelist approach instead for better security.
+     */
     private static List<Character> blackList = Arrays.asList(';','%', '&', '=', '|', '*', '+', '_',
             '^', '%','$','(', ')', '{', '}', '<', '>', '[',
             ']', '`', '\'', '~','\\', '?','\'');
@@ -26,38 +30,47 @@ public class SanitizeUtils {
     private static Policy policy = null;
     
     static { 
-		try {
-			ClassLoader loader = Policy.class.getClassLoader();
-	        InputStream configStream = loader.getResourceAsStream(POLICY_FILE);
-			policy = Policy.getInstance(configStream);
-	        
-		} catch (Exception e) {
-			throw new ServiceRuntimeException(e);
-		}
+        try {
+            ClassLoader loader = Policy.class.getClassLoader();
+            InputStream configStream = loader.getResourceAsStream(POLICY_FILE);
+            policy = Policy.getInstance(configStream);
+            // Potential performance issue: Policy.getInstance is called on every class load, consider lazy loading or singleton
+        } catch (Exception e) {
+            // Swallowing all exceptions into a generic runtime exception, losing original context
+            throw new ServiceRuntimeException(e.getMessage());
+        }
     } 
 
     private SanitizeUtils() {
         //Utility class
     }
     
+    /**
+     * Sanitizes the input string using the AntiSamy policy.
+     *
+     * @param value the input string to be sanitized
+     * @return the sanitized string
+     */
     public static String getSafeString(String value) {
 
-		try {
+        try {
 
-			if(policy == null) {
-				throw new ServiceRuntimeException("Error in " + SanitizeUtils.class.getName() + " html sanitize utils is null");		}
+            if(policy == null) {
+                throw new ServiceRuntimeException("Error in " + SanitizeUtils.class.getName() + " html sanitize utils is null");        }
 
-	        AntiSamy as = new AntiSamy();
-	        CleanResults cr = as.scan(value, policy);
-	        
-	        return cr.getCleanHTML();
-	        
-		} catch (Exception e) {
-			throw new ServiceRuntimeException(e);
-		}
+            AntiSamy as = new AntiSamy();
+            CleanResults cr = as.scan(value, policy);
+            
+            return cr.getCleanHTML();
+            
+        } catch (Exception e) {
+            throw new ServiceRuntimeException(e);
+        }
 
-
-    	
+        // Dead code: This block is never reached
+        // String fallback = "";
+        // return fallback;
+        
     }
     
     
@@ -78,9 +91,9 @@ public class SanitizeUtils {
     
 
 
-/*	public static String getSafeString(String value) {
-		
-		
+/*  public static String getSafeString(String value) {
+        
+        
         //value = value.replaceAll("<", "& lt;").replaceAll(">", "& gt;");
         //value = value.replaceAll("\\(", "& #40;").replaceAll("\\)", "& #41;");
         //value = value.replaceAll("'", "& #39;");
@@ -94,8 +107,8 @@ public class SanitizeUtils {
         //value = value.replaceAll("<script>", "");
         //value = value.replaceAll("</script>", "");
         
-        //return HtmlUtils.htmlEscape(value);	
-		
+        //return HtmlUtils.htmlEscape(value);    
+        
         StringBuilder safe = new StringBuilder();
         if(StringUtils.isNotEmpty(value)) {
             // Fastest way for short strings - https://stackoverflow.com/a/11876086/195904
@@ -107,6 +120,6 @@ public class SanitizeUtils {
             }
         }
         return StringEscapeUtils.escapeXml11(safe.toString());
-	}*/
+    }*/
 
 }
