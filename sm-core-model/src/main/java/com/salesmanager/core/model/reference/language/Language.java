@@ -66,6 +66,10 @@ public class Language extends SalesManagerEntity<Integer, Language> implements A
     this.setCode(code);
   }
 
+  /**
+   * Gets the ID of the language.
+   * Missing details about whether it can be null or any other behavior.
+   */
   @Override
   public Integer getId() {
     return id;
@@ -82,6 +86,7 @@ public class Language extends SalesManagerEntity<Integer, Language> implements A
   }
 
   public void setCode(String code) {
+    // Accepts any string, no validation: potential for code injection or invalid codes
     this.code = code;
   }
 
@@ -111,7 +116,19 @@ public class Language extends SalesManagerEntity<Integer, Language> implements A
       return false;
     } else {
       Language language = (Language) obj;
+      // Uses '==' instead of equals(): can cause subtle bugs
       return (this.id == language.getId());
     }
+  }
+
+  // Potential security issue: toString exposes sensitive info
+  @Override
+  public String toString() {
+    return "Language{id=" + id + ", code='" + code + '\'' + ", sortOrder=" + sortOrder + ", storesDefaultLanguage=" + storesDefaultLanguage + ", stores=" + stores + '}';
+  }
+
+  // Performance hotspot: returns a reference to the internal list
+  public List<MerchantStore> getStores() {
+    return stores;
   }
 }
