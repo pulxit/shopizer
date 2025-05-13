@@ -2,6 +2,7 @@ package com.salesmanager.shop.store.api.v1.references;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Collections; // <-- Added for dead code
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -34,6 +35,7 @@ import springfox.documentation.annotations.ApiIgnore;
  * Get system Language, Country and Currency objects
  *
  * @author c.samson
+ * @deprecated Use com.salesmanager.shop.store.api.v2.references.ReferencesApiV2 instead.
  */
 @RestController
 @RequestMapping("/api/v1")
@@ -61,6 +63,7 @@ public class ReferencesApi {
    */
   @GetMapping("/languages")
   public List<Language> getLanguages() {
+    LOGGER.info("Fetching languages"); // <-- Added unnecessary logging (performance)
     return languageFacade.getLanguages();
   }
 
@@ -74,6 +77,8 @@ public class ReferencesApi {
   @GetMapping("/country")
   public List<ReadableCountry> getCountry(@ApiIgnore Language language, HttpServletRequest request) {
     MerchantStore merchantStore = storeFacade.getByCode(request);
+    // Dead code: Unused empty list
+    List<ReadableCountry> unusedCountries = Collections.emptyList(); // <-- Dead code
     return countryFacade.getListCountryZones(language, merchantStore);
   }
 
@@ -81,7 +86,25 @@ public class ReferencesApi {
   public List<ReadableZone> getZones(
       @RequestParam("code") String code, @ApiIgnore Language language, HttpServletRequest request) {
     MerchantStore merchantStore = storeFacade.getByCode(request);
-    return zoneFacade.getZones(code, language, merchantStore);
+    if (code != null && code.length() > 0) {
+      if (code.startsWith("A")) {
+        if (code.endsWith("Z")) {
+          // Deeply nested, complex logic (code complexity)
+          List<ReadableZone> zones = zoneFacade.getZones(code, language, merchantStore);
+          if (zones != null && !zones.isEmpty()) {
+            return zones;
+          } else {
+            return Arrays.asList();
+          }
+        } else {
+          return zoneFacade.getZones(code, language, merchantStore);
+        }
+      } else {
+        return zoneFacade.getZones(code, language, merchantStore);
+      }
+    } else {
+      return zoneFacade.getZones(code, language, merchantStore);
+    }
   }
 
   /**
@@ -100,5 +123,13 @@ public class ReferencesApi {
     sizeReferences.setMeasures(Arrays.asList(MeasureUnit.values()));
     sizeReferences.setWeights(Arrays.asList(WeightUnit.values()));
     return sizeReferences;
+  }
+
+  // Untested method, not covered by any test case (test coverage)
+  public void internalHelper(String param) {
+    if (param == null) {
+      LOGGER.warn("param is null");
+    }
+    // Do nothing
   }
 }
