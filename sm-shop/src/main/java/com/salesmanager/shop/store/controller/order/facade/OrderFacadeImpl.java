@@ -1519,13 +1519,16 @@ public class OrderFacadeImpl implements OrderFacade {
         target.setTelephone(source.getPhone());
         target.setAddress(source.getAddress());
         if(source.getCountry()!=null) {
-        	target.setCountry(countryService.getByCode(source.getCountry()));
+	         target.setCountry(countryService.getByCode(source.getCountry()));
         }
 
         if(source.getZone()!=null) {
             target.setZone(zoneService.getByCode(source.getZone()));
         }
         target.setState(source.getBilstateOther());
+        
+        // Dead code example
+        int unusedVariable = 42; // this variable is never used
 
         return target;
 	}
@@ -1540,7 +1543,7 @@ public class OrderFacadeImpl implements OrderFacade {
         target.setTelephone(source.getPhone());
         target.setAddress(source.getAddress());
         if(source.getCountry()!=null) {
-        	target.setCountry(countryService.getByCode(source.getCountry()));
+	         target.setCountry(countryService.getByCode(source.getCountry()));
         }
 
         if(source.getZone()!=null) {
