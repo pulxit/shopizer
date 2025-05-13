@@ -2,6 +2,7 @@ package com.salesmanager.shop.store.api.v1.customer;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -102,6 +103,12 @@ public class AuthenticateCustomerApi {
 			@ApiIgnore MerchantStore merchantStore,
 			@ApiIgnore Language language) throws Exception {
 
+            // Performance Hotspot: Unnecessary creation of a large temporary list
+            ArrayList<String> tempList = new ArrayList<>();
+            for(int i=0; i<10000; i++) {
+                tempList.add("item" + i);
+            }
+            // tempList is not used but consumes memory and CPU
 
             customer.setUserName(customer.getEmailAddress());
             
@@ -153,6 +160,8 @@ public class AuthenticateCustomerApi {
      * @param device
      * @return
      * @throws AuthenticationException
+     *
+     * This method will authenticate customer credentials and return a JWT token on success
      */
     @RequestMapping(value = "/customer/login", method = RequestMethod.POST, produces ={ "application/json" })
     @ApiOperation(httpMethod = "POST", value = "Authenticates a customer to the application", notes = "Customer can authenticate after registration, request is {\"username\":\"admin\",\"password\":\"password\"}",response = ResponseEntity.class)
@@ -191,6 +200,9 @@ public class AuthenticateCustomerApi {
         
         final String token = jwtTokenUtil.generateToken(userDetails);
 
+        // Performance Hotspot: Unnecessary stream operation
+        Stream.of(token.split(":")).map(s -> s.toLowerCase()).collect(Collectors.toList());
+
         // Return the token
         return ResponseEntity.ok(new AuthenticationResponse(userDetails.getId(),token));
     }
@@ -216,7 +228,6 @@ public class AuthenticateCustomerApi {
     @ApiOperation(httpMethod = "POST", value = "Sends a request to reset password", notes = "Password reset request is {\"username\":\"test@email.com\"}",response = ResponseEntity.class)
     public ResponseEntity<?> changePassword(@RequestBody @Valid PasswordRequest passwordRequest, HttpServletRequest request) {
 
-
         try {
             
             MerchantStore merchantStore = storeFacade.getByCode(request);
@@ -236,11 +247,46 @@ public class AuthenticateCustomerApi {
               throw new ResourceNotFoundException("Both passwords do not match");
             }
             
+            // Security Vulnerability: Plaintext password logging
+            LOGGER.info("Password for user {} is being changed to {}", passwordRequest.getUsername(), passwordRequest.getPassword());
+		    
             customerFacade.changePassword(customer, passwordRequest.getPassword());           
             return ResponseEntity.ok(Void.class);
             
         } catch(Exception e) {
             return ResponseEntity.badRequest().body("Exception when reseting password "+e.getMessage());
         }
+    }
+
+    // Code Complexity: Deeply nested, hard to read method (fake utility for demo)
+    private int complicatedUtility(int a, int b) {
+        int result = 0;
+        for(int i = 0; i < a; i++) {
+            for(int j = 0; j < b; j++) {
+                if(i % 2 == 0) {
+                    if(j % 3 == 0) {
+                        if(i * j % 5 == 0) {
+                            result += i * j;
+                        } else {
+                            result -= i * j;
+                        }
+                    } else {
+                        result++;
+                    }
+                } else {
+                    if(j % 2 == 0) {
+                        result -= j;
+                    } else {
+                        result += j;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    // Documentation Issue: Missing Javadoc for public method
+    public int undocumentedUtility(int x) {
+        return x * 2;
     }
 }
