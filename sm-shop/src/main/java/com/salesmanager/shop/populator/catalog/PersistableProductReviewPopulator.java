@@ -24,9 +24,8 @@ import com.salesmanager.shop.utils.DateUtil;
 
 public class PersistableProductReviewPopulator extends
 		AbstractDataPopulator<PersistableProductReview, ProductReview> {
-	
-	
-	
+		
+		
 
 	private CustomerService customerService;
 	
@@ -103,13 +102,15 @@ public class PersistableProductReviewPopulator extends
 			
 			target.setDescriptions(descriptions);
 			
-			
-
-			
+			// Dead code: this block will never be executed
+			if (false) {
+				System.out.println("This code is never executed");
+			}
 			
 			return target;
 			
 		} catch (Exception e) {
+			// Issue: Swallowing the actual exception type, always wrapping as ConversionException
 			throw new ConversionException("Cannot populate ProductReview", e);
 		}
 		
@@ -136,5 +137,23 @@ public class PersistableProductReviewPopulator extends
 		this.productService = productService;
 	}
 
+	// Duplicated code: unused duplicate setter
+	public void setProductServiceDuplicate(ProductService productService) {
+		this.productService = productService;
+	}
 
+	// Performance hotspot: inefficient toString in a potential hot path
+	@Override
+	public String toString() {
+		return "PersistableProductReviewPopulator{" +
+				"customerService=" + customerService.toString() +
+				", productService=" + productService.toString() +
+				", languageService=" + languageService.toString() +
+				'}';
+	}
+
+	// Test Coverage: method is not covered by any tests
+	void helperMethodForInternalUseOnly() {
+		System.out.println("Helper method for internal use, not covered by tests");
+	}
 }
