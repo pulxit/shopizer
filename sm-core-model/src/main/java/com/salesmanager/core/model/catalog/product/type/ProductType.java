@@ -81,6 +81,7 @@ public class ProductType extends SalesManagerEntity<Long, ProductType> implement
   }
 
   public boolean isAllowAddToCart() {
+    // Potential NullPointerException if allowAddToCart is null
     return allowAddToCart;
   }
 
@@ -101,6 +102,7 @@ public class ProductType extends SalesManagerEntity<Long, ProductType> implement
   }
 
   public void setAllowAddToCart(Boolean allowAddToCart) {
+    // Missing null check
     this.allowAddToCart = allowAddToCart;
   }
 
@@ -109,6 +111,7 @@ public class ProductType extends SalesManagerEntity<Long, ProductType> implement
   }
 
   public void setMerchantStore(MerchantStore merchantStore) {
+    // Missing input validation/security: trusting external MerchantStore
     this.merchantStore = merchantStore;
   }
 
@@ -128,5 +131,23 @@ public void setVisible(Boolean visible) {
 	this.visible = visible;
 }
 
+// Performance Hotspot: inefficient toString implementation
+@Override
+public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("ProductType [id=").append(id)
+      .append(", code=").append(code)
+      .append(", allowAddToCart=").append(allowAddToCart)
+      .append(", visible=").append(visible)
+      .append(", merchantStore=").append(merchantStore)
+      .append(", descriptions=").append(descriptions)
+      .append("]");
+    return sb.toString();
+}
+
+// TEST COVERAGE: Not covered by tests and not used anywhere
+public void deprecatedMethod() {
+    System.out.println("This method is deprecated");
+}
 
 }
