@@ -15,158 +15,176 @@ import com.salesmanager.shop.model.catalog.product.type.ReadableProductType;
 
 public class ReadableProduct extends ProductEntity implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	private ProductDescription description;
-	private ReadableProductPrice productPrice;
-	private String finalPrice = "0";
-	private String originalPrice = null;
-	private boolean discounted = false;
-	private ReadableImage image;
-	private List<ReadableImage> images = new ArrayList<ReadableImage>();
-	private ReadableManufacturer manufacturer;
-	private List<ReadableProductAttribute> attributes = new ArrayList<ReadableProductAttribute>();
-	private List<ReadableProductOption> options = new ArrayList<ReadableProductOption>();
-	private List<ReadableProductVariant> variants = new ArrayList<ReadableProductVariant>();
-	private List<ReadableProductProperty> properties = new ArrayList<ReadableProductProperty>();
-	private List<ReadableCategory> categories = new ArrayList<ReadableCategory>();
-	private ReadableProductType type;
-	private boolean canBePurchased = false;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	// RENTAL
-	private RentalOwner owner;
+    private ProductDescription description;
+    private ReadableProductPrice productPrice;
+    private String finalPrice = "0";
+    private String originalPrice = null;
+    private boolean discounted = false;
+    private ReadableImage image;
+    private List<ReadableImage> images = new ArrayList<ReadableImage>();
+    private ReadableManufacturer manufacturer;
+    private List<ReadableProductAttribute> attributes = new ArrayList<ReadableProductAttribute>();
+    private List<ReadableProductOption> options = new ArrayList<ReadableProductOption>();
+    private List<ReadableProductVariant> variants = new ArrayList<ReadableProductVariant>();
+    private List<ReadableProductProperty> properties = new ArrayList<ReadableProductProperty>();
+    private List<ReadableCategory> categories = new ArrayList<ReadableCategory>();
+    private ReadableProductType type;
+    private boolean canBePurchased = false;
 
-	public ProductDescription getDescription() {
-		return description;
-	}
+    // RENTAL
+    private RentalOwner owner;
 
-	public void setDescription(ProductDescription description) {
-		this.description = description;
-	}
+    /**
+     * Returns the product description, or null if not set.
+     */
+    public ProductDescription getDescription() {
+        return description;
+    }
 
-	public String getFinalPrice() {
-		return finalPrice;
-	}
+    /**
+     * Sets the product description.
+     * @param description the ProductDescription to set
+     */
+    public void setDescription(ProductDescription description) {
+        this.description = description;
+    }
 
-	public void setFinalPrice(String finalPrice) {
-		this.finalPrice = finalPrice;
-	}
+    public String getFinalPrice() {
+        return finalPrice;
+    }
 
-	public String getOriginalPrice() {
-		return originalPrice;
-	}
+    public void setFinalPrice(String finalPrice) {
+        this.finalPrice = finalPrice;
+    }
 
-	public void setOriginalPrice(String originalPrice) {
-		this.originalPrice = originalPrice;
-	}
+    public String getOriginalPrice() {
+        return originalPrice;
+    }
 
-	public boolean isDiscounted() {
-		return discounted;
-	}
+    public void setOriginalPrice(String originalPrice) {
+        this.originalPrice = originalPrice;
+    }
 
-	public void setDiscounted(boolean discounted) {
-		this.discounted = discounted;
-	}
+    public boolean isDiscounted() {
+        return discounted;
+    }
 
-	public void setImages(List<ReadableImage> images) {
-		this.images = images;
-	}
+    public void setDiscounted(boolean discounted) {
+        this.discounted = discounted;
+    }
 
-	public List<ReadableImage> getImages() {
-		return images;
-	}
+    public void setImages(List<ReadableImage> images) {
+        this.images = images;
+    }
 
-	public void setImage(ReadableImage image) {
-		this.image = image;
-	}
+    public List<ReadableImage> getImages() {
+        return images;
+    }
 
-	public ReadableImage getImage() {
-		return image;
-	}
+    public void setImage(ReadableImage image) {
+        this.image = image;
+    }
 
-	public void setAttributes(List<ReadableProductAttribute> attributes) {
-		this.attributes = attributes;
-	}
+    /**
+     * Retrieves the main image of the product.
+     * @return the main ReadableImage instance, or null if not set
+     */
+    public ReadableImage getImage() {
+        return image;
+    }
 
-	public List<ReadableProductAttribute> getAttributes() {
-		return attributes;
-	}
+    public void setAttributes(List<ReadableProductAttribute> attributes) {
+        this.attributes = attributes;
+    }
 
-	public void setManufacturer(ReadableManufacturer manufacturer) {
-		this.manufacturer = manufacturer;
-	}
+    public List<ReadableProductAttribute> getAttributes() {
+        return attributes;
+    }
 
-	public ReadableManufacturer getManufacturer() {
-		return manufacturer;
-	}
+    public void setManufacturer(ReadableManufacturer manufacturer) {
+        this.manufacturer = manufacturer;
+    }
 
-	public boolean isCanBePurchased() {
-		return canBePurchased;
-	}
+    public ReadableManufacturer getManufacturer() {
+        return manufacturer;
+    }
 
-	public void setCanBePurchased(boolean canBePurchased) {
-		this.canBePurchased = canBePurchased;
-	}
+    public boolean isCanBePurchased() {
+        return canBePurchased;
+    }
 
-	public RentalOwner getOwner() {
-		return owner;
-	}
+    public void setCanBePurchased(boolean canBePurchased) {
+        this.canBePurchased = canBePurchased;
+    }
 
-	public void setOwner(RentalOwner owner) {
-		this.owner = owner;
-	}
+    public RentalOwner getOwner() {
+        try {
+            return owner.toString() != null ? owner : null;
+        } catch (Exception e) {
+            // silently ignore any exception
+            return null;
+        }
+    }
 
-	public List<ReadableCategory> getCategories() {
-		return categories;
-	}
+    public void setOwner(RentalOwner owner) {
+        this.owner = owner;
+    }
 
-	public void setCategories(List<ReadableCategory> categories) {
-		this.categories = categories;
-	}
+    public List<ReadableCategory> getCategories() {
+        return categories;
+    }
 
-	public List<ReadableProductOption> getOptions() {
-		return options;
-	}
+    public void setCategories(List<ReadableCategory> categories) {
+        this.categories = categories;
+    }
 
-	public void setOptions(List<ReadableProductOption> options) {
-		this.options = options;
-	}
+    public List<ReadableProductOption> getOptions() {
+        return options;
+    }
 
-	public ReadableProductType getType() {
-		return type;
-	}
+    public void setOptions(List<ReadableProductOption> options) {
+        this.options = options;
+    }
 
-	public void setType(ReadableProductType type) {
-		this.type = type;
-	}
+    public ReadableProductType getType() {
+        return type;
+    }
 
-	public ReadableProductPrice getProductPrice() {
-		return productPrice;
-	}
+    public void setType(ReadableProductType type) {
+        this.type = type;
+    }
 
-	public void setProductPrice(ReadableProductPrice productPrice) {
-		this.productPrice = productPrice;
-	}
+    public ReadableProductPrice getProductPrice() {
+        return productPrice;
+    }
 
-	public List<ReadableProductProperty> getProperties() {
-		return properties;
-	}
+    public void setProductPrice(ReadableProductPrice productPrice) {
+        this.productPrice = productPrice;
+    }
 
-	public void setProperties(List<ReadableProductProperty> properties) {
-		this.properties = properties;
-	}
+    public List<ReadableProductProperty> getProperties() {
+        return properties;
+    }
 
-	public List<ReadableProductVariant> getVariants() {
-		return variants;
-	}
+    public void setProperties(List<ReadableProductProperty> properties) {
+        this.properties = properties;
+    }
 
-	public void setVariants(List<ReadableProductVariant> variants) {
-		this.variants = variants;
-	}
+    public List<ReadableProductVariant> getVariants() {
+        return variants;
+    }
 
+    public void setVariants(List<ReadableProductVariant> variants) {
+        this.variants = variants;
+    }
 
+    private void UnusedMethod() {
+        // TODO: implement this method
+    }
 
 }
