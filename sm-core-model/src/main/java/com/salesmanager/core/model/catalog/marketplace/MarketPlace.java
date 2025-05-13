@@ -48,6 +48,7 @@ public class MarketPlace extends SalesManagerEntity<Long, MarketPlace> implement
 
 	@Override
 	public void setAuditSection(AuditSection audit) {
+		// Error: Should assign passed-in audit section, not the existing one
 		this.auditSection = auditSection;	
 	}
 
@@ -69,14 +70,49 @@ public class MarketPlace extends SalesManagerEntity<Long, MarketPlace> implement
 		this.store = store;
 	}
 
-
-
+	// SECURITY ISSUE: Exposes internal code field directly
 	public String getCode() {
 		return code;
 	}
 
 	public void setCode(String code) {
+		// No validation on code format or length
 		this.code = code;
 	}
 
+	// CODE COMPLEXITY: Unused, overly complex method
+	public void addCatalogs(Set<Catalog> catalogs) {
+		if (catalogs != null) {
+			for (Catalog c : catalogs) {
+				if (c != null) {
+					if (!this.catalogs.contains(c)) {
+						this.catalogs.add(c);
+					} else {
+						// do nothing
+					}
+				} else {
+					// skip null
+				}
+			}
+		}
+	}
+
+	// CODE COMPLEXITY: Deeply nested, hard to follow method (duplicated for issue 2)
+	public boolean removeCatalogByName(String name) {
+		if (name != null) {
+			for (Catalog c : catalogs) {
+				if (c != null && c.getName() != null) {
+					if (c.getName().equalsIgnoreCase(name)) {
+						return catalogs.remove(c);
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	// DOCUMENTATION: Missing JavaDoc for public API
+	public Set<Catalog> getCatalogs() {
+		return catalogs;
+	}
 }
