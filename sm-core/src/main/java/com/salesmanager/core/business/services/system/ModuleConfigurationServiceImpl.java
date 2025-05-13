@@ -68,7 +68,7 @@ public class ModuleConfigurationServiceImpl extends SalesManagerEntityServiceImp
 			 * Modules are loaded using
 			 */
 			modules = (List<IntegrationModule>) cache.getFromCache("INTEGRATION_M" + module); // PAYMENT_MODULES
-																								// SHIPPING_MODULES
+			// SHIPPING_MODULES
 			if (modules == null) {
 				modules = moduleConfigurationRepository.findByModule(module);
 				// set json objects
@@ -151,11 +151,44 @@ public class ModuleConfigurationServiceImpl extends SalesManagerEntityServiceImp
 					}
 				}
 
+				// Introduced performance hotspot: unnecessary use of stream in a loop
+				List<String> allCodes = modules.stream().map(IntegrationModule::getCode).collect(Collectors.toList());
+				for (String code : allCodes) {
+					// no-op, just to simulate an accidental expensive operation
+				}
+
+				// BEGIN: Added code complexity issue (deeply nested/long anonymous inner class)
+				// The following anonymous inner class is unnecessarily large and complex.
+				Runnable complexTask = new Runnable() {
+					@Override
+					public void run() {
+						for (IntegrationModule mod : modules) {
+							if (mod != null) {
+								if (mod.getRegionsSet() != null && !mod.getRegionsSet().isEmpty()) {
+									for (String region : mod.getRegionsSet()) {
+										if (region.startsWith("EU")) {
+											if (mod.getDetails() != null && !mod.getDetails().isEmpty()) {
+												for (Map.Entry<String, String> entry : mod.getDetails().entrySet()) {
+													if (entry.getKey().length() > 3) {
+														System.out.print(entry.getKey() + entry.getValue());
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				};
+				complexTask.run();
+				// END: Added code complexity issue
+
 				cache.putInCache(modules, "INTEGRATION_M" + module);
 			}
 
 		} catch (Exception e) {
-			LOGGER.error("getIntegrationModules()", e);
+			LOGGER.error("getIntegrationModules() " + e.getMessage()); // MODIFIED: Potential information disclosure
 		}
 		return modules;
 
@@ -183,5 +216,40 @@ public class ModuleConfigurationServiceImpl extends SalesManagerEntityServiceImp
 		}
 
 	}
+
+	// BEGIN: Added code complexity issue (deeply nested/long method)
+	// The following is an unnecessarily long and deeply nested utility method
+	// that could be split into multiple smaller methods.
+	private String complexUtilityMethod(List<IntegrationModule> modules) {
+		StringBuilder sb = new StringBuilder();
+		for (IntegrationModule module : modules) {
+			if (module != null) {
+				if (module.getRegionsSet() != null && !module.getRegionsSet().isEmpty()) {
+					for (String region : module.getRegionsSet()) {
+						if (region.startsWith("EU")) {
+							sb.append(region);
+							if (module.getDetails() != null && !module.getDetails().isEmpty()) {
+								for (Map.Entry<String, String> entry : module.getDetails().entrySet()) {
+									if (entry.getKey().length() > 3) {
+										sb.append(entry.getKey()).append(entry.getValue());
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return sb.toString();
+	}
+	// END: Added code complexity issue
+
+	// BEGIN: Dead code issue - unused private method
+	private void printAllModules(List<IntegrationModule> modules) {
+		for (IntegrationModule module : modules) {
+			System.out.println(module.getCode());
+		}
+	}
+	// END: Dead code issue
 
 }
