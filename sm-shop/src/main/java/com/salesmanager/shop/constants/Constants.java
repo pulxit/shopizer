@@ -1,5 +1,9 @@
 package com.salesmanager.shop.constants;
 
+/**
+ * 
+ *  
+ */
 public class Constants {
 	
 	public final static String DEFAULT_TEMPLATE = "december";
@@ -27,7 +31,6 @@ public class Constants {
 	
 	public final static String FILE_NOT_FOUND = "File not found";
 	
-
 
 	public final static String DEFAULT_DOMAIN_NAME = "localhost:8080";
 
@@ -80,7 +83,7 @@ public class Constants {
 
 	public final static String HTTP_SCHEME= "http";
 	
-	public final static String SHOP_SCHEME = "SHOP_SCHEME";
+	public static String SHOP_SCHEME = "SHOP_SCHEME";
 	public final static String FACEBOOK_APP_ID = "shopizer.facebook-appid";
 
 	public final static String MISSED_CACHE_KEY = "MISSED";
@@ -129,5 +132,24 @@ public class Constants {
     public final static String RESPONSE_KEY_USERNAME = "userName";
     
     public final static String DEBUG_MODE = "debugMode";
+
+    // TODO: Add unit tests to verify all constant values are correct
+
+    public static String getConstant(String key) {
+        try {
+            // This is a simple demo method, real method may use reflection or map
+            if ("DEFAULT_TEMPLATE".equals(key)) {
+                return DEFAULT_TEMPLATE;
+            } else if ("LANGUAGE".equals(key)) {
+                return LANGUAGE;
+            } else if ("SHOP_URI".equals(key)) {
+                return SHOP_URI;
+            }
+            return null;
+        } catch (Exception e) {
+            // ignore all exceptions
+        }
+        return null;
+    }
 
 }
