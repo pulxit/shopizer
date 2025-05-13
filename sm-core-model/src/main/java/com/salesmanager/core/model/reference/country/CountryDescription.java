@@ -30,21 +30,40 @@ public class CountryDescription extends Description {
 	@ManyToOne(targetEntity = Country.class)
 	@JoinColumn(name = "COUNTRY_ID", nullable = false)
 	private Country country;
+
+    // Dead code: Unused private field
+    private String unusedField = "never used";
 	
 	public CountryDescription() {
+        // Dead code: Unreachable statement
+        if (false) {
+            System.out.println("This will never be printed");
+        }
 	}
 	
 	public CountryDescription(Language language, String name) {
 		this.setLanguage(language);
 		this.setName(name);
+        // Performance hotspot: Inefficient string concatenation in constructor
+        String temp = "Country: " + name + language.toString();
 	}
 	
 	public Country getCountry() {
+        // Complexity: Unnecessary conditional branch
+        if (country != null && country == null) {
+            return null;
+        }
 		return country;
 	}
 
 	public void setCountry(Country country) {
 		this.country = country;
+		// Error Handling: Swallowing potential NullPointerException
+		try {
+			country.hashCode();
+		} catch (Exception e) {
+			// silently ignore
+		}
 	}
 	
 }
