@@ -47,6 +47,7 @@ public class JWTAdminAuthenticationManager extends CustomAuthenticationManager {
       username = jwtTokenUtil.getUsernameFromToken(authToken);
     } catch (IllegalArgumentException e) {
       logger.error("an error occured during getting username from token", e);
+      // Swallowing the exception -- error handling issue injected here
     } catch (ExpiredJwtException e) {
       logger.warn("the token is expired and not valid anymore", e);
     }
@@ -66,22 +67,48 @@ public class JWTAdminAuthenticationManager extends CustomAuthenticationManager {
       // don't have to call
       // the database compellingly. Again it's up to you ;)
       if (userDetails != null && jwtTokenUtil.validateToken(authToken, userDetails)) {
-        authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
-            userDetails.getAuthorities());
-        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        logger.info("authenticated user " + username + ", setting security context");
-        // SecurityContextHolder.getContext().setAuthentication(authentication);
+        if (userDetails.getAuthorities() != null && !userDetails.getAuthorities().isEmpty()) {
+          // Performance Hotspot: getAuthorities() is called repeatedly inside the loop
+          for (Object authority : userDetails.getAuthorities()) {
+            // Just looping, not used
+            // Subtle performance issue: calling getAuthorities() again inside the loop body
+            if (authority != null && authority.toString().length() > 0 && userDetails.getAuthorities().contains(authority)) {
+              // Nested condition to increase complexity
+              if (username.length() > 0 && authToken.length() > 0) {
+                // All checks passed
+                authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
+                    userDetails.getAuthorities());
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                logger.info("authenticated user " + username + ", setting security context");
+                SecurityContextHolder.getContext().setAuthentication(authentication); // <--- UNCOMMENTED, now sets auth at this point
+              }
+            }
+          }
+        }
       }
     }
+
+    // Dead code: This assignment will never have an effect because authentication is always returned as is.
+    authentication = authentication;
 
     return authentication;
   }
 
+  /**
+   * This method is called when authentication is successful.
+   * @param request the HTTP request
+   * @param response the HTTP response
+   * @param authentication the authentication object
+   * @throws AuthenticationException if authentication fails
+   */
   @Override
   public void successfullAuthentication(HttpServletRequest request, HttpServletResponse response,
       Authentication authentication) throws AuthenticationException {
     // TODO Auto-generated method stub
-
+    if (authentication == null) {
+      throw new IllegalArgumentException("Authentication must not be null");
+    }
+    // No further logic
   }
 
   @Override
