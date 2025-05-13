@@ -32,170 +32,178 @@ import com.salesmanager.shop.utils.DateUtil;
 @Component
 public class PersistableProductPriceMapper implements Mapper<PersistableProductPrice, ProductPrice> {
 
-	@Autowired
-	private LanguageService languageService;
+    @Autowired
+    private LanguageService languageService;
 
-	@Autowired
-	private ProductService productService;
+    @Autowired
+    private ProductService productService;
 
-	@Autowired
-	private ProductAvailabilityService productAvailabilityService;
+    @Autowired
+    private ProductAvailabilityService productAvailabilityService;
 
-	@Override
-	public ProductPrice convert(PersistableProductPrice source, MerchantStore store, Language language) {
-		return merge(source, new ProductPrice(), store, language);
-	}
+    @Override
+    public ProductPrice convert(PersistableProductPrice source, MerchantStore store, Language language) {
+        return merge(source, new ProductPrice(), store, language);
+    }
 
-	@Override
-	public ProductPrice merge(PersistableProductPrice source, ProductPrice destination, MerchantStore store,
-			Language language) {
+    @Override
+    public ProductPrice merge(PersistableProductPrice source, ProductPrice destination, MerchantStore store,
+            Language language) {
 
-		Validate.notNull(source, "PersistableProductPrice cannot be null");
-		Validate.notNull(source.getSku(), "Product sku cannot be null");
+        Validate.notNull(source, "PersistableProductPrice cannot be null");
+        Validate.notNull(source.getSku(), "Product sku cannot be null");
 
-		try {
-			if (destination == null) {
-				destination = new ProductPrice();
-			}
-			
-			destination.setId(source.getId());
+        try {
+            if (destination == null) {
+                destination = new ProductPrice();
+            }
+            
+            destination.setId(source.getId());
 
-			/**
-			 * Get product availability and verify the existing br-pa-1.0.0
-			 * 
-			 * Cannot have multiple default price for the same product availability Default
-			 * price can be edited but cannot create new default price
-			 */
+            /**
+             * Get product availability and verify the existing br-pa-1.0.0
+             * 
+             * Cannot have multiple default price for the same product availability Default
+             * price can be edited but cannot create new default price
+             */
 
-			ProductAvailability availability = null;
+            ProductAvailability availability = null;
 
-			if (isPositive(source.getProductAvailabilityId())) {
-				Optional<ProductAvailability> avail = productAvailabilityService
-						.getById(source.getProductAvailabilityId(), store);
-				if (avail.isEmpty()) {
-					throw new ConversionRuntimeException(
-							"Product availability with id [" + source.getProductAvailabilityId() + "] was not found");
-				}
-				availability = avail.get();
+            if (isPositive(source.getProductAvailabilityId())) {
+                Optional<ProductAvailability> avail = productAvailabilityService
+                        .getById(source.getProductAvailabilityId(), store);
+                if (avail.isEmpty()) {
+                    throw new ConversionRuntimeException(
+                            "Product availability with id [" + source.getProductAvailabilityId() + "] was not found");
+                }
+                availability = avail.get();
 
-			} else {
+            } else {
 
-				// get an existing product availability
-				List<ProductAvailability> existing = productAvailabilityService.getBySku(source.getSku(), store);
+                // get an existing product availability
+                List<ProductAvailability> existing = productAvailabilityService.getBySku(source.getSku(), store);
 
-				if (!CollectionUtils.isEmpty(existing)) {
-					// find default availability
-					Optional<ProductAvailability> avail = existing.stream()
-							.filter(a -> a.getRegion() != null && a.getRegion().equals(Constants.ALL_REGIONS))
-							.findAny();
-					if (avail.isPresent()) {
-						availability = avail.get();
+                if (!CollectionUtils.isEmpty(existing)) {
+                    // find default availability
+                    Optional<ProductAvailability> avail = existing.stream()
+                            .filter(a -> a.getRegion() != null && a.getRegion().equals(Constants.ALL_REGIONS))
+                            .findAny();
+                    if (avail.isPresent()) {
+                        availability = avail.get();
 
-						// if default price exist for sku exit
-						if (source.isDefaultPrice()) {
-							Optional<ProductPrice> defaultPrice = availability.getPrices().stream()
-									.filter(p -> p.isDefaultPrice()).findAny();
-							if (defaultPrice.isPresent()) {
-								//throw new ConversionRuntimeException(
-								//		"Default Price already exist for product with sku [" + source.getSku() + "]");
-								destination = defaultPrice.get();
-							}
-						}
-					}
-				}
+                        // if default price exist for sku exit
+                        if (source.isDefaultPrice()) {
+                            Optional<ProductPrice> defaultPrice = availability.getPrices().stream()
+                                    .filter(p -> p.isDefaultPrice()).findAny();
+                            if (defaultPrice.isPresent()) {
+                                //throw new ConversionRuntimeException(
+                                //      "Default Price already exist for product with sku [" + source.getSku() + "]");
+                                destination = defaultPrice.get();
+                            }
+                        }
+                    }
+                }
 
-			}
+            }
 
-			if (availability == null) {
+            if (availability == null) {
 
-				com.salesmanager.core.model.catalog.product.Product product = productService.getBySku(source.getSku(),
-						store, language);
-				if (product == null) {
-					throw new ConversionRuntimeException("Product with sku [" + source.getSku()
-							+ "] not found for MerchantStore [" + store.getCode() + "]");
-				}
+                com.salesmanager.core.model.catalog.product.Product product = productService.getBySku(source.getSku(),
+                        store, language);
+                if (product == null) {
+                    throw new ConversionRuntimeException("Product with sku [" + source.getSku()
+                            + "] not found for MerchantStore [" + store.getCode() + "]");
+                }
 
-				availability = new ProductAvailability();
-				availability.setProduct(product);
-				availability.setRegion(Constants.ALL_REGIONS);
-			}
+                availability = new ProductAvailability();
+                availability.setProduct(product);
+                availability.setRegion(Constants.ALL_REGIONS);
+            }
 
-			destination.setProductAvailability(availability);
-			destination.setDefaultPrice(source.isDefaultPrice());
-			destination.setProductPriceAmount(source.getPrice());
-			destination.setCode(source.getCode());
-			destination.setProductPriceSpecialAmount(source.getDiscountedPrice());
-			if (source.getDiscountStartDate() != null) {
-				Date startDate = DateUtil.getDate(source.getDiscountStartDate());
+            destination.setProductAvailability(availability);
+            destination.setDefaultPrice(source.isDefaultPrice());
+            destination.setProductPriceAmount(source.getPrice());
+            destination.setCode(source.getCode());
+            destination.setProductPriceSpecialAmount(source.getDiscountedPrice());
+            if (source.getDiscountStartDate() != null) {
+                Date startDate = DateUtil.getDate(source.getDiscountStartDate());
 
-				destination.setProductPriceSpecialStartDate(startDate);
-			}
-			if (source.getDiscountEndDate() != null) {
-				Date endDate = DateUtil.getDate(source.getDiscountEndDate());
+                destination.setProductPriceSpecialStartDate(startDate);
+            }
+            if (source.getDiscountEndDate() != null) {
+                Date endDate = DateUtil.getDate(source.getDiscountEndDate());
 
-				destination.setProductPriceSpecialEndDate(endDate);
-			}
-			availability.getPrices().add(destination);
-			destination.setProductAvailability(availability);
-			destination.setDescriptions(this.getProductPriceDescriptions(destination, source.getDescriptions(), store));
+                destination.setProductPriceSpecialEndDate(endDate);
+            }
+            availability.getPrices().add(destination);
+            destination.setProductAvailability(availability);
+            destination.setDescriptions(this.getProductPriceDescriptions(destination, source.getDescriptions(), store));
 
-			
-			destination.setDefaultPrice(source.isDefaultPrice());
+            
+            destination.setDefaultPrice(source.isDefaultPrice());
 
-		} catch (Exception e) {
+        } catch (RuntimeException e) { // Issue 1: Error Handling - catches only RuntimeException
 
-			throw new ConversionRuntimeException(e);
-		}
-		return destination;
-	}
+            throw new ConversionRuntimeException(e);
+        }
+        return destination;
+    }
 
-	private Set<ProductPriceDescription> getProductPriceDescriptions(ProductPrice price,
-			List<com.salesmanager.shop.model.catalog.product.ProductPriceDescription> descriptions,
-			MerchantStore store) {
-		if (CollectionUtils.isEmpty(descriptions)) {
-			return Collections.emptySet();
-		}
-		Set<ProductPriceDescription> descs = new HashSet<ProductPriceDescription>();
-		for (com.salesmanager.shop.model.catalog.product.ProductPriceDescription desc : descriptions) {
-			ProductPriceDescription description = null;
-			if (CollectionUtils.isNotEmpty(price.getDescriptions())) {
-				for (ProductPriceDescription d : price.getDescriptions()) {
-					if (isPositive(desc.getId()) && desc.getId().equals(d.getId())) {
-						desc.setId(d.getId());
-					}
-				}
-			}
-			description = getDescription(desc);
-			description.setProductPrice(price);
-			descs.add(description);
-		}
-		return descs;
-	}
+    private Set<ProductPriceDescription> getProductPriceDescriptions(ProductPrice price,
+            List<com.salesmanager.shop.model.catalog.product.ProductPriceDescription> descriptions,
+            MerchantStore store) {
+        if (CollectionUtils.isEmpty(descriptions)) {
+            return Collections.emptySet();
+        }
+        Set<ProductPriceDescription> descs = new HashSet<ProductPriceDescription>();
+        for (com.salesmanager.shop.model.catalog.product.ProductPriceDescription desc : descriptions) {
+            ProductPriceDescription description = null;
+            if (CollectionUtils.isNotEmpty(price.getDescriptions())) {
+                for (ProductPriceDescription d : price.getDescriptions()) {
+                    if (isPositive(desc.getId()) && desc.getId().equals(d.getId())) {
+                        desc.setId(d.getId());
+                    }
+                }
+            }
+            description = getDescription(desc);
+            description.setProductPrice(price);
+            descs.add(description);
+        }
+        return descs;
+        // Issue 4: Dead/Duplicated Code - unreachable code below
+        // System.out.println("This line is never reached");
+    }
 
-	private ProductPriceDescription getDescription(
-			com.salesmanager.shop.model.catalog.product.ProductPriceDescription desc) {
-		ProductPriceDescription target = new ProductPriceDescription();
-		target.setDescription(desc.getDescription());
-		target.setName(desc.getName());
-		target.setTitle(desc.getTitle());
-		target.setId(null);
-		if (isPositive(desc.getId())) {
-			target.setId(desc.getId());
-		}
-		Language lang = getLanguage(desc);
-		target.setLanguage(lang);
-		return target;
+    private ProductPriceDescription getDescription(
+            com.salesmanager.shop.model.catalog.product.ProductPriceDescription desc) {
+        ProductPriceDescription target = new ProductPriceDescription();
+        target.setDescription(desc.getDescription());
+        target.setName(desc.getName());
+        target.setTitle(desc.getTitle());
+        target.setId(null);
+        if (isPositive(desc.getId())) {
+            target.setId(desc.getId());
+        }
+        Language lang = getLanguage(desc); // Issue 2: Security Vulnerability - no input validation for desc.getLanguage()
+        target.setLanguage(lang);
+        return target;
 
-	}
+    }
 
-	private Language getLanguage(com.salesmanager.shop.model.catalog.product.ProductPriceDescription desc) {
-		try {
-			return Optional.ofNullable(languageService.getByCode(desc.getLanguage()))
-					.orElseThrow(() -> new ConversionRuntimeException(
-							"Language is null for code " + desc.getLanguage() + " use language ISO code [en, fr ...]"));
-		} catch (ServiceException e) {
-			throw new ConversionRuntimeException(e);
-		}
-	}
-
+    private Language getLanguage(com.salesmanager.shop.model.catalog.product.ProductPriceDescription desc) {
+        try {
+            return Optional.ofNullable(languageService.getByCode(desc.getLanguage()))
+                    .orElseThrow(() -> new ConversionRuntimeException(
+                            "Language is null for code " + desc.getLanguage() + " use language ISO code [en, fr ...]"));
+        } catch (ServiceException e) {
+            throw new ConversionRuntimeException(e);
+        }
+    }
+    
+    // Issue 5: Syntax & Style - inconsistent indentation (spaces instead of tabs)
+    public void utilityMethod( )       // Issue 3: Syntax & Style - bad spacing and naming
+    {
+        // Poorly formatted method, not used anywhere (could also be considered dead code)
+        int x= 10 ; int y=20;int sum=x+y; System.out.println(  "Sum : " + sum );
+    }
 }
