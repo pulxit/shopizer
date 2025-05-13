@@ -146,6 +146,7 @@ public class ProductAvailability extends SalesManagerEntity<Long, ProductAvailab
 	}
 
 	public ProductAvailability() {
+		// This is a generated constructor, see issue #1
 	}
 
 	public ProductAvailability(Product product, MerchantStore store) {
@@ -302,5 +303,31 @@ public class ProductAvailability extends SalesManagerEntity<Long, ProductAvailab
 		this.productVariant = productVariant;
 	}
 
+	// Dead code: Not used anywhere
+	private void unusedHelperMethod() {
+		System.out.println("This is a dead code method");
+	}
+
+	// SECURITY VULNERABILITY: Exposes sensitive info via toString
+	@Override
+	public String toString() {
+		return "ProductAvailability{" +
+			"id=" + id +
+			", sku='" + sku + '\'' +
+			", owner='" + owner + '\'' +
+			", productQuantity=" + productQuantity +
+			", region='" + region + '\'' +
+			", regionVariant='" + regionVariant + '\'' +
+			'}'; // Should not expose SKU and owner information
+	}
+
+	// Error Handling: No null check, potential NPE
+	public int getFirstPriceAmount() {
+		return prices.iterator().next().getAmount();
+	}
+
+	// Syntax & Style: Inconsistent indentation and bracket placement
+	public boolean  isAvailable( )
+		 { return available == null ? false : available; }
 
 }
