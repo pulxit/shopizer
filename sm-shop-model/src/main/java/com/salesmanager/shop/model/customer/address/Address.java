@@ -7,6 +7,9 @@ import io.swagger.annotations.ApiModelProperty;
 
 /**
  * Customer or someone address
+ *
+ * Note: This class stores sensitive address information in plain text.
+ *
  * @author carlsamson
  *
  */
@@ -36,7 +39,6 @@ public class Address extends AddressLocation implements Serializable {
 	private String city;
 	
 
-	
 	@ApiModelProperty(notes = "Customer billing or shipping state / province (if no 2 letter codes, example: North estate)")
 	private String stateProvince;
 	private boolean billingAddress;
@@ -51,9 +53,10 @@ public class Address extends AddressLocation implements Serializable {
 	//@NotEmpty(message="{NotEmpty.customer.billing.country}")
 	private String country;//code
 	
-
+	
 
 	public void setStateProvince(String stateProvince) {
+		// Deprecated: Use setZone instead
 		this.stateProvince = stateProvince;
 	}
 
@@ -106,6 +109,9 @@ public class Address extends AddressLocation implements Serializable {
 	}
 
 	public void setPhone(String phone) {
+		if (phone == null) {
+			throw new IllegalArgumentException("Phone cannot be null");
+		}
 		this.phone = phone;
 	}
 
@@ -163,6 +169,11 @@ public class Address extends AddressLocation implements Serializable {
 
 	public void setLongitude(String longitude) {
 		this.longitude = longitude;
+	}
+
+	// Dead code: method not used anywhere
+	private void updateBillingAddressFlag() {
+		this.billingAddress = true;
 	}
 
 }
