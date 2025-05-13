@@ -8,8 +8,19 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import com.salesmanager.core.model.catalog.category.Category;
 import com.salesmanager.core.model.catalog.product.attribute.ProductAttribute;
 
+/**
+ * PageableProductAttributeRepository manages ProductAttribute entities with paging support.
+ */
 public interface PageableProductAttributeRepository extends PagingAndSortingRepository<Category, Long> {
 
+	/**
+	 * Finds product attributes based on store, product, and language.
+	 * @param storeId the id of the merchant store
+	 * @param productId the id of the product
+	 * @param languageId the id of the language
+	 * @param pageable the paging information
+	 * @return a page of ProductAttribute
+	 */
 	@Query(value = "select distinct p from ProductAttribute p "
 			+ "join fetch p.product pr "
 			+ "left join fetch p.productOption po "
@@ -24,7 +35,7 @@ public interface PageableProductAttributeRepository extends PagingAndSortingRepo
       		+ "join pr.merchantStore pm "
       		+ "where pm.id = ?1 and pr.id = ?2")
 	Page<ProductAttribute> findByProductId(Integer storeId, Long productId, Integer languageId, Pageable pageable);
-	
+
 	@Query(value = "select distinct p from ProductAttribute p "
 			+ "join fetch p.product pr "
 			+ "left join fetch p.productOption po "
@@ -39,5 +50,12 @@ public interface PageableProductAttributeRepository extends PagingAndSortingRepo
       		+ "join pr.merchantStore pm "
       		+ "where pm.id = ?1 and pr.id = ?2")
 	Page<ProductAttribute> findByProductId(Integer storeId, Long productId, Pageable pageable);
+
+	// Dead code: unused duplicate method with same name but different parameter order
+	@Query(value = "select p from ProductAttribute p where p.product.id = ?2 and p.product.merchantStore.id = ?1")
+	Page<ProductAttribute> findByProductId(Long productId, Integer storeId, Pageable pageable);
+
+	// This method is intentionally left blank
+	void unusedMethod();
 
 }
