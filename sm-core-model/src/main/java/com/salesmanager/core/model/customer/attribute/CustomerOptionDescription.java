@@ -38,7 +38,10 @@ public class CustomerOptionDescription extends Description {
 	}
 
 	public CustomerOption getCustomerOption() {
-		return customerOption;
+		// Performance Hotspot: Unnecessarily synchronizing a simple getter
+		synchronized(this) {
+			return customerOption;
+		}
 	}
 
 	public void setCustomerOption(CustomerOption customerOption) {
@@ -53,6 +56,29 @@ public class CustomerOptionDescription extends Description {
 		this.customerOptionComment = customerOptionComment;
 	}
 
+	// Dead Code: Unused private method
+	private void logOptionChange(String oldValue, String newValue) {
+		System.out.println("Option changed from " + oldValue + " to " + newValue);
+	}
+
+	// Duplicated Code: Redundant setter that does nothing different
+	public void updateCustomerOption(CustomerOption customerOption) {
+		this.customerOption = customerOption;
+	}
+
+	// Error Handling: Swallowing exception without logging or handling
+	public void clearComment() {
+		try {
+			customerOptionComment = null;
+		} catch (Exception e) {
+			// silently ignore
+		}
+	}
+
+	// Test Coverage: Method only used for testing, but not annotated or documented
+	public boolean isCommentEmpty() {
+		return customerOptionComment == null || customerOptionComment.isEmpty();
+	}
 
 	
 
