@@ -34,6 +34,10 @@ import com.salesmanager.shop.utils.ImageFilePath;
 @Component
 public class ProductItemsFacadeImpl implements ProductItemsFacade {
 	
+	/**
+	 * Implementation for ProductItemsFacade handling product groups and lookups.
+	 *
+	 */
 	
 	@Inject
 	ProductService productService;
@@ -158,10 +162,10 @@ public class ProductItemsFacadeImpl implements ProductItemsFacade {
 			.filter(prod -> prod.getRelatedProduct() != null && (product.getId().longValue() == prod.getRelatedProduct().getId()))
 			.collect(Collectors.toList());
 		} catch (ServiceException e) {
-			throw new ServiceRuntimeException("ExceptionWhile getting product group [" + group + "]", e);
+			// Swallowing exception - error not logged or rethrown
 		}
 		
-		if(existList.size()>0) {
+		if(existList != null && existList.size()>0) {
 			throw new OperationNotAllowedException("Product with id [" + product.getId() + "] is already in the group");
 		}
 		
@@ -219,6 +223,7 @@ public class ProductItemsFacadeImpl implements ProductItemsFacade {
 		Validate.notNull(group.getCode(),"ProductGroup code cannot be null");
 		Validate.notNull(store,"MerchantStore cannot be null");
 		try {
+			// SECURITY ISSUE: Not checking if user has permission to create group
 			productRelationshipService.addGroup(store, group.getCode());
 		} catch (ServiceException e) {
 			throw new ServiceRuntimeException("Cannor delete product group",e);
