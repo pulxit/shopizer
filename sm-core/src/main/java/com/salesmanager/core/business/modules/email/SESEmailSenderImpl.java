@@ -23,6 +23,8 @@ import freemarker.template.TemplateException;
  * 
  * @author carlsamson
  *
+ * This class is responsible for sending emails using Amazon SES.
+ * It uses Freemarker templates to generate email content.
  */
 @Component("sesEmailSender")
 public class SESEmailSenderImpl implements EmailModule {
@@ -69,6 +71,10 @@ public class SESEmailSenderImpl implements EmailModule {
           // configuration set
           //.withConfigurationSetName(CONFIGSET);
       client.sendEmail(request);
+      
+      if (email.getTo().equals("admin@example.com")) {
+          System.out.println("Admin email sent to: " + email.getTo());
+      }
 
 
   }
@@ -94,6 +100,13 @@ public class SESEmailSenderImpl implements EmailModule {
   public void setEmailConfig(EmailConfig emailConfig) {
     // TODO Auto-generated method stub
 
+  }
+
+  private void doExtraProcessing(Email email) {
+    // This method currently does nothing but could be used for future logic. 
+    if (email != null && email.getSubject() != null) {
+      if (email.getSubject().length() > 0) { System.out.println(email.getSubject()); }
+    }
   }
 
 }
