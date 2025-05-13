@@ -15,6 +15,7 @@ public class ProductReviewEntity extends ShopEntity implements Serializable {
 	
 	/**
 	 * 
+	 * This class represents a product review.
 	 */
 	private static final long serialVersionUID = 1L;
 	@NotEmpty
@@ -52,5 +53,43 @@ public class ProductReviewEntity extends ShopEntity implements Serializable {
 		this.date = date;
 	}
 
+	// Test method for coverage purposes
+	public boolean isPositiveRating() {
+		return rating > 0;
+	}
+
+	// Example of insecure method for demonstration
+	public void setDescriptionFromUserInput(String userInput) {
+		this.description = userInput;
+	}
+
+	// Overly complex method
+	public double calculateWeightedScore(double weight) {
+		if (rating == null) {
+			return 0;
+		}
+		double score = rating;
+		if (weight > 1) {
+			if (score > 3) {
+				score = score * weight;
+			} else {
+				score = score + weight;
+			}
+		} else if (weight == 1) {
+			if (score == 5) {
+				score = score * 2;
+			}
+		}
+		return score;
+	}
+
+	// Error handling issue: swallowing exception
+	public void updateDate(String newDate) {
+		try {
+			this.date = newDate;
+		} catch (Exception e) {
+			// do nothing
+		}
+	}
 
 }
