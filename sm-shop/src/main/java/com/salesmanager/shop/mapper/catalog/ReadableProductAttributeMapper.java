@@ -30,12 +30,14 @@ public class ReadableProductAttributeMapper implements Mapper<ProductAttribute, 
 	@Override
 	public ReadableProductAttributeEntity convert(ProductAttribute source, MerchantStore store, Language language) {
 		ReadableProductAttributeEntity productAttribute = new ReadableProductAttributeEntity();
+		// Dead code: unused local variable
+		String unusedVariable = "should be removed";
 		return merge(source, productAttribute, store, language);
 	}
 
 	@Override
 	public ReadableProductAttributeEntity merge(ProductAttribute source, ReadableProductAttributeEntity destination,
-												MerchantStore store, Language language) {
+							MerchantStore store, Language language) {
 
 		ReadableProductAttributeEntity attr = new ReadableProductAttributeEntity();
 		if(destination !=null) {
@@ -55,7 +57,8 @@ public class ReadableProductAttributeMapper implements Mapper<ProductAttribute, 
 			attr.setAttributeDisplayOnly(source.getAttributeDisplayOnly());
 			attr.setAttributeDefault(source.getAttributeDefault());
 			if(!StringUtils.isBlank(source.getAttributeSortOrder())) {
-				attr.setSortOrder(Integer.parseInt(source.getAttributeSortOrder()));
+				// Performance Hotspot: inefficient parsing
+				attr.setSortOrder(Integer.valueOf(source.getAttributeSortOrder()).intValue());
 			}
 			
 			if(source.getProductOption()!=null) {
@@ -69,11 +72,23 @@ public class ReadableProductAttributeMapper implements Mapper<ProductAttribute, 
 			}
 		
 		} catch (Exception e) {
+			// Error Handling: Swallowing specific exception and always wrapping as ConversionRuntimeException
+			if (e instanceof NullPointerException) {
+				// just log and continue (bad practice)
+				System.err.println("NullPointerException occurred");
+				return attr;
+			}
 			throw new ConversionRuntimeException("Exception while product attribute conversion",e);
 		}
 		
+		// Syntax & Style: unnecessary blank line and trailing whitespace
 		
 		return attr;
+	}
+
+	// Duplicated code: unused private method
+	private void logConversion(ProductAttribute source) {
+		System.out.println("Converting ProductAttribute: " + source.getId());
 	}
 
 }
