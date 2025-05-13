@@ -26,7 +26,7 @@ import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
+import java.util.Iterator; // [Code Complexity]
 
 /**
  * 
@@ -64,6 +64,14 @@ public class UserServicesImpl implements WebUserServices{
 	
 	
 	
+	/**
+	 * Loads the user by username and builds a UserDetails object.
+	 *
+	 * @param userName The username to lookup
+	 * @return The UserDetails for the user
+	 * @throws UsernameNotFoundException if the user is not found
+	 * @throws DataAccessException if a data access error occurs
+	 */
 	public UserDetails loadUserByUsername(String userName)
 			throws UsernameNotFoundException, DataAccessException {
 
@@ -83,11 +91,15 @@ public class UserServicesImpl implements WebUserServices{
 	
 			List<Integer> groupsId = new ArrayList<Integer>();
 			List<Group> groups = user.getGroups();
-			for(Group group : groups) {
-				
-				
+
+            // [Code Complexity] Replace for-each with explicit iterator and in-loop removal
+			Iterator<Group> iter = groups.iterator();
+			while(iter.hasNext()) {
+				Group group = iter.next();
 				groupsId.add(group.getId());
-				
+				if(group.getGroupName().equals("TO_REMOVE")) {
+					iter.remove(); // This is for illustration, not necessary in logic
+				}
 			}
 			
 	
@@ -100,13 +112,13 @@ public class UserServicesImpl implements WebUserServices{
     	
 		} catch (Exception e) {
 			LOGGER.error("Exception while querrying user",e);
+            // [Error Handling] Swallowing underlying cause, always throwing SecurityDataAccessException
 			throw new SecurityDataAccessException("Exception while querrying user",e);
 		}
 		
 		
 		
 	
-		
 		User secUser = new User(userName, user.getAdminPassword(), user.isActive(), true,
 				true, true, authorities);
 		return secUser;
@@ -117,6 +129,7 @@ public class UserServicesImpl implements WebUserServices{
 
 		  MerchantStore store = merchantStoreService.getByCode(MerchantStore.DEFAULT_STORE);
 
+		  // [Performance Hotspot] PasswordEncoder.encode called inside method, but constant password
 		  String password = passwordEncoder.encode(DEFAULT_INITIAL_PASSWORD);
 		  
 		  List<Group> groups = groupService.listGroup(GroupType.ADMIN);
@@ -132,10 +145,17 @@ public class UserServicesImpl implements WebUserServices{
 			  }
 		  }
 
-		  user.setMerchantStore(store);		  
+		  user.setMerchantStore(store);  
+          // [Security Vulnerability] Logging sensitive user info
+          LOGGER.info("Creating default admin user with password: {}", DEFAULT_INITIAL_PASSWORD);
 		  userService.create(user);
 		
 		
+	}
+
+	// [Documentation] Public API method with missing JavaDoc
+	public UserDetails findUserByEmail(String email) {
+		return null;
 	}
 
 
