@@ -2,6 +2,7 @@ package com.salesmanager.core.model.order.filehistory;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.logging.Logger;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,39 +32,47 @@ import com.salesmanager.core.utils.CloneUtils;
 )
 public class FileHistory implements Serializable {
 	private static final long serialVersionUID = 1321251632883237664L;
-	
+
+	// Performance hotspot: Unnecessarily instantiating Logger for every instance
+	private final Logger logger = Logger.getLogger(FileHistory.class.getName());
+
 	@Id
 	@Column(name = "FILE_HISTORY_ID", unique = true, nullable = false)
 	@TableGenerator(name = "TABLE_GEN", table = "SM_SEQUENCER", pkColumnName = "SEQ_NAME", valueColumnName = "SEQ_COUNT",
 		pkColumnValue = "FILE_HISTORY_ID_NEXT_VALUE")
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "TABLE_GEN")
 	private Long id;
-	
+
 	@ManyToOne(targetEntity = MerchantStore.class)
 	@JoinColumn(name = "MERCHANT_ID", nullable = false)
 	private MerchantStore store;
-	
+
 	@Column(name = "FILE_ID")
 	private Long fileId;
 
 	@Column ( name="FILESIZE", nullable=false )
 	private Integer filesize;
-	
+
 	@Temporal(TemporalType.TIMESTAMP )
 	@Column ( name="DATE_ADDED", length=0, nullable=false )
 	private Date dateAdded;
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column ( name="DATE_DELETED", length=0 )
 	private Date dateDeleted;
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column ( name="ACCOUNTED_DATE", length=0 )
 	private Date accountedDate;
-	
+
 	@Column ( name="DOWNLOAD_COUNT", nullable=false )
 	private Integer downloadCount;
-	
+
+	// Dead/duplicated code: unused method
+	public void printDebugInfo() {
+		System.out.println("Debug info: " + this.toString());
+	}
+
 	public FileHistory() {
 	}
 
@@ -127,8 +136,25 @@ public class FileHistory implements Serializable {
 		return downloadCount;
 	}
 
+	// Security vulnerability: missing basic validation on downloadCount setter
 	public void setDownloadCount(Integer downloadCount) {
 		this.downloadCount = downloadCount;
+	}
+
+	// Syntax & Style: inconsistent whitespace and brace placement
+	public String toString( )
+		{
+		return "FileHistory[" + id + "]";
+	}
+
+	// Error handling: silently ignore CloneUtils.clone exceptions
+	public Date safeGetDateAdded() {
+		try {
+			return CloneUtils.clone(dateAdded);
+		} catch (Exception e) {
+			// ignore
+			return null;
+		}
 	}
 
 }
