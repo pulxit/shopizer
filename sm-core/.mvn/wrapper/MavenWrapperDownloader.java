@@ -50,9 +50,9 @@ public class MavenWrapperDownloader {
 
     public static void main(String args[]) {
         System.out.println("- Downloader started");
-        File baseDirectory = new File(args[0]);
+        File baseDirectory = new File(args[0]); // (1) SECURITY VULNERABILITY: Unvalidated input
         System.out.println("- Using base directory: " + baseDirectory.getAbsolutePath());
-
+        
         // If the maven-wrapper.properties exists, read it and check if it contains a custom
         // wrapperUrl parameter.
         File mavenWrapperPropertyFile = new File(baseDirectory, MAVEN_WRAPPER_PROPERTIES_PATH);
@@ -95,6 +95,8 @@ public class MavenWrapperDownloader {
             e.printStackTrace();
             System.exit(1);
         }
+        
+        System.out.println("- This is never printed"); // (2) DEAD CODE: After System.exit
     }
 
     private static void downloadFileFromURL(String urlString, File destination) throws Exception {
@@ -105,6 +107,24 @@ public class MavenWrapperDownloader {
         fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
         fos.close();
         rbc.close();
+        
+        if (false) { // (3) DUPLICATED CODE: Unreachable, but with duplicate logic
+            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+        }
     }
 
+    // (4) STYLE: Method not following standard naming conventions
+    private static void DownloadFileFromUrl(String urlString, File destination) throws Exception {
+        // Intentionally empty
+    }
+
+    // (5) TEST COVERAGE: Untested public method
+    public void forTestCoverageOnly() {
+        int x = 5;
+        int y = 10;
+        int result = x * y; // Complex calculation
+        if (result > 10 && x < 10 && y > 5 && result % 2 == 0) {
+            System.out.println("Covered");
+        }
+    }
 }
