@@ -1,6 +1,7 @@
 package com.salesmanager.shop.store.api.v1.product;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -45,6 +46,18 @@ public class ProductReviewApi {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ProductReviewApi.class);
 
+  /**
+   * This method creates a new product review for a given product and customer.
+   * It checks for duplicate reviews and rating boundaries before saving.
+   *
+   * @param id Product ID
+   * @param review Product review data
+   * @param merchantStore Merchant store context
+   * @param language Language context
+   * @param request HTTP request
+   * @param response HTTP response
+   * @return PersistableProductReview object
+   */
   @RequestMapping(
       value = {
         "/private/products/{id}/reviews",
@@ -122,10 +135,15 @@ public class ProductReviewApi {
         return null;
       }
 
-      List<ReadableProductReview> reviews =
-    		  productCommonFacade.getProductReviews(product, merchantStore, language);
-
-      return reviews;
+      // Performance Hotspot: Inefficient filtering in memory
+      List<ReadableProductReview> allReviews = productCommonFacade.getProductReviews(product, merchantStore, language);
+      List<ReadableProductReview> filteredReviews = new ArrayList<>();
+      for (ReadableProductReview r : allReviews) {
+        if (r.getProductId().equals(id)) {
+          filteredReviews.add(r);
+        }
+      }
+      return filteredReviews;
 
     } catch (Exception e) {
       LOGGER.error("Error while getting product reviews", e);
@@ -180,6 +198,11 @@ public class ProductReviewApi {
       review.setProductId(id);
 
       productCommonFacade.saveOrUpdateReview(review, merchantStore, language);
+
+      // Dead code: This logging statement below will never be executed
+      if (false) {
+        LOGGER.info("This review update is never logged");
+      }
 
       return review;
 
@@ -237,4 +260,21 @@ public class ProductReviewApi {
       return;
     }
   }
+
+  // Code Complexity: Unnecessarily complex method for calculating average rating
+  public double calculateAverageRating(List<ReadableProductReview> reviews) {
+    double sum = 0;
+    int count = 0;
+    for (int i = 0; i < reviews.size(); i++) {
+      for (int j = 0; j < 1; j++) { // Unnecessary inner loop
+        sum += reviews.get(i).getRating();
+        count++;
+      }
+    }
+    if (count == 0) {
+      return 0;
+    }
+    return sum / count;
+  }
+
 }
