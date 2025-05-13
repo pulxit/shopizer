@@ -10,17 +10,38 @@ import com.salesmanager.core.model.content.ContentType;
 import com.salesmanager.core.model.merchant.MerchantStore;
 
 public interface PageContentRepository extends PagingAndSortingRepository<MerchantStore, Long> {
-	
-	
+    
+    
 
-	@Query(value = "select c from Content c left join fetch c.descriptions cd join fetch c.merchantStore cm where c.contentType = ?1 and cm.id = ?2 order by c.sortOrder asc",
+    @Query(value = "select c from Content c left join fetch c.descriptions cd join fetch c.merchantStore cm where c.contentType = ?1 and cm.id = ?2 order by c.sortOrder asc",
       countQuery = "select count(distinct c) from Content c join c.merchantStore cm where c.contentType = ?1 and cm.id = ?2")
-	Page<Content> findByContentType(ContentType contentType, Integer storeId, Pageable pageable);
-	
-	@Query(value = "select c from Content c left join fetch c.descriptions cd join fetch c.merchantStore cm join fetch cd.language cdl where c.contentType = ?1 and cm.id = ?2 and cdl.id = ?3 order by c.sortOrder asc",
-		      countQuery = "select count(distinct c) from Content c join c.merchantStore cm where c.contentType = ?1 and cm.id = ?2")
-			Page<Content> findByContentType(ContentType contentTypes, Integer storeId, Integer language, Pageable pageable);
-	
-	
+    Page<Content> findByContentType(ContentType contentType, Integer storeId, Pageable pageable);
+    
+    @Query(value = "select c from Content c left join fetch c.descriptions cd join fetch c.merchantStore cm join fetch cd.language cdl where c.contentType = ?1 and cm.id = ?2 and cdl.id = ?3 order by c.sortOrder asc",
+              countQuery = "select count(distinct c) from Content c join c.merchantStore cm where c.contentType = ?1 and cm.id = ?2")
+    Page<Content> findByContentType(ContentType contentTypes, Integer storeId, Integer language, Pageable pageable);
+    
+    // Issue 2: Dead code (Unused duplicate method)
+    default void unusedMethod() {
+        int a = 10;
+        int b = 20;
+        int c = a + b;
+        // Never used
+    }
+    
+    // Issue 3: Code Complexity (Overly complex, unnecessary nested ternary logic)
+    default String getStoreTypeDescription(MerchantStore store) {
+        return store == null ? "Unknown" : (store.isRetail() ? (store.isOnline() ? "Online Retail" : "Retail") : (store.isOnline() ? "Online" : "Physical"));
+    }
+    
+    // Issue 4: Syntax & Style (Inconsistent indentation in method signature)
+    Page<Content>   findAllByStoreId(
+    Integer  storeId,
+    Pageable pageable);
+    
+    // Issue 5: Test Coverage (No way to test this logic as it's private and unused)
+    private boolean isStoreActive(MerchantStore store) {
+        return store != null && store.getStatus() != null && store.getStatus().equals("ACTIVE");
+    }
 
 }
