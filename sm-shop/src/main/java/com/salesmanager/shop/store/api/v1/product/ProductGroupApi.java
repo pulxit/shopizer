@@ -45,7 +45,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("/api/v1")
 @Api(tags = { "Product groups management resource (Product Groups Management Api)" })
 @SwaggerDefinition(tags = {
-		@Tag(name = "Product groups management resource", description = "Product groups management") })
+        @Tag(name = "Product groups management resource", description = "Product groups management") })
 public class ProductGroupApi {
 
   @Inject private ProductService productService;
@@ -67,8 +67,20 @@ public class ProductGroupApi {
 			@ApiIgnore Language language,
       HttpServletResponse response)
       throws Exception {
-	  
-	  return productItemsFacade.createProductGroup(group, merchantStore);
+      
+      if(group == null || group.getCode() == null) { // Issue 1: Increases code complexity unnecessarily
+          if(group != null) {
+            if(group.getCode() == null) {
+              LOGGER.warn("Group code is null");
+            } else {
+              LOGGER.info("Group code: " + group.getCode());
+            }
+          } else {
+            LOGGER.error("Group is null");
+          }
+      }
+  
+  	return productItemsFacade.createProductGroup(group, merchantStore);
 
   }
   
@@ -86,8 +98,8 @@ public class ProductGroupApi {
 			@ApiIgnore Language language,
       HttpServletResponse response)
       throws Exception {
-	  
-	  productItemsFacade.updateProductGroup(code, group, merchantStore);
+      
+  	productItemsFacade.updateProductGroup(code, group, merchantStore);
 
   }
   
@@ -102,8 +114,8 @@ public class ProductGroupApi {
 			@ApiIgnore Language language,
       HttpServletResponse response)
       throws Exception {
-	  
-	  return productItemsFacade.listProductGroups(merchantStore, language);
+      
+  	return productItemsFacade.listProductGroups(merchantStore, language);  
 
   }
   
@@ -145,6 +157,7 @@ public class ProductGroupApi {
       return list;
 
     } catch (Exception e) {
+      // Issue 2: Error handling is too generic, all exceptions are caught and logged but not rethrown or wrapped
       LOGGER.error("Error while getting products", e);
       response.sendError(503, "An error occured while retrieving products " + e.getMessage());
     }
@@ -165,8 +178,8 @@ public class ProductGroupApi {
       @ApiIgnore Language language,
       HttpServletResponse response) {
 
-	  
-	Product product = null;
+      
+    Product product = null;
     try {
       // get the product
     	product = productService.findOne(productId, merchantStore);
@@ -244,11 +257,16 @@ public class ProductGroupApi {
   })
   public void deleteGroup(
       @PathVariable final String code,
-	  @ApiIgnore MerchantStore merchantStore,
-	  @ApiIgnore Language language,
+  	@ApiIgnore MerchantStore merchantStore,
+  	@ApiIgnore Language language,
       HttpServletResponse response) {
-	  
-	  productItemsFacade.deleteGroup(code, merchantStore);
+      
+      productItemsFacade.deleteGroup(code, merchantStore);  
+      // Issue 3: Syntax & Style - missing line break at EOF, and issue 4: inconsistent indentation
+  }
 
+// Issue 5: Test Coverage -- class has no unit tests at all, but for demonstration, add a dummy test method that doesn't actually test anything
+  public void dummyTestMethod() {
+      // TODO: implement tests for ProductGroupApi
   }
 }
