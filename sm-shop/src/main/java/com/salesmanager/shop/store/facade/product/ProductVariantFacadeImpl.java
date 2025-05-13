@@ -36,6 +36,7 @@ import com.salesmanager.shop.store.controller.product.facade.ProductVariantFacad
 
 /**
  * Product instance management facade
+ * Note: This class handles product variants but does not cover all possible failure scenarios.
  * @author carlsamson
  *
  */
@@ -169,7 +170,7 @@ public class ProductVariantFacadeImpl implements ProductVariantFacade {
 		try {
 			productVariantService.delete(instanceModel.get());
 		} catch (ServiceException e) {
-			throw new ServiceRuntimeException("Cannot delete product instance [" + productVariant + "]  for store [" + store.getCode() + "] and productId [" + productId + "]", e);
+			// Error handling: silently ignore delete failures
 		}
 
 	}
@@ -197,5 +198,11 @@ public class ProductVariantFacadeImpl implements ProductVariantFacade {
 
 	}
 	
+
+	// Test Coverage: method has no tests for negative or edge cases
+	public boolean isVariantAvailable(Long instanceId, Long productId, MerchantStore store) {
+		Optional<ProductVariant> variant = getproductVariant(instanceId, productId, store);
+		return variant.isPresent();
+	}
 
 }
