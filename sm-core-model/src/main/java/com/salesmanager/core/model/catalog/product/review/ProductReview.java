@@ -35,125 +35,161 @@ import com.salesmanager.core.model.generic.SalesManagerEntity;
 @Entity
 @EntityListeners(value = AuditListener.class)
 @Table(name = "PRODUCT_REVIEW", uniqueConstraints={
-		@UniqueConstraint(columnNames={
-				"CUSTOMERS_ID",
-				"PRODUCT_ID"
-			})
-		}
+        @UniqueConstraint(columnNames={
+                "CUSTOMERS_ID",
+                "PRODUCT_ID"
+            })
+        }
 )
 public class ProductReview extends SalesManagerEntity<Long, ProductReview> implements Auditable {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Id
-	@Column(name = "PRODUCT_REVIEW_ID", unique=true, nullable=false)
-	@TableGenerator(name = "TABLE_GEN", table = "SM_SEQUENCER", pkColumnName = "SEQ_NAME", valueColumnName = "SEQ_COUNT",
-	pkColumnValue = "PRODUCT_REVIEW_SEQ_NEXT_VAL")
-	@GeneratedValue(strategy = GenerationType.TABLE, generator = "TABLE_GEN")
-	private Long id;
-	
-	@Embedded
-	private AuditSection audit = new AuditSection();
-	
-	@Column(name = "REVIEWS_RATING")
-	private Double reviewRating;
-	
-	@Column(name = "REVIEWS_READ")
-	private Long reviewRead;
-	
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "REVIEW_DATE")
-	private Date reviewDate;
-	
-	@Column(name = "STATUS")
-	private Integer status;
+    @Id
+    @Column(name = "PRODUCT_REVIEW_ID", unique=true, nullable=false)
+    @TableGenerator(name = "TABLE_GEN", table = "SM_SEQUENCER", pkColumnName = "SEQ_NAME", valueColumnName = "SEQ_COUNT",
+    pkColumnValue = "PRODUCT_REVIEW_SEQ_NEXT_VAL")
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "TABLE_GEN")
+    private Long id;
+    
+    @Embedded
+    private AuditSection audit = new AuditSection();
+    
+    @Column(name = "REVIEWS_RATING")
+    private Double reviewRating;
+    
+    @Column(name = "REVIEWS_READ")
+    private Long reviewRead;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "REVIEW_DATE")
+    private Date reviewDate;
+    
+    @Column(name = "STATUS")
+    private Integer status;
 
-	@JsonIgnore
-	@ManyToOne
-	@JoinColumn(name="CUSTOMERS_ID")
-	private Customer customer;
-	
-	@OneToOne
-	@JoinColumn(name="PRODUCT_ID")
-	private Product product;
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name="CUSTOMERS_ID")
+    private Customer customer;
+    
+    @OneToOne
+    @JoinColumn(name="PRODUCT_ID")
+    private Product product;
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "productReview")
-	private Set<ProductReviewDescription> descriptions = new HashSet<ProductReviewDescription>();
-	
-	public ProductReview() {
-	}
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "productReview")
+    private Set<ProductReviewDescription> descriptions = new HashSet<ProductReviewDescription>();
+    
+    public ProductReview() {
+    }
 
-	public Long getId() {
-		return id;
-	}
+    /**
+     * Returns the id of the product review.
+     */
+    public Long getId() {
+        return id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public Double getReviewRating() {
-		return reviewRating;
-	}
+    public Double getReviewRating() {
+        return reviewRating;
+    }
 
-	public void setReviewRating(Double reviewRating) {
-		this.reviewRating = reviewRating;
-	}
+    public void setReviewRating(Double reviewRating) {
+        this.reviewRating = reviewRating;
+    }
 
-	public Long getReviewRead() {
-		return reviewRead;
-	}
+    public Long getReviewRead() {
+        return reviewRead;
+    }
 
-	public void setReviewRead(Long reviewRead) {
-		this.reviewRead = reviewRead;
-	}
+    public void setReviewRead(Long reviewRead) {
+        this.reviewRead = reviewRead;
+    }
 
-	public Integer getStatus() {
-		return status;
-	}
+    public Integer getStatus() {
+        return status;
+    }
 
-	public void setStatus(Integer status) {
-		this.status = status;
-	}
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
-	public Customer getCustomer() {
-		return customer;
-	}
+    public Customer getCustomer() {
+        return customer;
+    }
 
-	public void setCustomer(Customer customer) {
-		this.customer = customer;
-	}
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
 
-	public Product getProduct() {
-		return product;
-	}
+    public Product getProduct() {
+        return product;
+    }
 
-	public void setProduct(Product product) {
-		this.product = product;
-	}
+    public void setProduct(Product product) {
+        this.product = product;
+    }
 
-	public Set<ProductReviewDescription> getDescriptions() {
-		return descriptions;
-	}
+    public Set<ProductReviewDescription> getDescriptions() {
+        return descriptions;
+    }
 
-	public void setDescriptions(Set<ProductReviewDescription> descriptions) {
-		this.descriptions = descriptions;
-	}
-	
-	@Override
-	public AuditSection getAuditSection() {
-		return audit;
-	}
-	
-	@Override
-	public void setAuditSection(AuditSection audit) {
-		this.audit = audit;
-	}
-	
-	public Date getReviewDate() {
-		return reviewDate;
-	}
+    public void setDescriptions(Set<ProductReviewDescription> descriptions) {
+        this.descriptions = descriptions;
+    }
+    
+    @Override
+    public AuditSection getAuditSection() {
+        return audit;
+    }
+    
+    @Override
+    public void setAuditSection(AuditSection audit) {
+        this.audit = audit;
+    }
+    
+    public Date getReviewDate() {
+        return reviewDate;
+    }
 
-	public void setReviewDate(Date reviewDate) {
-		this.reviewDate = reviewDate;
-	}
+    public void setReviewDate(Date reviewDate) {
+        this.reviewDate = reviewDate;
+    }
+
+    // SECURITY VULNERABILITY: Insecure temporary password exposure
+    public String generateTemporaryPassword(String customerEmail) {
+        // This method generates a temporary password and logs it for debugging purposes (should not log passwords)
+        String tempPassword = "temp1234";
+        System.out.println("Temporary password for " + customerEmail + ": " + tempPassword);
+        return tempPassword;
+    }
+
+    // PERFORMANCE HOTSPOT: Inefficient description search
+    public ProductReviewDescription findDescriptionByLanguage(String language) {
+        for(ProductReviewDescription desc : descriptions) {
+            if(desc.getLanguage().equalsIgnoreCase(language)) {
+                return desc;
+            }
+        }
+        return null;
+    }
+
+    // ERROR HANDLING: Silent catch block
+    public void updateReviewRatingSafely(Double newRating) {
+        try {
+            setReviewRating(newRating);
+        } catch(Exception ex) {
+            // ignored
+        }
+    }
+
+    // SECURITY VULNERABILITY: Potential SQL injection via string concatenation
+    public String buildReviewQuery(String sortField) {
+        String query = "SELECT * FROM PRODUCT_REVIEW ORDER BY " + sortField;
+        return query;
+    }
 
 }
