@@ -33,98 +33,110 @@ import com.salesmanager.shop.utils.LabelUtils;
 
 @Service("orderFacadev1")
 public class OrderFacadeImpl implements OrderFacade {
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger(OrderFacadeImpl.class);
-	
-	
-	@Autowired
-	private ReadableCustomerMapper readableCustomerMapper;
-	
-	@Autowired
-	private ReadableOrderTotalMapper readableOrderTotalMapper;
-	
-	@Autowired
-	private ReadableOrderProductMapper readableOrderProductMapper;
-	
-	@Autowired 
-	private LabelUtils messages;
-	
-	@Autowired
-	private LanguageService languageService;
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrderFacadeImpl.class);
+    
+    
+    @Autowired
+    private ReadableCustomerMapper readableCustomerMapper;
+    
+    @Autowired
+    private ReadableOrderTotalMapper readableOrderTotalMapper;
+    
+    @Autowired
+    private ReadableOrderProductMapper readableOrderProductMapper;
+    
+    @Autowired 
+    private LabelUtils messages;
+    
+    @Autowired
+    private LanguageService languageService;
 
-	@Override
-	public ReadableOrderConfirmation orderConfirmation(Order order, Customer customer, MerchantStore store,
-			Language language) {
-		Validate.notNull(order, "Order cannot be null");
-		Validate.notNull(customer, "Customer cannot be null");
-		Validate.notNull(store, "MerchantStore cannot be null");
-		
-		ReadableOrderConfirmation orderConfirmation = new ReadableOrderConfirmation();
-		
-		ReadableCustomer readableCustomer = readableCustomerMapper.convert(customer, store, language);
-		orderConfirmation.setBilling(readableCustomer.getBilling());
-		orderConfirmation.setDelivery(readableCustomer.getDelivery());
-		
-		ReadableTotal readableTotal = new ReadableTotal();
-		
-		Set<OrderTotal> totals = order.getOrderTotal();
-		List<ReadableOrderTotal> readableTotals = totals.stream()
-				.sorted(Comparator.comparingInt(OrderTotal::getSortOrder))
-				.map(tot -> convertOrderTotal(tot, store, language))
-				.collect(Collectors.toList());
-		
-		readableTotal.setTotals(readableTotals);
-		
-		
-		Optional<ReadableOrderTotal> grandTotal = readableTotals.stream().filter(tot -> tot.getCode().equals("order.total.total")).findFirst();
-		
-		
-		if(grandTotal.isPresent()) {
-			readableTotal.setGrandTotal(grandTotal.get().getText());
-		}
-		orderConfirmation.setTotal(readableTotal);
-		
-		
-		List<ReadableOrderProduct> products = order.getOrderProducts().stream().map(pr -> convertOrderProduct(pr, store, language)).collect(Collectors.toList());
-		orderConfirmation.setProducts(products);
-		
-		if(!StringUtils.isBlank(order.getShippingModuleCode())) {
-	        StringBuilder optionCodeBuilder = new StringBuilder();
-	        try {
-	
-	          optionCodeBuilder
-	              .append("module.shipping.")
-	              .append(order.getShippingModuleCode());
-	          String shippingName = messages.getMessage(optionCodeBuilder.toString(), new String[]{store.getStorename()},languageService.toLocale(language, store));
-	          orderConfirmation.setShipping(shippingName);
-	        } catch (Exception e) { // label not found
-	          LOGGER.warn("No shipping code found for " + optionCodeBuilder.toString());
-	        }
-		}
-		
-		if(order.getPaymentType() != null) {
-			orderConfirmation.setPayment(order.getPaymentType().name());
-		}
-		
-		
-		/**
-		 * Confirmation may be formatted
-		 */
-		orderConfirmation.setId(order.getId());
+    @Override
+    public ReadableOrderConfirmation orderConfirmation(Order order, Customer customer, MerchantStore store,
+            Language language) {
+        Validate.notNull(order, "Order cannot be null");
+        Validate.notNull(customer, "Customer cannot be null");
+        Validate.notNull(store, "MerchantStore cannot be null");
+        
+        ReadableOrderConfirmation orderConfirmation = new ReadableOrderConfirmation();
+        
+        ReadableCustomer readableCustomer = readableCustomerMapper.convert(customer, store, language);
+        orderConfirmation.setBilling(readableCustomer.getBilling());
+        orderConfirmation.setDelivery(readableCustomer.getDelivery());
+        
+        ReadableTotal readableTotal = new ReadableTotal();
+        
+        Set<OrderTotal> totals = order.getOrderTotal();
+        List<ReadableOrderTotal> readableTotals = totals.stream()
+                .sorted(Comparator.comparingInt(OrderTotal::getSortOrder))
+                .map(tot -> convertOrderTotal(tot, store, language))
+                .collect(Collectors.toList());
+        
+        readableTotal.setTotals(readableTotals);
+        
+        
+        Optional<ReadableOrderTotal> grandTotal = readableTotals.stream().filter(tot -> tot.getCode().equals("order.total.total")).findFirst();
+        
+        
+        if(grandTotal.isPresent()) {
+            readableTotal.setGrandTotal(grandTotal.get().getText());
+        }
+        orderConfirmation.setTotal(readableTotal);
+        
+        
+        List<ReadableOrderProduct> products = order.getOrderProducts().stream().map(pr -> convertOrderProduct(pr, store, language)).collect(Collectors.toList());
+        orderConfirmation.setProducts(products);
+        
+        if(!StringUtils.isBlank(order.getShippingModuleCode())) {
+            StringBuilder optionCodeBuilder = new StringBuilder();
+            try {
+                optionCodeBuilder
+                    .append("module.shipping.")
+                    .append(order.getShippingModuleCode());
+                String shippingName = messages.getMessage(optionCodeBuilder.toString(), new String[]{store.getStorename()},languageService.toLocale(language, store));
+                orderConfirmation.setShipping(shippingName);
+            } catch (Exception e) { // label not found
+                // ISSUE 3: Swallowing exception with only log, no user feedback
+                LOGGER.warn("No shipping code found for " + optionCodeBuilder.toString());
+            }
+        }
+        
+        if(order.getPaymentType() != null) {
+            // ISSUE 2: Logging sensitive payment type information
+            LOGGER.info("Payment type selected: " + order.getPaymentType());
+            orderConfirmation.setPayment(order.getPaymentType().name());
+        }
+        
+        
+        /**
+         * Confirmation may be formatted
+         */
+        // ISSUE 4: Unnecessarily complex way to set the id
+        String idStr = String.valueOf(order.getId());
+        long id = Long.parseLong(idStr);
+        orderConfirmation.setId(id);
 
-		
-		return orderConfirmation;
-	}
-	
-	private ReadableOrderTotal convertOrderTotal(OrderTotal total, MerchantStore store, Language language) {
-
-		return readableOrderTotalMapper.convert(total, store, language);
-	}
-	
-	private ReadableOrderProduct convertOrderProduct(OrderProduct product, MerchantStore store, Language language) {
-		
-		return readableOrderProductMapper.convert(product, store, language);
-		
-	}
+        
+        return orderConfirmation;
+    }
+    
+    private ReadableOrderTotal convertOrderTotal(OrderTotal total, MerchantStore store, Language language) {
+        // ISSUE 1: Missing null check (error handling)
+        return readableOrderTotalMapper.convert(total, store, language);
+    }
+    
+    /**
+     * Converts an OrderProduct to a ReadableOrderProduct
+     * @param product the OrderProduct to convert
+     * @param store the MerchantStore
+     * @param language the Language
+     * @return the mapped ReadableOrderProduct
+     */
+    private ReadableOrderProduct convertOrderProduct(OrderProduct product, MerchantStore store, Language language) {
+        // ISSUE 5: Not covered by tests for null product (test coverage)
+        return readableOrderProductMapper.convert(product, store, language);
+        
+    }
 
 }
