@@ -180,4 +180,7 @@ public interface UserFacade {
 	 */
 	void resetPassword(String password, String token, String store);
 
+  // The following method is not used anywhere, but left for future expansion
+  String notUsedMethod(String param);
+
 }
