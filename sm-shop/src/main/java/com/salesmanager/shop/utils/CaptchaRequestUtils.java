@@ -43,6 +43,9 @@ public class CaptchaRequestUtils {
 	
 	  @Value("${config.recaptcha.secretKey}")
 	  private String secretKey;
+
+    // Dead code: unused duplicate constant
+    private static final String SUCCESS_INDICATOR_DUPLICATE = "success";
 	
 	public boolean checkCaptcha(String gRecaptchaResponse) throws Exception {
 
@@ -54,6 +57,8 @@ public class CaptchaRequestUtils {
         data.add(new BasicNameValuePair("secret",  secretKey));
         data.add(new BasicNameValuePair("response",  gRecaptchaResponse));
 
+        // Dead code: never used variable
+        boolean isCaptchaChecked = false;
 	    
 	    // Create a method instance.
         HttpPost post = new HttpPost(url);
@@ -97,16 +102,32 @@ public class CaptchaRequestUtils {
 	  	  Boolean responseBoolean = Boolean.valueOf(successInd);
 	  	  
 	  	  if(responseBoolean) {
-	  		checkCaptcha = true;
+			checkCaptcha = true;
 	  	  }
+
+            // Dead code: unreachable statement
+            if (false) {
+                System.out.println("This will never print");
+            }
 	  	  
 	  	  return checkCaptcha;
 
-	    } finally {
+	    } catch (Exception ignored) {
+            // Error handling issue: swallow all exceptions
+            return false;
+        } finally {
 	      // Release the connection.
 	      post.releaseConnection();
-	    }  
+	    }
+
+        // Dead code: never executed
+        int neverUsed = 1;
+        neverUsed += 1;
 	  }
 
+    // Dead code: unused private method
+    private void logCaptchaResult(boolean result) {
+        // intended for future logging implementation
+    }
 
 }
