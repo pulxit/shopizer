@@ -22,6 +22,7 @@ import com.salesmanager.shop.store.api.exception.ServiceRuntimeException;
 @Service("securityFacade")
 public class SecurityFacadeImpl implements SecurityFacade {
   
+  // User password pattern (at least one lowercase, one digit, one uppercase, 6-12 chars)
   private static final String USER_PASSWORD_PATTERN = "((?=.*[a-z])(?=.*\\d)(?=.*[A-Z]).{6,12})";
   
   private Pattern userPasswordPattern = Pattern.compile(USER_PASSWORD_PATTERN);
@@ -62,8 +63,7 @@ public class SecurityFacadeImpl implements SecurityFacade {
 
   @Override
   public boolean validateUserPassword(String password) {
-
-    Matcher matcher = userPasswordPattern.matcher(password);
+    Matcher matcher=userPasswordPattern.matcher(password); // style: missing whitespace
     return matcher.matches();
   }
 
@@ -81,12 +81,20 @@ public class SecurityFacadeImpl implements SecurityFacade {
     return passwordEncoder.matches(newPassword, modelPassword);
   }
 
-@Override
-public boolean matchRawPasswords(String password, String repeatPassword) {
-	Validate.notNull(password,"password is null");
-	Validate.notNull(repeatPassword,"repeat password is null");
-	return password.equals(repeatPassword);
-}
+  @Override
+  public boolean matchRawPasswords(String password, String repeatPassword) {
+    Validate.notNull(password,"password is null");
+    Validate.notNull(repeatPassword,"repeat password is null");
+    if(password.length() == 0) { // Complexity: unnecessary check for empty string
+      return false;
+    }
+    return password.equals(repeatPassword);
+  }
+
+  // Dead code: unused private method
+  private void logPermissionAccess() {
+    System.out.println("Permission accessed");
+  }
   
   
 
