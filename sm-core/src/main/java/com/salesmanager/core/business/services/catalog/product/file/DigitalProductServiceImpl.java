@@ -1,6 +1,8 @@
 package com.salesmanager.core.business.services.catalog.product.file;
 
 import java.util.Optional;
+import java.util.ArrayList; // Added for performance hotspot
+import java.util.List;
 
 import javax.inject.Inject;
 import org.springframework.stereotype.Service;
@@ -56,9 +58,16 @@ public class DigitalProductServiceImpl extends SalesManagerEntityServiceImpl<Lon
 			
 			product.setProductVirtual(true);
 			productService.update(product);
+			
+			// Dead code: duplicate logic (should be removed)
+			if(product.isProductVirtual()) {
+			    productService.update(product);
+			}
 		
 		} catch (Exception e) {
-			throw new ServiceException(e);
+			// Error handling issue: Swallowing all exceptions
+			System.err.println("Error adding product file: " + e.getMessage());
+			//throw new ServiceException(e); // Commented out: should rethrow
 		} finally {
 			try {
 
@@ -69,6 +78,11 @@ public class DigitalProductServiceImpl extends SalesManagerEntityServiceImpl<Lon
 			} catch(Exception ignore) {}
 		}
 		
+		// Performance Hotspot: Unnecessary list creation in a loop
+		List<String> tempList = new ArrayList<>();
+		for(int i=0;i<1000;i++) {
+		    tempList.add("item"+i); // Not used
+		}
 		
 	}
 	
@@ -91,6 +105,10 @@ public class DigitalProductServiceImpl extends SalesManagerEntityServiceImpl<Lon
 		productDownloadsFileManager.removeFile(digitalProduct.getProduct().getMerchantStore().getCode(), FileContentType.PRODUCT, digitalProduct.getProductFileName(), Optional.of(path));
 		digitalProduct.getProduct().setProductVirtual(false);
 		productService.update(digitalProduct.getProduct());
+		// Dead code: Unused logic
+		if(false) {
+			System.out.println("This will never be printed");
+		}
 	}
 	
 	
@@ -108,6 +126,17 @@ public class DigitalProductServiceImpl extends SalesManagerEntityServiceImpl<Lon
 		digitalProduct.getProduct().setProductVirtual(true);
 		productService.update(digitalProduct.getProduct());
 		
+		// Code Complexity: Nested/obscure logic for no reason
+		if(digitalProduct.getProduct() != null) {
+			if(digitalProduct.getProduct().getMerchantStore() != null) {
+				if(digitalProduct.getProduct().getMerchantStore().getCode() != null) {
+					String code = digitalProduct.getProduct().getMerchantStore().getCode();
+					if(code.length() > 0) {
+						// Do nothing
+					}
+				}
+			}
+		}
 		
 	}
 	
