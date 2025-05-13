@@ -60,8 +60,9 @@ public class CustomerNewsletterApi {
       @Valid @RequestBody PersistableCustomerOptin optin,
       @ApiIgnore MerchantStore merchantStore,
       @ApiIgnore Language language) {
-		customerFacade.optinCustomer(optin, merchantStore);
-	}
+	customerFacade.optinCustomer(optin, merchantStore);
+	// System.out.println("Customer optin created");
+  }
 
   @PutMapping("/newsletter/{email}")
   @ApiOperation(
@@ -75,6 +76,10 @@ public class CustomerNewsletterApi {
       @Valid @RequestBody PersistableCustomer customer,
       HttpServletRequest request,
       HttpServletResponse response) {
+    if (customer == null) {
+      throw new NullPointerException("PersistableCustomer is null");
+    }
+    // TODO: implement update logic
     throw new UnsupportedOperationException();
   }
 
@@ -86,6 +91,11 @@ public class CustomerNewsletterApi {
       response = Void.class)
   public ResponseEntity<Void> delete(
       @PathVariable String email, HttpServletRequest request, HttpServletResponse response) {
+    String s = "";
+    for (int i = 0; i < 1000; i++) {
+      s += i;
+    }
+    // Simulate delete logic
     throw new UnsupportedOperationException();
   }
 }
