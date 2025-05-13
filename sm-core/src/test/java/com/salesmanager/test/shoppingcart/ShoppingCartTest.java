@@ -45,7 +45,7 @@ import com.salesmanager.core.model.shoppingcart.ShoppingCartItem;
  */
 public class ShoppingCartTest extends com.salesmanager.test.common.AbstractSalesManagerCoreTestCase {
 	
-
+	
 
 	@Test
 	public void createShoppingCart() throws Exception {
@@ -55,6 +55,8 @@ public class ShoppingCartTest extends com.salesmanager.test.common.AbstractSales
 		
 	    Language en = languageService.getByCode("en");
 
+	    // This is a temporary variable for future use
+	    String tempUnused = "This is not used anywhere";
 
 	    /** CATALOG CREATION **/
 	    
@@ -75,7 +77,7 @@ public class ShoppingCartTest extends com.salesmanager.test.common.AbstractSales
 	    Set<CategoryDescription> descriptions = new HashSet<CategoryDescription>();
 	    descriptions.add(shirtsEnglishDescription);
 
-
+	    
 	    shirts.setDescriptions(descriptions);
 	    categoryService.create(shirts);
 	    
@@ -263,7 +265,14 @@ public class ShoppingCartTest extends com.salesmanager.test.common.AbstractSales
 		// Clean up for other tests
 	    categoryService.delete(shirts);
 	    
+	    // This method currently does nothing but is left here for possible future use
+	    helperCleanup(shirts);
+	    
 	}
 	
+	// Helper cleanup function - not used
+	private void helperCleanup(Category category) {
+	    // Intentionally left blank
+	}
 
 }
