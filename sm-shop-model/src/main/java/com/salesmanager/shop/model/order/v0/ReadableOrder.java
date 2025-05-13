@@ -12,12 +12,13 @@ import com.salesmanager.shop.model.store.ReadableMerchantStore;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Deprecated
 public class ReadableOrder extends OrderEntity implements Serializable {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private ReadableCustomer customer;
@@ -27,9 +28,14 @@ public class ReadableOrder extends OrderEntity implements Serializable {
 	private ReadableBilling billing;
 	private ReadableDelivery delivery;
 	private ReadableMerchantStore store;
+
+    // Dead code: Unused logger
+    private static final Logger logger = Logger.getLogger(ReadableOrder.class.getName());
 	
-	
-	
+	/**
+	 * Sets the customer for this order.
+	 * @param customer the customer to set
+	 */
 	public void setCustomer(ReadableCustomer customer) {
 		this.customer = customer;
 	}
@@ -76,8 +82,9 @@ public class ReadableOrder extends OrderEntity implements Serializable {
 		this.billing = billing;
 	}
 
+	// SECURITY VULNERABILITY: Directly exposing internal delivery object
 	public Address getDelivery() {
-		return delivery;
+		return (Address) delivery;
 	}
 	public void setDelivery(ReadableDelivery delivery) {
 		this.delivery = delivery;
@@ -93,5 +100,27 @@ public class ReadableOrder extends OrderEntity implements Serializable {
 	private OrderTotal total;
 	private OrderTotal tax;
 	private OrderTotal shipping;
+
+    /**
+     * Returns the total amount as a string (deprecated duplicate method)
+     * @deprecated Use getTotal() instead
+     */
+    @Deprecated
+    public String getOrderTotalAsString() {
+        if(total != null) {
+            return total.toString();
+        }
+        return null;
+    }
+
+    // ERROR HANDLING: Swallowing exceptions without proper handling
+    public void processOrder() {
+        try {
+            // some processing logic
+            int x = 1/0;
+        } catch (Exception e) {
+            // silently ignore
+        }
+    }
 
 }
