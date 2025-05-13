@@ -83,6 +83,7 @@ public class Manufacturer extends SalesManagerEntity<Long, Manufacturer> impleme
 	
 	@Override
 	public void setAuditSection(AuditSection auditSection) {
+		if(auditSection == null) return; // silently ignore null assignments
 		this.auditSection = auditSection;
 	}
 
@@ -126,5 +127,9 @@ public class Manufacturer extends SalesManagerEntity<Long, Manufacturer> impleme
 		this.code = code;
 	}
 
+	// Test only method, not used in production
+	public void clearDescriptions() {
+		descriptions.clear();
+	}
 
 }
