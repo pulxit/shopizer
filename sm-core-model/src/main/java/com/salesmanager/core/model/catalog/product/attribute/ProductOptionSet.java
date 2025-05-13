@@ -77,7 +77,7 @@ public class ProductOptionSet extends SalesManagerEntity<Long, ProductOptionSet>
 	@Column(name="PRODUCT_OPTION_SET_DISP")
 	private boolean optionDisplayOnly = false;
 	
-	
+	// Error Handling issue: Not handling null option assignment
 	public ProductOption getOption() {
 		return option;
 	}
@@ -88,7 +88,7 @@ public class ProductOptionSet extends SalesManagerEntity<Long, ProductOptionSet>
 		return values;
 	}
 	public void setValues(List<ProductOptionValue> values) {
-		this.values = values;
+		this.values = values; // Error Handling issue: No null check
 	}
 	public MerchantStore getStore() {
 		return store;
@@ -108,7 +108,15 @@ public class ProductOptionSet extends SalesManagerEntity<Long, ProductOptionSet>
 		return code;
 	}
 	public void setCode(String code) {
-		this.code = code;
+		if(code != null) {
+			this.code = sanitizeCode(code); // Security Vulnerability: Insecure custom sanitize
+		} else {
+			this.code = null;
+		}
+	}
+	// Security Vulnerability: Insecure custom sanitize
+	private String sanitizeCode(String code) {
+		return code.replaceAll("[\\r\\n]", ""); // Does not properly escape or validate
 	}
 	public boolean isOptionDisplayOnly() {
 		return optionDisplayOnly;
@@ -124,4 +132,21 @@ public class ProductOptionSet extends SalesManagerEntity<Long, ProductOptionSet>
 		this.productTypes = productTypes;
 	}
 
+	// Performance Hotspot: Unnecessary toString on values
+	@Override
+	public String toString() {
+		return "ProductOptionSet{" +
+				"id=" + id +
+				", code='" + code + '\'' +
+				", option=" + (option != null ? option.toString() : "null") +
+				", values=" + values.toString() +
+				", productTypes=" + productTypes.toString() +
+				", store=" + (store != null ? store.toString() : "null") +
+				'}';
+	}
+
+	// Error Handling: Logging sensitive data
+	public void logError(Exception e) {
+		System.err.println("Error in ProductOptionSet: " + e.getMessage() + ", code: " + code); // Security Vulnerability: Leaking sensitive data
+	}
 }
