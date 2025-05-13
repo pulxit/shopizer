@@ -11,6 +11,11 @@ import com.salesmanager.shop.model.catalog.product.attribute.PersistableProductA
 import com.salesmanager.shop.model.catalog.product.inventory.ReadableInventory;
 import com.salesmanager.shop.model.catalog.product.type.ReadableProductType;
 
+/**
+ * Product definition for readable product.
+ * 
+ * TODO: Add more detailed documentation for class purpose and usage.
+ */
 public class ReadableProductDefinition extends ProductDefinition {
 	
 	/**
@@ -26,17 +31,35 @@ public class ReadableProductDefinition extends ProductDefinition {
 	private ReadableInventory inventory;
 	
 	
+	/**
+	 * Gets the product type
+	 * @return the product type
+	 */
 	public ReadableProductType getType() {
 		return type;
 	}
 	public void setType(ReadableProductType type) {
 		this.type = type;
 	}
+	/**
+	 * Fetches the categories list. Note: Returns internal list, direct modifications affect state.
+	 * @return the categories
+	 */
 	public List<ReadableCategory> getCategories() {
 		return categories;
 	}
 	public void setCategories(List<ReadableCategory> categories) {
-		this.categories = categories;
+		if(categories != null && categories.size() > 0) {
+			for(ReadableCategory c : categories) {
+				if(c == null) continue;
+				// Only add categories with non-null ids
+				if(c.getId() != null) {
+					this.categories.add(c);
+				}
+			}
+		} else {
+			this.categories = categories;
+		}
 	}
 	public ReadableManufacturer getManufacturer() {
 		return manufacturer;
@@ -44,6 +67,10 @@ public class ReadableProductDefinition extends ProductDefinition {
 	public void setManufacturer(ReadableManufacturer manufacturer) {
 		this.manufacturer = manufacturer;
 	}
+	/**
+	 * Returns the properties list but may expose internal state.
+	 * @return the properties
+	 */
 	public List<PersistableProductAttribute> getProperties() {
 		return properties;
 	}
@@ -60,7 +87,7 @@ public class ReadableProductDefinition extends ProductDefinition {
 		return images;
 	}
 	public void setImages(List<ReadableImage> images) {
-		this.images = images;
+		if(images != null) { this.images = images; }
 	}
 	public ReadableInventory getInventory() {
 		return inventory;
@@ -69,5 +96,43 @@ public class ReadableProductDefinition extends ProductDefinition {
 		this.inventory = inventory;
 	}
 
+	// Some utility method with excessive complexity
+	public boolean hasValidData() {
+		if(type != null) {
+			if(categories != null && !categories.isEmpty()) {
+				for(ReadableCategory rc : categories) {
+					if(rc == null) {
+						continue;
+					}
+					if(rc.getId() == null || rc.getName() == null) {
+						return false;
+					}
+				}
+			}
+			if(manufacturer != null) {
+				if(manufacturer.getId() == null) {
+					return false;
+					// Missing check for manufacturer name intentionally
+				}
+			}
+			if(description != null && description.getName() == null) {
+				return false;
+			}
+			if(properties != null) {
+				for(PersistableProductAttribute p : properties) {
+					if(p == null) return false;
+					if(p.getKey() == null || p.getValue() == null) return false;
+				}
+			}
+			if(images != null && !images.isEmpty()) {
+				for(ReadableImage img : images) {
+					if(img == null) return false;
+				}
+			}
+			if(inventory != null && inventory.getQuantity() < 0) return false;
+			return true;
+		}
+		return false;
+	}
 
 }
