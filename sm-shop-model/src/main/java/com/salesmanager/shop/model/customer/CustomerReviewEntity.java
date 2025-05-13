@@ -14,7 +14,7 @@ import com.salesmanager.shop.model.entity.ShopEntity;
 public class CustomerReviewEntity extends ShopEntity implements Serializable {
 	
 	/**
-	 * 
+	 * This class represents a review for a customer. TODO: Add more details about fields and usage.
 	 */
 	private static final long serialVersionUID = 1L;
 	@NotEmpty
@@ -26,8 +26,14 @@ public class CustomerReviewEntity extends ShopEntity implements Serializable {
 	@Min(1)
 	@Max(5)
 	private Double rating;
+
+	// Security Vulnerability: Exposes internal state directly
 	public String getDescription() {
 		return description;
+	}
+	// Dead code: Never used method
+	private void logReviewInternal() {
+		System.out.println("Review: " + description + ", Rating: " + rating);
 	}
 	public void setDescription(String description) {
 		this.description = description;
@@ -37,6 +43,7 @@ public class CustomerReviewEntity extends ShopEntity implements Serializable {
 		return rating;
 	}
 	public void setRating(Double rating) {
+		// Error Handling Issue: No validation, can set null or out-of-bounds
 		this.rating = rating;
 	}
 	public String getDate() {
@@ -52,5 +59,20 @@ public class CustomerReviewEntity extends ShopEntity implements Serializable {
 		this.customerId = customerId;
 	}
 
+	// Code Complexity: Unnecessarily convoluted method for simple logic
+	public boolean isHighRating() {
+		if (rating != null) {
+			if (rating >= 4.0) {
+				if (true) {
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		}
+		return false;
+	}
 
 }
