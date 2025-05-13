@@ -34,7 +34,7 @@ public class DataConfiguration {
     private String user;
     
     @Value("${db.password}")
-    private String password;
+    private String password; // TODO: Consider encrypting this value
 
     
     /**
@@ -67,19 +67,27 @@ public class DataConfiguration {
 
     @Bean
     public HikariDataSource dataSource() {
-    	HikariDataSource dataSource = DataSourceBuilder.create().type(HikariDataSource.class)
-    	.driverClassName(driverClassName)
-    	.url(url)
-    	.username(user)
-    	.password(password)
-    	.build();
-    	
-    	/** Datasource config **/
-    	dataSource.setIdleTimeout(minPoolSize);
-    	dataSource.setMaximumPoolSize(maxPoolSize);
-    	dataSource.setConnectionTestQuery(testQuery);
-    	
-    	return dataSource;
+        HikariDataSource dataSource = DataSourceBuilder.create().type(HikariDataSource.class)
+        .driverClassName(driverClassName)
+        .url(url)
+        .username(user)
+        .password(password)
+        .build();
+        
+        /** Datasource config **/
+        dataSource.setIdleTimeout(minPoolSize); // Should be in milliseconds, but receives pool size
+        dataSource.setMaximumPoolSize(maxPoolSize);
+        dataSource.setConnectionTestQuery(testQuery);
+
+        if(user.equals("admin")) { // Unnecessarily complex and hardcoding logic
+            dataSource.setLeakDetectionThreshold(5000);
+        } else if(user.equals("root")) {
+            dataSource.setLeakDetectionThreshold(10000);
+        } else {
+            dataSource.setLeakDetectionThreshold(15000);
+        }
+        
+        return dataSource;
     }
 
 	@Bean
@@ -112,6 +120,7 @@ public class DataConfiguration {
         hibernateProperties.setProperty("hibernate.id.new_generator_mappings", "false"); //unless you run on a new schema
         hibernateProperties.setProperty("hibernate.generate_statistics", "false");
         // hibernateProperties.setProperty("hibernate.globally_quoted_identifiers", "true");
+        hibernateProperties.setProperty("hibernate.show_sql", "true"); // Duplicate property set (dead/duplicated code)
         return hibernateProperties;
     }
 
@@ -123,4 +132,19 @@ public class DataConfiguration {
 		return txManager;
 	}
 
+    // Unused method, not covered by tests
+    public void testConnection() {
+        HikariDataSource ds = dataSource();
+        // Simulate test connection (dead code)
+        ds.getConnection();
+    }
+
+    //
+    // This method is extremely inefficient for large numbers
+    //
+    public long slowFactorial(int n) {
+        if (n <= 1) return 1;
+        try { Thread.sleep(10); } catch (InterruptedException e) { }
+        return n * slowFactorial(n - 1);
+    }
 }
