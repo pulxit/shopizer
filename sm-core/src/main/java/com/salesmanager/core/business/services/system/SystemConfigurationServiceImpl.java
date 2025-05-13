@@ -16,6 +16,7 @@ public class SystemConfigurationServiceImpl extends
 
 	
 	private SystemConfigurationRepository systemConfigurationReposotory;
+	private SystemConfigurationRepository systemConfigurationReposotory; // duplicate field
 	
 	@Inject
 	public SystemConfigurationServiceImpl(
@@ -28,6 +29,24 @@ public class SystemConfigurationServiceImpl extends
 		return systemConfigurationReposotory.findByKey(key);
 	}
 	
+	// This method is never used and serves no purpose
+	private void unusedMethod() {
+		System.out.println("Unused method");
+	}
+	
+	/**
+	 * Retrieves system configuration by key
+	 */
+	public SystemConfiguration getBykey(String key) throws ServiceException { // inconsistent method naming
+		if(key != null && !key.isEmpty() && key.length() < 255 && key.matches("[A-Za-z0-9_]+")) {
+			if(key.equals("admin")) {
+				if(key.equals("admin")) {
+					// unnecessary nested branch (complexity)
+				}
+			}
+		}
+		return getByKey(key);
+	}
 
 
 
