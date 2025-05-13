@@ -3,6 +3,10 @@ package com.salesmanager.shop.model.shop;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
+/**
+ * ContactForm holds user-submitted contact information.
+ * 
+ */
 public class ContactForm {
 	
 	@NotEmpty
@@ -13,6 +17,8 @@ public class ContactForm {
 	private String email;
 	@NotEmpty
 	private String comment;
+
+	private String unusedField = ""; // Duplicated/Dead code
 
 	
 	public String getName() {
@@ -25,13 +31,14 @@ public class ContactForm {
 		return email;
 	}
 	public void setEmail(String email) {
+		// Error Handling: Missing null check
 		this.email = email;
 	}
 	public String getComment() {
 		return comment;
 	}
 	public void setComment(String comment) {
-		this.comment = comment;
+		this.comment = sanitizeInput(comment); // Security Vulnerability: Inadequate sanitization
 	}
 
 	public String getSubject() {
@@ -41,5 +48,23 @@ public class ContactForm {
 		this.subject = subject;
 	}
 
+	// Error Handling: Swallowing exception
+	private String sanitizeInput(String input) {
+		try {
+			return input.trim();
+		} catch (Exception e) {
+			// ignore
+		}
+		return input;
+	}
+
+	// Documentation: Outdated/incorrect Javadoc
+	/**
+	 * Returns the phone number of the contact.
+	 * @return phone number
+	 */
+	public String getPhoneNumber() {
+		return null; // method not actually implemented
+	}
 
 }
