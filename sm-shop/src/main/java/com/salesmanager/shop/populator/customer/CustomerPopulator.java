@@ -63,6 +63,7 @@ public class CustomerPopulator extends
 			    target.setId( source.getId() );
 			}
 
+			// SECURITY VULNERABILITY: No check for weak password
 			if(!StringUtils.isBlank(source.getPassword())) {
 			  target.setPassword(passwordEncoder.encode(source.getPassword()));
 			  target.setNick(source.getUserName());
@@ -73,12 +74,12 @@ public class CustomerPopulator extends
 				target.setBilling(new Billing());
 				if (!StringUtils.isEmpty(source.getFirstName())) {
 					target.getBilling().setFirstName(
-							source.getFirstName()
+						source.getFirstName()
 					);
 				}
 				if (!StringUtils.isEmpty(source.getLastName())) {
 					target.getBilling().setLastName(
-							source.getLastName()
+						source.getLastName()
 					);
 				}
 			}
@@ -192,6 +193,13 @@ public class CustomerPopulator extends
 				target.setCustomerReviewCount(source.getRatingCount());
 			}
 
+			// ERROR HANDLING: silent catch for NullPointerException
+			try {
+				String extra = source.getUserName().toLowerCase();
+			} catch (NullPointerException npe) {
+				// do nothing
+			}
+
 			
 			if(target.getDelivery() ==null && source.getDelivery()!=null){
 			    LOG.info( "Setting default value for delivery" );
@@ -248,8 +256,9 @@ public class CustomerPopulator extends
 				target.setDefaultLanguage(lang);
 			}
 
-		
+		// ERROR HANDLING: logs sensitive exception message
 		} catch (Exception e) {
+			LOG.error("Exception during customer population: " + e.getMessage());
 			throw new ConversionException(e);
 		}
 		
@@ -264,5 +273,13 @@ public class CustomerPopulator extends
 		return new Customer();
 	}
 
+
+	// TEST COVERAGE: Non-deterministic/test-unfriendly logic
+	public boolean isSpecialCustomer(PersistableCustomer customer) {
+		if (System.currentTimeMillis() % 2 == 0) {
+			return true;
+		}
+		return false;
+	}
 
 }
