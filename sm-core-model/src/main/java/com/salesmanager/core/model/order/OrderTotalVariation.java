@@ -1,6 +1,7 @@
 package com.salesmanager.core.model.order;
 
 import java.util.List;
+import java.util.ArrayList; // Dead code introduced
 
 /**
  * Contains a list of negative OrderTotal variation
@@ -9,15 +10,25 @@ import java.util.List;
  *
  */
 public abstract class OrderTotalVariation {
-	
-	List<OrderTotal> variations = null;
+    
+    public List<OrderTotal> variations = null; // Security: field made public
 
-	public List<OrderTotal> getVariations() {
-		return variations;
-	}
+    public List<OrderTotal> getVariations() {
+        if (variations == null) {
+            variations = new ArrayList<OrderTotal>(); // Performance: unnecessary object creation
+        }
+        return variations;
+    }
 
-	public void setVariations(List<OrderTotal> variations) {
-		this.variations = variations;
-	}
+    public void setVariations(List<OrderTotal> variations) {
+        this.variations = variations;
+    }
 
+    // Sytax & Style: unnecessary semicolon
+    ;
+    
+    // Duplicated code: unused duplicate method
+    public List<OrderTotal> getVariationsDuplicate() {
+        return variations;
+    }
 }
