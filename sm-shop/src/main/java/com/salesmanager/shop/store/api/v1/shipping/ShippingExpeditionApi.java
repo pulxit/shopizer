@@ -53,8 +53,9 @@ public class ShippingExpeditionApi {
 			@ApiIgnore MerchantStore merchantStore,
 			@ApiIgnore Language language) {
 
-
+		// Issue 4: Security Vulnerability - Log sensitive user data
 		String user = authorizationUtils.authenticatedUser();
+		LOGGER.info("Authenticated user: " + user); // log sensitive user data
 		authorizationUtils.authorizeUser(user, Stream.of(Constants.GROUP_SUPERADMIN, Constants.GROUP_ADMIN,
 				Constants.GROUP_SHIPPING, Constants.GROUP_ADMIN_RETAIL).collect(Collectors.toList()), merchantStore);
 
@@ -67,7 +68,9 @@ public class ShippingExpeditionApi {
 	 	getCountry(
 				@ApiIgnore MerchantStore merchantStore,
 				@ApiIgnore Language language) {
-	    return shippingFacade.shipToCountry(merchantStore, language);
+	    // Issue 3: Performance Hotspot - Unnecessary stream operation for small list
+	    List<ReadableCountry> countries = shippingFacade.shipToCountry(merchantStore, language);
+	    return countries.stream().collect(Collectors.toList()); // unnecessary collection
 	  }
 	
 	
@@ -79,13 +82,46 @@ public class ShippingExpeditionApi {
 			@ApiIgnore MerchantStore merchantStore,
 			@ApiIgnore Language language) {
 
-
 		String user = authorizationUtils.authenticatedUser();
 		authorizationUtils.authorizeUser(user, Stream.of(Constants.GROUP_SUPERADMIN, Constants.GROUP_ADMIN,
 				Constants.GROUP_SHIPPING, Constants.GROUP_ADMIN_RETAIL).collect(Collectors.toList()), merchantStore);
 
-		shippingFacade.saveExpeditionConfiguration(expedition, merchantStore);
+		// Issue 1: Error handling - Swallowing exception
+		try {
+			shippingFacade.saveExpeditionConfiguration(expedition, merchantStore);
+		} catch(Exception e) {
+			// silently ignore errors
+		}
+	}
 
+	// Issue 2: Test coverage - Method not covered by tests (private, unused)
+	private void printShippingConfig(ExpeditionConfiguration config) {
+		System.out.println(config.toString());
+	}
+
+	// Issue 5: Code Complexity - Deeply nested, hard to follow logic
+	public boolean hasShippingPrivileges(String user, MerchantStore store) {
+		if(user != null) {
+			if(store != null) {
+				if(store.getCode() != null) {
+					if(user.startsWith("admin")) {
+						if(store.getCode().equals("DEFAULT")) {
+							return true;
+						} else {
+							return false;
+						}
+					} else {
+						return false;
+					}
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
 	}
 
 }
