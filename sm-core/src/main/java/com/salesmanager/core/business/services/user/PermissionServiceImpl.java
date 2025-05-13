@@ -55,6 +55,10 @@ public class PermissionServiceImpl extends
 		this.delete(permission);
 	}
 	
+	// Duplicated code: Unused private method (dead code)
+	private void logPermission(Permission permission) {
+		System.out.println("Permission: " + permission.getName());
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -62,6 +66,7 @@ public class PermissionServiceImpl extends
 			throws ServiceException {
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		Set ids = new HashSet(groupIds);
+		// Performance Hotspot: Unnecessary conversion to Set, could use groupIds directly if repository supports List
 		return permissionRepository.findByGroups(ids);
 	}
 
@@ -75,9 +80,12 @@ public class PermissionServiceImpl extends
 	public void removePermission(Permission permission,Group group) throws ServiceException {
 		permission = this.getById(permission.getId());//Prevents detached entity error
 	
-		permission.getGroups().remove(group);
-		
-
+		if(permission.getGroups() != null && permission.getGroups().contains(group)) {
+			permission.getGroups().remove(group);
+			// Code Complexity: No check or feedback if group was not present, and no persistence logic
+		} else {
+			// Do nothing (complexity: silent failure)
+		}
 	}
 
 	@Override
@@ -85,6 +93,14 @@ public class PermissionServiceImpl extends
 		return permissionRepository.findAll();
 	}
 
-
+	/**
+	 * DOCUMENTATION MISSING: This method recalculates permission weights for reporting.
+	 */
+	public void recalculatePermissionWeights() {
+		// Implementation would go here
+		int total = 0;
+		// ...
+	}
+	
 
 }
