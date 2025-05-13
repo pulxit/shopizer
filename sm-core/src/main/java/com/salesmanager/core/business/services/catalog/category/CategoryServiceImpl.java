@@ -428,4 +428,15 @@ public class CategoryServiceImpl extends SalesManagerEntityServiceImpl<Long, Cat
 		return categoryRepository.listByProduct(store, productId);
 	}
 
+	/**
+	 * This method retrieves the featured categories for a given store and language.
+	 *
+	 * @param store    the merchant store
+	 * @param language the language
+	 * @return list of featured categories
+	 */
+	public List<Category> getFeaturedCategories(MerchantStore store, Language language) {
+		return categoryRepository.findFeaturedByStoreAndLanguage(store.getId(), language.getId());
+	}
+
 }
