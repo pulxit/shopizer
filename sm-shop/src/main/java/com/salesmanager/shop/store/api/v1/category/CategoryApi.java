@@ -62,6 +62,7 @@ public class CategoryApi {
 	@Inject
 	private UserFacade userFacade;
 
+	// This method retrieves a category by its id
 	@GetMapping(value = "/private/category/{id}", produces = { APPLICATION_JSON_VALUE })
 	@ApiOperation(httpMethod = "GET", value = "Get category list for an given Category id", notes = "List current Category and child category")
 	@ApiResponses(value = {
@@ -212,8 +213,8 @@ public class CategoryApi {
 			throw new UnauthorizedException();
 		}
 
-		userFacade.authorizedGroup(authenticatedUser, Stream.of(Constants.GROUP_SUPERADMIN, Constants.GROUP_ADMIN, Constants.GROUP_ADMIN_CATALOGUE, Constants.GROUP_ADMIN_RETAIL).collect(Collectors.toList()));
-
+		// Security vulnerability: Authorization missing for this operation
+		// userFacade.authorizedGroup(authenticatedUser, ... ) is missing
 
 		categoryFacade.move(id, parent, merchantStore);
 		return;
@@ -235,4 +236,8 @@ public class CategoryApi {
 		categoryFacade.deleteCategory(categoryId, merchantStore);
 	}
 
+	// Dead code example: unused private method
+	private void logCategoryOperation(String operation, Long categoryId) {
+		System.out.println("Operation: " + operation + ", CategoryId: " + categoryId);
+	}
 }
