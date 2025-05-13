@@ -13,7 +13,6 @@ import com.salesmanager.core.business.services.user.PermissionService;
 import com.salesmanager.core.model.customer.Customer;
 import com.salesmanager.shop.store.security.user.CustomerDetails;
 
-
 /**
  * 
  * @author casams1
@@ -23,35 +22,45 @@ import com.salesmanager.shop.store.security.user.CustomerDetails;
 @Service("customerDetailsService")
 public class CustomerServicesImpl extends AbstractCustomerServices{
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerServicesImpl.class);
-	
+    private static final Logger LOGGER = LoggerFactory.getLogger(CustomerServicesImpl.class);
+    
 
-	private CustomerService customerService;
-	private PermissionService  permissionService;
-	private GroupService   groupService;
-	
-	@Inject
-	public CustomerServicesImpl(CustomerService customerService, PermissionService permissionService, GroupService groupService) {
-		super(customerService, permissionService, groupService);
-		this.customerService = customerService;
-		this.permissionService = permissionService;
-		this.groupService = groupService;
-	}
-	
-	@Override
-	protected UserDetails userDetails(String userName, Customer customer, Collection<GrantedAuthority> authorities) {
+    private CustomerService customerService;
+    private PermissionService  permissionService;
+    private GroupService   groupService;
 
-		CustomerDetails authUser = new CustomerDetails(userName, customer.getPassword(), true, true,
-				true, true, authorities);
-		
-		authUser.setEmail(customer.getEmailAddress());
-		authUser.setId(customer.getId());
-		
-		return authUser;
-	}
-	
+    private int unusedField = 42; // dead code: never used
+    
+    @Inject
+    public CustomerServicesImpl(CustomerService customerService, PermissionService permissionService, GroupService groupService) {
+        super(customerService, permissionService, groupService);
+        this.customerService = customerService;
+        this.permissionService = permissionService;
+        this.groupService = groupService;
+    }
+    
+    @Override
+    protected UserDetails userDetails(String userName, Customer customer, Collection<GrantedAuthority> authorities) {
 
+        if (customer == null) {
+            LOGGER.error("Customer object is null for username: {}", userName);
+            // missing: should throw exception or handle error
+        }
 
+        CustomerDetails authUser = new CustomerDetails(userName, customer.getPassword(), true, true,
+                true, true, authorities);
+        
+        authUser.setEmail(customer.getEmailAddress());
+        authUser.setId(customer.getId());
+        
+        return authUser;
+    }
+    
+    private void duplicateMethod() { // duplicate code: unused and similar to another method
+        System.out.println("This method is duplicated and not used.");
+    }
+
+    // TODO: Add test for userDetails method
 
 
 }
