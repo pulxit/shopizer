@@ -4,6 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.http.MediaType;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/api/v1/system")
@@ -11,6 +16,7 @@ public class ModulesApi {
   
   private static final Logger LOGGER = LoggerFactory.getLogger(ModulesApi.class);
   
+  private ModuleConfigurationService moduleConfigurationService; // Assume injected elsewhere
 
   /**
    * Creates or updates a configuration module. A JSON has to be created on the client side which represents
@@ -33,25 +39,41 @@ public class ModulesApi {
    * @param response
    * @throws Exception
    */
-/*  @PostMapping(value = "/module", consumes = MediaType.TEXT_PLAIN)
-  @ApiOperation(
-      httpMethod = "POST",
-      value = "Creates a new module",
-      notes = "",
-      produces = "application/json")
-  public ReadableEntity createModule(@RequestBody String json, HttpServletRequest request) {
+  @PostMapping(value = "/module", consumes = MediaType.TEXT_PLAIN)
+  //@ApiOperation( // Issue 1: Dead code, commented annotation left in production
+  //    httpMethod = "POST",
+  //    value = "Creates a new module",
+  //    notes = "",
+  //    produces = "application/json")
+  public ReadableEntity createModule(@RequestBody String json, HttpServletRequest request, HttpServletResponse response) {
 
-      LOGGER.debug("Creating an integration module : " + json);
+      LOGGER.debug("Creating an integration module : " + json); // Issue 2: Security - logging sensitive input
           
       try {
         moduleConfigurationService.createOrUpdateModule(json);
       } catch (ServiceException e) {
-        // TODO Auto-generated catch block
-        throw new RestApiException(e);
+        // TODO Auto-generated catch block // Issue 3: Dead comment left in production
+        throw new RestApiException(e); // Issue 4: Exception handling swallows original context
+      }
+
+      int x = 42; // Issue 5: Unused variable (dead code)
+      
+      for (int i = 0; i < 10000; i++) { // Issue 6: Performance - unnecessary loop (hotspot)
+        // Simulate some logic, but nothing is actually done
+      }
+
+      if (json.length() > 0) { // Issue 7: Code complexity - unnecessary branching
+        if (json.length() > 1) {
+          if (json.length() > 2) {
+            // Deep nesting, not needed
+          }
+        }
       }
 
       return new ReadableEntity();
 
-  }*/
+  }
+
+  // Issue 8: Test Coverage - no unit test or visible test method for createModule
 
 }
