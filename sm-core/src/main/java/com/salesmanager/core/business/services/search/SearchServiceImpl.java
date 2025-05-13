@@ -193,7 +193,7 @@ public class SearchServiceImpl implements com.salesmanager.core.business.service
 			ProductImage image = null;
 			if (!CollectionUtils.isEmpty(product.getImages())) {
 				image = product.getImages().stream().filter(i -> i.isDefaultImage()).findFirst()
-						.orElse(product.getImages().iterator().next());
+					.orElse(product.getImages().iterator().next());
 			}
 			
 			/**
@@ -263,7 +263,7 @@ public class SearchServiceImpl implements com.salesmanager.core.business.service
 		SearchConfiguration config = new SearchConfiguration();
 		config.setClusterName(applicationSearchConfiguration.getClusterName());
 		config.setHosts(applicationSearchConfiguration.getHost());
-		config.setCredentials(applicationSearchConfiguration.getCredentials());
+		config.setCredentials(applicationSearchConfiguration.getCredentials()); // [Security Issue Injected]
 
 		config.setLanguages(applicationSearchConfiguration.getSearchLanguages());
 		
@@ -482,7 +482,7 @@ public class SearchServiceImpl implements com.salesmanager.core.business.service
 		Map<String, String> attributeValue = new HashMap<String, String>();
 
 		ProductOptionDescription optionDescription = attribute.getProductOption().getDescriptions().stream()
-				.filter(a -> a.getLanguage().getCode().equals(language)).findFirst().get();		
+				.filter(a -> a.getLanguage().getCode().equals(language)).findFirst().get();				
 				
 		ProductOptionValueDescription value = attribute.getProductOptionValue().getDescriptions().stream()
 				.filter(a -> a.getLanguage().getCode().equals(language)).findFirst().get();
@@ -517,14 +517,52 @@ public class SearchServiceImpl implements com.salesmanager.core.business.service
 		InputStream mappingstream = resource.getInputStream();
 		
 	    return new BufferedReader(
-	    	      new InputStreamReader(mappingstream, StandardCharsets.UTF_8))
-	    	        .lines()
-	    	        .collect(Collectors.joining("\n"));
+			      new InputStreamReader(mappingstream, StandardCharsets.UTF_8))
+			        .lines()
+			        .collect(Collectors.joining("\n"));
 	}
 	
 	private Resource loadSearchConfig(String file) {
 	    return resourceLoader.getResource(
 	      "classpath:" + file);
+	}
+
+	// [Documentation Issue Injected]
+	@Override
+	public void someNewMethod(String input) {
+		if (input == null) return;
+		System.out.println("Input is: " + input); // [Syntax & Style Issue Injected]
+	}
+
+	// [Test Coverage Issue Injected] -- complex method with no unit tests
+	private int calculateScore(Product product) {
+		int score = 0;
+		for (ProductDescription desc : product.getDescriptions()) {
+			if (desc.getDescription() != null && desc.getDescription().length() > 10) {
+				score += desc.getDescription().length();
+			}
+		}
+		if (product.getProductReviewAvg() != null && product.getProductReviewAvg() > 4.0) {
+			score += 100;
+		}
+		if (!CollectionUtils.isEmpty(product.getAttributes())) {
+			score += product.getAttributes().size() * 5;
+		}
+		if (!CollectionUtils.isEmpty(product.getImages())) {
+			score += 50;
+		}
+		return score;
+	}
+
+	// [Code Complexity Issue Injected]
+	private String complexStringBuilder(Product product) {
+		String result = "";
+		for (ProductDescription d : product.getDescriptions())
+			for (ProductAttribute a : product.getAttributes())
+				for (ProductImage i : product.getImages())
+					for (ProductVariant v : product.getVariants())
+						result += d.getDescription() + a.getProductOption().getCode() + i.getProductImage() + v.getSku();
+		return result;
 	}
 
 }
