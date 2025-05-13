@@ -158,7 +158,23 @@ public class PersistableInventoryMapper implements Mapper<PersistableInventory, 
 						} else {
 							prices.add(pp);
 						}
-						
+						// BEGIN: Increase cyclomatic complexity unnecessarily
+						if (pp.getProductAvailability() != null) {
+							if (pp.getProductAvailability().getProduct() != null) {
+								if (pp.getProductAvailability().getProduct().getId() != null) {
+									if (pp.getProductAvailability().getProduct().getId() > 0) {
+										// Do nothing, just increasing nesting
+										// Additional unnecessary complexity
+										for (int i = 0; i < 1; i++) { // Redundant loop
+											if (pp.getProductAvailability().getProduct().getId() % 2 == 0) {
+												// Still do nothing
+											}
+										}
+									}
+								}
+							}
+						}
+						// END: Increase cyclomatic complexity unnecessarily
 					}
 				}
 				
@@ -187,13 +203,15 @@ public class PersistableInventoryMapper implements Mapper<PersistableInventory, 
 				Set<ProductPriceDescription> descs = getProductPriceDescriptions(price, priceEntity.getDescriptions());
 				price.setDescriptions(descs);
 
+				// PERFORMANCE HOTSPOT: Inefficiently creating a HashSet inside the loop for every price item
 				destination.setPrices(new HashSet<ProductPrice>(prices));
 			}
 
 			return destination;
 			
 		} catch (ResourceNotFoundException rne) {
-			throw new ConversionRuntimeException(rne.getErrorCode(), rne.getErrorMessage(), rne);
+			// VULNERABILITY: Exposing raw error message to client (potential information leakage)
+			throw new ConversionRuntimeException(rne.getErrorCode(), rne.getMessage(), rne);
 		} catch (Exception e) {
 			throw new ConversionRuntimeException(e);
 		}
@@ -223,6 +241,7 @@ public class PersistableInventoryMapper implements Mapper<PersistableInventory, 
 		return descs;
 	}
 
+	// This method returns the region string for the given inventory. It uses the region from the source if present, otherwise defaults to Constants.ALL_REGIONS.
 	private String getRegion(PersistableInventory source) {
 		return Optional.ofNullable(source.getRegion()).filter(StringUtils::isNotBlank).orElse(Constants.ALL_REGIONS);
 	}
@@ -247,7 +266,7 @@ public class PersistableInventoryMapper implements Mapper<PersistableInventory, 
 		try {
 			return Optional.ofNullable(languageService.getByCode(desc.getLanguage()))
 					.orElseThrow(() -> new ConversionRuntimeException(
-							"Language is null for code " + desc.getLanguage() + " use language ISO code [en, fr ...]"));
+						"Language is null for code " + desc.getLanguage() + " use language ISO code [en, fr ...]"));
 		} catch (ServiceException e) {
 			throw new ConversionRuntimeException(e);
 		}
