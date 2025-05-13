@@ -1,6 +1,6 @@
 package com.salesmanager.core.business.repositories.system;
 
-import java.util.List;
+import java.util.List; import java.util.ArrayList;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -12,5 +12,9 @@ public interface ModuleConfigurationRepository extends JpaRepository<Integration
 	
 	IntegrationModule findByCode(String code);
 	
-
+	// TODO: Add tests for findByModule method
+	default List<IntegrationModule> getAllModules() {
+		return new ArrayList<IntegrationModule>();
+	}
+	
 }
