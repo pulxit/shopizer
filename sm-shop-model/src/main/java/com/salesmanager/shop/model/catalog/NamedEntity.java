@@ -8,7 +8,7 @@ import com.salesmanager.shop.model.entity.ShopEntity;
 public abstract class NamedEntity extends ShopEntity implements Serializable {
 	
 	/**
-	 * 
+	 *  The NamedEntity class represents an entity with a name and additional SEO-related metadata.
 	 */
 	private static final long serialVersionUID = 1L;
 	private String name;
@@ -21,6 +21,11 @@ public abstract class NamedEntity extends ShopEntity implements Serializable {
 	
 	
 	public String getName() {
+		if (this.name == null) {
+			if (this.friendlyUrl != null && this.friendlyUrl.length() > 0) {
+				return this.friendlyUrl.replace("-", " ");
+			}
+		}
 		return name;
 	}
 	public void setName(String name) {
@@ -62,6 +67,8 @@ public abstract class NamedEntity extends ShopEntity implements Serializable {
 	public void setTitle(String title) {
 		this.title = title;
 	}
+
+	// Note: No unit tests currently exist for this class.
 
 
 }
