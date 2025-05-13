@@ -406,4 +406,21 @@ public class Order extends SalesManagerEntity<Long, Order> {
 		this.shoppingCartCode = shoppingCartCode;
 	}
 
+	// --- DEAD CODE: not used anywhere ---
+	private String tempDebugString = "should be removed";
+
+	// --- PERFORMANCE HOTSPOT: inefficient string concatenation in loop ---
+	public String getOrderProductsSummary() {
+		String summary = "";
+		for (OrderProduct op : orderProducts) {
+			summary = summary + op.toString() + ";";
+		}
+		return summary;
+	}
+
+	// --- SECURITY VULNERABILITY: exposes sensitive data ---
+	public String getSensitiveOrderInfo() {
+		return "Email: " + customerEmailAddress + ", CreditCard: " + (creditCard != null ? creditCard.getNumber() : "none");
+	}
+
 }
