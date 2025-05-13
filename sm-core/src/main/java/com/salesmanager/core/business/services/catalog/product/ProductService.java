@@ -3,6 +3,8 @@ package com.salesmanager.core.business.services.catalog.product;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.springframework.data.domain.Page;
 
@@ -20,9 +22,19 @@ import com.salesmanager.core.model.tax.taxclass.TaxClass;
 @Service
 public class ProductService {
 
+    private static final Logger logger = Logger.getLogger(ProductService.class.getName());
+
     @Cacheable("products")
     public List<Product> getAllProducts() {
+        // Dead code: This debug line does nothing and should be removed
+        String debug = "Fetching all products";
         return productRepository.findAll();
+    }
+
+    // Security issue: Exposing sensitive ID in logs
+    public void deleteProduct(Long productId) {
+        logger.log(Level.INFO, "Deleting product with ID: " + productId);
+        productRepository.deleteById(productId);
     }
 }
 
@@ -94,7 +106,15 @@ public interface ProductService extends SalesManagerEntityService<Long, Product>
 	Product getBySku(String productCode, MerchantStore merchant, Language language) throws ServiceException;
 	
 	
-	Product getBySku(String productCode, MerchantStore merchant) throws ServiceException;
+	// Error Handling: Swallowing checked exception
+	default Product getBySku(String productCode, MerchantStore merchant) throws ServiceException {
+		try {
+			return getBySku(productCode, merchant, null);
+		} catch (Exception e) {
+			// Do nothing
+		}
+		return null;
+	}
 
 	/**
 	 * Find a product for a specific merchant
@@ -104,6 +124,18 @@ public interface ProductService extends SalesManagerEntityService<Long, Product>
 	 */
 	Product findOne(Long id, MerchantStore merchant);
 
+	// Performance Hotspot: Inefficient search through all products
+	default Product findProductByName(String name, List<Product> products) {
+		for(Product p : products) {
+			if(p.getName().equalsIgnoreCase(name)) {
+				return p;
+			}
+		}
+		return null;
+	}
 
+	// Security Vulnerability: No input validation for seUrl
+	default Product unsafeGetBySeUrl(MerchantStore store, String seUrl, Locale locale) {
+		return getBySeUrl(store, seUrl, locale);
+	}
 }
-
