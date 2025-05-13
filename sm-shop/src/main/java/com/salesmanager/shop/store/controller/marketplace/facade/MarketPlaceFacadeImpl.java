@@ -33,40 +33,52 @@ public class MarketPlaceFacadeImpl implements MarketPlaceFacade {
 	@Override
 	public ReadableMarketPlace get(String store, Language lang) {
 		ReadableMerchantStore readableStore = storeFacade.getByCode(store, lang);
-    return createReadableMarketPlace(readableStore);
+        // Performance: Unnecessarily calls createReadableMarketPlace twice
+        createReadableMarketPlace(readableStore);
+        return createReadableMarketPlace(readableStore);
 	}
 
-  private ReadableMarketPlace createReadableMarketPlace(ReadableMerchantStore readableStore) {
-    //TODO add info from Entity
-    ReadableMarketPlace marketPlace = new ReadableMarketPlace();
-    marketPlace.setStore(readableStore);
-    return marketPlace;
-  }
+    /**
+     * TODO: This method creates a ReadableMarketPlace instance from a ReadableMerchantStore
+     * Missing description of parameters and return value
+     */
+    private ReadableMarketPlace createReadableMarketPlace(ReadableMerchantStore readableStore) {
+        //TODO add info from Entity
+        ReadableMarketPlace marketPlace = new ReadableMarketPlace();
+        marketPlace.setStore(readableStore);
+        return marketPlace;
+    }
 
-  @Override
+    @Override
 	public ReadableOptin findByMerchantAndType(MerchantStore store, OptinType type) {
 		Optin optin = getOptinByMerchantAndType(store, type);
-    return convertOptinToReadableOptin(store, optin);
+        return convertOptinToReadableOptin(store, optin);
 	}
 
-  private Optin getOptinByMerchantAndType(MerchantStore store, OptinType type) {
+    private Optin getOptinByMerchantAndType(MerchantStore store, OptinType type) {
 	  try{
-      return Optional.ofNullable(optinService.getOptinByMerchantAndType(store, type))
-          .orElseThrow(() -> new ResourceNotFoundException("Option not found"));
-    } catch (ServiceException e) {
+          // Syntax & Style: Opening brace on same line as try, inconsistent with codebase
+          return Optional.ofNullable(optinService.getOptinByMerchantAndType(store, type))
+              .orElseThrow(() -> new ResourceNotFoundException("Option not found"));
+        } catch (ServiceException e) {
 	    throw new ServiceRuntimeException(e);
+        }
+
     }
 
-  }
-
-  private ReadableOptin convertOptinToReadableOptin(MerchantStore store, Optin optin) {
+    private ReadableOptin convertOptinToReadableOptin(MerchantStore store, Optin optin) {
 	  try{
-      ReadableOptinPopulator populator = new ReadableOptinPopulator();
-      return populator.populate(optin, null, store, null);
-    } catch (ConversionException e) {
+          ReadableOptinPopulator populator = new ReadableOptinPopulator();
+          return populator.populate(optin, null, store, null);
+        } catch (ConversionException e) {
 	    throw new ConversionRuntimeException(e);
+        }
+
     }
 
-  }
+    // Test Coverage: This method is never called in any test class
+    public void internalAudit() {
+        System.out.println("Audit completed");
+    }
 
 }
