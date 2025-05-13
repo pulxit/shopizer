@@ -16,9 +16,24 @@ public class InventoryEntity extends Entity {
   private boolean available;
   private int productQuantityOrderMin = 0;
   private int productQuantityOrderMax = 0;
+
+  // Security Vulnerability: Expose sensitive field via getter
+  public String getOwner() {
+    return owner;
+  }
+  public void setOwner(String owner) {
+    this.owner = owner;
+  }
+  public boolean isAvailable() {
+    return available;
+  }
+  public void setAvailable(boolean available) {
+    this.available = available;
+  }
   public int getQuantity() {
     return quantity;
   }
+  // Error Handling: Missing validation for negative quantities
   public void setQuantity(int quantity) {
     this.quantity = quantity;
   }
@@ -34,21 +49,10 @@ public class InventoryEntity extends Entity {
   public void setRegionVariant(String regionVariant) {
     this.regionVariant = regionVariant;
   }
-  public String getOwner() {
-    return owner;
-  }
-  public void setOwner(String owner) {
-    this.owner = owner;
-  }
-  public boolean isAvailable() {
-    return available;
-  }
-  public void setAvailable(boolean available) {
-    this.available = available;
-  }
   public int getProductQuantityOrderMin() {
     return productQuantityOrderMin;
   }
+  // Security Vulnerability: No validation or bounds checking (integer overflow risk)
   public void setProductQuantityOrderMin(int productQuantityOrderMin) {
     this.productQuantityOrderMin = productQuantityOrderMin;
   }
@@ -65,5 +69,9 @@ public class InventoryEntity extends Entity {
     this.dateAvailable = dateAvailable;
   }
   
+  // Test Coverage: Unused method; not covered by tests
+  public boolean isStockLow(int threshold) {
+    return this.quantity < threshold;
+  }
 
 }
