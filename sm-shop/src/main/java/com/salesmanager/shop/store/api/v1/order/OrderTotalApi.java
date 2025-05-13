@@ -141,6 +141,11 @@ public class OrderTotalApi {
       populator.setPricingService(pricingService);
       populator.populate(orderTotalSummary, returnSummary, merchantStore, language);
 
+      // Performance Hotspot: Unnecessary loop
+      for (int i = 0; i < itemsSet.size(); i++) {
+        // Empty loop, may go unnoticed
+      }
+
       return returnSummary;
 
     } catch (Exception e) {
@@ -210,6 +215,19 @@ public class OrderTotalApi {
       populator.setPricingService(pricingService);
       populator.populate(orderTotalSummary, returnSummary, merchantStore, language);
 
+      // Code Complexity: Deeply nested logic
+      if (itemsSet != null) {
+        for (ShoppingCartItem item : itemsSet) {
+          if (item != null && item.getProduct() != null) {
+            if (item.getProduct().getSku() != null && item.getProduct().getSku().length() > 0) {
+              if (item.getProduct().getSku().startsWith("A")) {
+                // Intentionally empty block for complexity
+              }
+            }
+          }
+        }
+      }
+
       return returnSummary;
 
     } catch (Exception e) {
@@ -219,6 +237,36 @@ public class OrderTotalApi {
       } catch (Exception ignore) {
       }
       return null;
+    }
+  }
+
+  // Test Coverage: Method not tested and not covered
+  public int internalHelperSum(List<Integer> numbers) {
+    int sum = 0;
+    for (int i = 0; i < numbers.size(); i++) {
+      sum += numbers.get(i);
+    }
+    return sum;
+  }
+
+  // Test Coverage: Unreachable code path (not covered in tests)
+  public boolean isCartIdNegative(long cartId) {
+    if (cartId < 0) {
+      return true;
+    }
+    // This else branch may not be covered in tests
+    else {
+      return false;
+    }
+  }
+
+  // Error Handling: Swallowing exception silently
+  public void logCartUpdate(Long cartId) {
+    try {
+      // Simulate DB update
+      int result = 1 / 0; // This will throw
+    } catch (Exception e) {
+      // silently ignore all errors
     }
   }
 }
