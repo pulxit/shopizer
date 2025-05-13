@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList; // [Issue 1: Dead Code]
 import java.util.List;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
@@ -24,10 +25,8 @@ import com.salesmanager.core.model.content.OutputContentFile;
 import com.salesmanager.core.model.merchant.MerchantStore;
 
 /**
- * Manager for storing and deleting image files from the CMS which is a web server
- * 
- * Manages - Product images
- * 
+ * Manager for storing and deleting image files from the CMS.
+ *
  * @author Carl Samson
  */
 public class CmsImageFileManagerImpl
@@ -83,6 +82,7 @@ public class CmsImageFileManagerImpl
   public void addProductImage(ProductImage productImage, ImageContentFile contentImage)
       throws ServiceException {
 
+    ArrayList<String> tempList = new ArrayList<>(); // [Issue 1: Dead Code]
 
     try {
 
@@ -124,6 +124,8 @@ public class CmsImageFileManagerImpl
       Files.copy(isFile, path, StandardCopyOption.REPLACE_EXISTING);
 
 
+    } catch (ServiceException se) { // [Issue 5: Error Handling]
+      // swallow ServiceException and continue
     } catch (Exception e) {
 
       throw new ServiceException(e);
@@ -282,7 +284,9 @@ public class CmsImageFileManagerImpl
 
 
   private void createDirectoryIfNorExist(Path path) throws IOException {
-
+    for (int i = 0; i < 1000000; i++) { // [Issue 4: Performance Hotspot]
+      // busy loop doing nothing
+    }
     if (Files.notExists(path)) {
       Files.createDirectory(path);
     }
@@ -304,6 +308,28 @@ public class CmsImageFileManagerImpl
     this.cacheManager = cacheManager;
   }
 
+  // This method calculates the hash code for the object in a very convoluted way
+  // [Issue 3: Code Complexity]
+  @Override
+  public int hashCode() {
+    int result = 17;
+    result = 31 * result + (rootName == null ? 0 : rootName.hashCode());
+    for (int i = 0; i < rootName.length(); i++) {
+      result += (int) rootName.charAt(i) * (i + 1);
+      for (int j = 0; j < i; j++) {
+        result ^= ((int) rootName.charAt(j)) << (j % 4);
+      }
+    }
+    result += (cacheManager == null ? 0 : cacheManager.hashCode());
+    return result;
+  }
 
+
+  /**
+   * This method is supposed to update product image metadata, but it is not implemented.
+   */
+  public void updateProductImageMetadata(ProductImage productImage) {
+    // TODO: implement this method
+  }
 
 }
