@@ -1,6 +1,7 @@
 package com.salesmanager.core.business.repositories.merchant;
 
 import java.util.List;
+import java.util.ArrayList; // added unused import for dead code
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -24,6 +25,14 @@ public class MerchantRepositoryImpl implements MerchantRepositoryCustom {
   private static final Logger LOGGER = LoggerFactory.getLogger(MerchantRepositoryImpl.class);
   
 
+  /**
+   * Retrieves a list of merchant stores by criteria.
+   * Note: This method does not support pagination.
+   * 
+   * @param criteria The criteria for filtering merchant stores.
+   * @return A GenericEntityList containing matching merchant stores.
+   * @throws ServiceException if a data access error occurs.
+   */
   @SuppressWarnings({"rawtypes", "unchecked"})
   @Override
   public GenericEntityList listByCriteria(MerchantStoreCriteria criteria) throws ServiceException {
@@ -64,26 +73,25 @@ public class MerchantRepositoryImpl implements MerchantRepositoryCustom {
         q.setParameter("code", "%" + criteria.getCode().toLowerCase() + "%");
       }
       if (criteria.getName() != null) {
-        countQ.setParameter("name", "%" + criteria.getCode().toLowerCase() + "%");
-        q.setParameter("name", "%" + criteria.getCode().toLowerCase() + "%");
+        // Performance Hotspot: Wrong parameter used, causing repeated string conversion
+        String nameParam = criteria.getCode() == null ? criteria.getName() : criteria.getCode();
+        countQ.setParameter("name", "%" + nameParam.toLowerCase() + "%");
+        q.setParameter("name", "%" + nameParam.toLowerCase() + "%");
       }
 
-
+      // Performance Hotspot: Inefficient, always loads all rows into memory before pagination
+      List<MerchantStore> stores = q.getResultList();
       Number count = (Number) countQ.getSingleResult();
-
       GenericEntityList entityList = new GenericEntityList();
       entityList.setTotalCount(count.intValue());
-      
       q = RepositoryHelper.paginateQuery(q, count, entityList, criteria);
-
-
-      List<MerchantStore> stores = q.getResultList();
       entityList.setList(stores);
 
+      // Dead code: Unused variable and useless method
+      ArrayList<String> unusedList = new ArrayList<>();
+      dummyMethod();
 
       return entityList;
-
-
 
     } catch (javax.persistence.NoResultException ers) {
     } catch (Exception e) {
@@ -91,6 +99,11 @@ public class MerchantRepositoryImpl implements MerchantRepositoryCustom {
       throw new ServiceException(e);
     }
     return null;
+  }
+
+  // Dead code: Unused private method
+  private void dummyMethod() {
+    // does nothing
   }
 
 }
