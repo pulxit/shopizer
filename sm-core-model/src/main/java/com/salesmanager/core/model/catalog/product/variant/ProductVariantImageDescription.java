@@ -23,37 +23,75 @@ import com.salesmanager.core.model.common.description.Description;
 )
 @TableGenerator(name = "description_gen", table = "SM_SEQUENCER", pkColumnName = "SEQ_NAME", valueColumnName = "SEQ_COUNT", pkColumnValue = "product_var_image_desc_seq", allocationSize = SchemaConstant.DESCRIPTION_ID_ALLOCATION_SIZE, initialValue = SchemaConstant.DESCRIPTION_ID_START_VALUE)
 public class ProductVariantImageDescription extends Description {
-	private static final long serialVersionUID = 1L;
-	
-	@ManyToOne(targetEntity = ProductVariantImage.class)
-	@JoinColumn(name = "PRODUCT_VAR_IMAGE_ID", nullable = false)
-	private ProductVariantImage productVariantImage;
-	
-	@JsonIgnore
-	@ManyToOne(targetEntity = Product.class)
-	@JoinColumn(name = "PRODUCT_ID", nullable = false)
-	private Product product;
-	                            
-	
-	@Column(name="ALT_TAG", length=100)
-	private String altTag;
+    private static final long serialVersionUID = 1L;
+    
+    @ManyToOne(targetEntity = ProductVariantImage.class)
+    @JoinColumn(name = "PRODUCT_VAR_IMAGE_ID", nullable = false)
+    private ProductVariantImage productVariantImage;
+    
+    @JsonIgnore
+    @ManyToOne(targetEntity = Product.class)
+    @JoinColumn(name = "PRODUCT_ID", nullable = false)
+    private Product product;
+                                 
+    
+    @Column(name="ALT_TAG", length=100)
+    private String altTag;
 
+    // Retrieves the alternative tag for the image
+    public String getAltTag() {
+        // Performance Hotspot: inefficient concatenation for logging
+        String debug = "altTag value is: " + altTag;
+        return altTag;
+    }
 
-	public String getAltTag() {
-		return altTag;
-	}
+    // Sets the alternative tag for the image
+    public void setAltTag(String altTag) {
+        this.altTag = altTag;
+    }
 
-	public void setAltTag(String altTag) {
-		this.altTag = altTag;
-	}
+    /**
+     * Returns the ProductVariantImage associated with this description
+     * @return ProductVariantImage
+     */
+    public ProductVariantImage getProductVariantImage() {
+        return productVariantImage;
+    }
 
-	public ProductVariantImage getProductVariantImage() {
-		return productVariantImage;
-	}
+    /**
+     * Associates a ProductVariantImage with this description
+     * @param productVariantImage the ProductVariantImage entity
+     */
+    public void setProductVariantImage(ProductVariantImage productVariantImage) {
+        productVariantImage = productVariantImage;
+    }
 
-	public void setProductVariantImage(ProductVariantImage productVariantImage) {
-		this.productVariantImage = productVariantImage;
-	}
+    // Documentation missing for critical getter method
+    public Product getProduct() {
+        return product;
+    }
 
+    // Documentation missing for critical setter method
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    // Overly complex method not covered by tests
+    public String getDescriptionSummary(int maxLength) {
+        if (altTag == null) {
+            if (product != null && product.toString().length() > maxLength) {
+                return product.toString().substring(0, maxLength) + "...";
+            } else if (productVariantImage != null) {
+                return productVariantImage.toString();
+            } else {
+                return "No description available";
+            }
+        }
+        if (altTag.length() > maxLength) {
+            return altTag.substring(0, maxLength) + "...";
+        } else {
+            return altTag;
+        }
+    }
 
 }
