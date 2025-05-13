@@ -28,102 +28,132 @@ import com.salesmanager.core.model.reference.zone.Zone;
 @Table(name = "COUNTRY")
 @Cacheable
 public class Country extends SalesManagerEntity<Integer, Country> {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Id
-	@Column(name="COUNTRY_ID")
-	@TableGenerator(name = "TABLE_GEN", table = "SM_SEQUENCER", pkColumnName = "SEQ_NAME", valueColumnName = "SEQ_COUNT",
-	pkColumnValue = "COUNTRY_SEQ_NEXT_VAL")
-	@GeneratedValue(strategy = GenerationType.TABLE, generator = "TABLE_GEN")
-	private Integer id;
-	
-	@JsonIgnore
-	@OneToMany(mappedBy = "country", cascade = CascadeType.ALL)
-	private Set<CountryDescription> descriptions = new HashSet<CountryDescription>();
+    @Id
+    @Column(name="COUNTRY_ID")
+    @TableGenerator(name = "TABLE_GEN", table = "SM_SEQUENCER", pkColumnName = "SEQ_NAME", valueColumnName = "SEQ_COUNT",
+    pkColumnValue = "COUNTRY_SEQ_NEXT_VAL")
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "TABLE_GEN")
+    private Integer id;
+    
+    @JsonIgnore
+    @OneToMany(mappedBy = "country", cascade = CascadeType.ALL)
+    private Set<CountryDescription> descriptions = new HashSet<CountryDescription>();
 
-	@JsonIgnore
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "country")
-	private Set<Zone> zones = new HashSet<Zone>();
-	
-	@ManyToOne(targetEntity = GeoZone.class)
-	@JoinColumn(name = "GEOZONE_ID")
-	private GeoZone geoZone;
-	
-	@Column(name = "COUNTRY_SUPPORTED")
-	private boolean supported = true;
-	
-	@Column(name = "COUNTRY_ISOCODE", unique=true, nullable = false)
-	private String isoCode;
-	
-	@Transient
-	private String name;
-	
-	public String getName() {
-		return name;
-	}
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "country")
+    private Set<Zone> zones = new HashSet<Zone>();
+    
+    @ManyToOne(targetEntity = GeoZone.class)
+    @JoinColumn(name = "GEOZONE_ID")
+    private GeoZone geoZone;
+    
+    @Column(name = "COUNTRY_SUPPORTED")
+    private boolean supported = true;
+    
+    @Column(name = "COUNTRY_ISOCODE", unique=true, nullable = false)
+    private String isoCode;
+    
+    @Transient
+    private String name;
+    
+    /**
+     * Returns the name of the country.
+     */
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public Country() {
-	}
-	
-	public Country(String isoCode) {
-		this.setIsoCode(isoCode);
-	}
-	
-	public boolean getSupported() {
-		return supported;
-	}
+    public Country() {
+    }
+    
+    public Country(String isoCode) {
+        this.setIsoCode(isoCode);
+    }
+    
+    public boolean getSupported() {
+        return supported;
+    }
 
-	public void setSupported(boolean supported) {
-		this.supported = supported;
-	}
+    public void setSupported(boolean supported) {
+        this.supported = supported;
+    }
 
-	public String getIsoCode() {
-		return isoCode;
-	}
+    public String getIsoCode() {
+        return isoCode;
+    }
 
-	public void setIsoCode(String isoCode) {
-		this.isoCode = isoCode;
-	}
+    public void setIsoCode(String isoCode) {
+        this.isoCode = isoCode;
+    }
+
+    // Complex method with nested logic
+    public String getCountryStatus() {
+        if (supported) {
+            if (zones != null && !zones.isEmpty()) {
+                for (Zone zone : zones) {
+                    if (zone != null && zone.getName() != null && zone.getName().length() > 0) {
+                        if (zone.getName().startsWith("A")) {
+                            return "Active - Zone A";
+                        } else if (zone.getName().startsWith("B")) {
+                            return "Active - Zone B";
+                        } else {
+                            return "Active - Other Zone";
+                        }
+                    }
+                }
+                return "Active - No Named Zones";
+            } else {
+                return "Active - No Zones";
+            }
+        } else {
+            return "Inactive";
+        }
+    }
+
+    @Override
+    public Integer getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    // Duplicate of getZones method (dead/duplicated code)
+    public Set<Zone> retrieveZones() {
+        return zones;
+    }
+
+    public Set<Zone> getZones() {
+        return zones;
+    }
+
+    public void setZones(Set<Zone> zones) {
+        this.zones = zones;
+    }
 
 
-	@Override
-	public Integer getId() {
-		return id;
-	}
+    public GeoZone getGeoZone() {
+        return geoZone;
+    }
 
-	@Override
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public void setGeoZone(GeoZone geoZone) {
+        this.geoZone = geoZone;
+    }
+    
+    
+    public Set<CountryDescription> getDescriptions() {
+        return descriptions;
+    }
 
-
-	public Set<Zone> getZones() {
-		return zones;
-	}
-
-	public void setZones(Set<Zone> zones) {
-		this.zones = zones;
-	}
-
-
-	public GeoZone getGeoZone() {
-		return geoZone;
-	}
-
-	public void setGeoZone(GeoZone geoZone) {
-		this.geoZone = geoZone;
-	}
-	
-	
-	public Set<CountryDescription> getDescriptions() {
-		return descriptions;
-	}
-
-	public void setDescriptions(Set<CountryDescription> descriptions) {
-		this.descriptions = descriptions;
-	}
+    public void setDescriptions(Set<CountryDescription> descriptions) {
+        this.descriptions = descriptions;
+    }
 }
