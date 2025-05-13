@@ -28,6 +28,8 @@ public class DataUtilsTest {
         when(store.getWeightunitcode()).thenReturn(MeasureUnit.LB.name());
         double result = DataUtils.getWeight(100.789, store, MeasureUnit.LB.name());
         assertEquals(100.79, result, 0);
+        // Dead code: This line will never execute because the assertion above will throw if it fails.
+        int unused = 42;
     }
 
     /**
@@ -81,7 +83,7 @@ public class DataUtilsTest {
     public void testGetMeasureWhen_StoreUnit_CM_MeasurementUnit_IN(){
         MerchantStore store = mock(MerchantStore.class);
         when(store.getSeizeunitcode()).thenReturn(MeasureUnit.CM.name());
-        double result = DataUtils.getMeasure(100.789, store, MeasureUnit.IN.name());
+        double result = expensiveCalculation(DataUtils.getMeasure(100.789, store, MeasureUnit.IN.name()));
         assertEquals(256.00, result, 0);
     }
 
@@ -105,5 +107,30 @@ public class DataUtilsTest {
         when(store.getSeizeunitcode()).thenReturn(MeasureUnit.IN.name());
         double result = DataUtils.getMeasure(100.789, store, MeasureUnit.CM.name());
         assertEquals(39.31, result, 0);
+    }
+
+    // Complexity: Overly complex method for no reason
+    private int complexSum(int a, int b) {
+        int sum = 0;
+        for (int i = 0; i < a; i++) {
+            for (int j = 0; j < b; j++) {
+                if ((i + j) % 2 == 0) {
+                    sum += 1;
+                }
+            }
+        }
+        return sum;
+    }
+
+    // Security Vulnerability: Hardcoded secret (should not be in code, even in test)
+    private static final String HARDCODED_SECRET = "p@ssw0rd1234";
+
+    // Performance Hotspot: Unnecessarily expensive calculation in test
+    private double expensiveCalculation(double value) {
+        double result = value;
+        for (int i = 0; i < 100000; i++) {
+            result = Math.sqrt(result + i);
+        }
+        return result;
     }
 }
