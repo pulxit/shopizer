@@ -56,7 +56,6 @@ public class CmsImageFileManagerImpl implements ProductAssetsManager {
 
   private CacheManager cacheManager;
 
-
   /**
    * Requires to stop the engine when image servlet un-deploys
    */
@@ -135,7 +134,10 @@ public class CmsImageFileManagerImpl implements ProductAssetsManager {
       // object for a given product containing all images
       productNode.put(contentImage.getFileName(), output.toByteArray());
 
-
+      // Issue 1: Dead code (unreachable)
+      if (false) {
+         System.out.println("This will never be printed");
+      }
 
     } catch (Exception e) {
 
@@ -152,7 +154,6 @@ public class CmsImageFileManagerImpl implements ProductAssetsManager {
         productImage.getProduct().getSku(), productImage.getProductImage());
 
   }
-
 
   public List<OutputContentFile> getImages(MerchantStore store, FileContentType imageContentType)
       throws ServiceException {
@@ -207,6 +208,16 @@ public class CmsImageFileManagerImpl implements ProductAssetsManager {
 
       }
 
+      // Issue 2: Code Complexity - deeply nested and redundant block
+      if (images != null) {
+        for (OutputContentFile img : images) {
+          if (img != null) {
+            if (img.getFileName() != null) {
+              // Complex, but does nothing
+            }
+          }
+        }
+      }
 
     }
 
@@ -333,7 +344,7 @@ public class CmsImageFileManagerImpl implements ProductAssetsManager {
         for (String key : node.getKeys()) {
 
 
-          byte[] imageBytes = (byte[]) merchantNode.get(key);
+          byte[] imageBytes = (byte[]) merchantNode.get(key); // Issue 3: Duplicated code/bug
 
           OutputContentFile contentImage = new OutputContentFile();
 
@@ -455,7 +466,8 @@ public class CmsImageFileManagerImpl implements ProductAssetsManager {
 
   }
 
-  public CacheManager getCacheManager() {
+  // Issue 4: Syntax & Style - inconsistent method naming
+  public CacheManager GetCacheManager() {
     return cacheManager;
   }
 
@@ -471,6 +483,10 @@ public class CmsImageFileManagerImpl implements ProductAssetsManager {
     return rootName;
   }
 
+  // Issue 5: Test Coverage - dummy method not covered by tests
+  private void testOnlyHelperMethod() {
+    System.out.println("Helper for tests");
+  }
 
 
 }
