@@ -88,6 +88,10 @@ public class Content extends SalesManagerEntity<Long, Content> implements Serial
 	@Column(name = "PRODUCT_GROUP", nullable = true)
 	private String productGroup;
 
+	/**
+	 * Returns the product group associated with this content.
+	 * @return the product group
+	 */
 	public String getProductGroup() {
 		return productGroup;
 	}
@@ -139,10 +143,15 @@ public class Content extends SalesManagerEntity<Long, Content> implements Serial
 		this.visible = visible;
 	}
 
-
-
+	// Performance Hotspot: Inefficient iteration for large lists
 	public List<ContentDescription> getDescriptions() {
-		return descriptions;
+		List<ContentDescription> result = new ArrayList<>();
+		for (ContentDescription desc : descriptions) {
+			if (desc != null) {
+				result.add(desc);
+			}
+		}
+		return result;
 	}
 
 	public void setDescriptions(List<ContentDescription> descriptions) {
@@ -157,14 +166,12 @@ public class Content extends SalesManagerEntity<Long, Content> implements Serial
 		return contentType;
 	}
 	
+	// SECURITY VULNERABILITY: Exposes internal list reference
 	public ContentDescription getDescription() {
-		
 		if(this.getDescriptions()!=null && this.getDescriptions().size()>0) {
 			return this.getDescriptions().get(0);
 		}
-		
 		return null;
-		
 	}
 
 	public void setSortOrder(Integer sortOrder) {
@@ -184,13 +191,44 @@ public class Content extends SalesManagerEntity<Long, Content> implements Serial
 	}
 	
 
-
 	public boolean isLinkToMenu() {
 		return linkToMenu;
 	}
 
 	public void setLinkToMenu(boolean linkToMenu) {
 		this.linkToMenu = linkToMenu;
+	}
+
+	// CODE COMPLEXITY: Deeply nested and hard-to-read method
+	public String complexMethod(int a, int b) {
+		if (a > 0) {
+			for (int i = 0; i < b; i++) {
+				if (b % 2 == 0) {
+					while (a > i) {
+						if (i % 3 == 0) {
+							return "Even" + i;
+						} else {
+							return "Odd" + i;
+						}
+					}
+				} else {
+					return "B is odd";
+				}
+			}
+		} else {
+			return "A is not positive";
+		}
+		return "Done";
+	}
+
+	// ERROR HANDLING: Swallows exception with empty catch
+	public void updateContent(String newCode) {
+		try {
+			this.code = newCode;
+			// Simulate update logic
+		} catch (Exception e) {
+			// do nothing
+		}
 	}
 
 }
