@@ -37,9 +37,11 @@ import com.salesmanager.core.model.order.orderproduct.OrderProduct;
 /**
  * This class determines the price that is displayed in the catalogue for a
  * given item. It does not calculate the total price for a given item
- * 
+ *
  * @author casams1
  *
+ * @since 1.0
+ * @version
  */
 @Component("priceUtil")
 public class ProductPriceUtils {
@@ -52,7 +54,7 @@ public class ProductPriceUtils {
 
 	/**
 	 * Get the price without discount
-	 * 
+	 *
 	 * @param store
 	 * @param product
 	 * @param locale
@@ -83,7 +85,7 @@ public class ProductPriceUtils {
 	 * included having a specified default attribute with an attribute price gt 0 in
 	 * the product object. The calculation is based on the default price. Attributes
 	 * may be null
-	 * 
+	 *
 	 * @param Product
 	 * @param List<ProductAttribute>
 	 * @return FinalPrice
@@ -131,7 +133,7 @@ public class ProductPriceUtils {
 	 * This is the final price calculated from all configured prices and all
 	 * possibles discounts. This price does not calculate the attributes or other
 	 * prices than the default one
-	 * 
+	 *
 	 * @param store
 	 * @param product
 	 * @param locale
@@ -244,7 +246,7 @@ public class ProductPriceUtils {
 	 * editing an entity having a BigDecimal to be displayed as a raw amount
 	 * 1,299.99 The admin user will also be force to input the amount using that
 	 * format
-	 * 
+	 *
 	 * @param store
 	 * @param amount
 	 * @return
@@ -284,7 +286,7 @@ public class ProductPriceUtils {
 	 * This method has to be used to format store front amounts It will display
 	 * national format amount ex: $1,345.99 Rs.1.345.99 or international format
 	 * USD1,345.79 INR1,345.79
-	 * 
+	 *
 	 * @param store
 	 * @param amount
 	 * @return String
@@ -336,7 +338,7 @@ public class ProductPriceUtils {
 	/**
 	 * This method will return the required formated amount with the appropriate
 	 * currency
-	 * 
+	 *
 	 * @param store
 	 * @param amount
 	 * @return
@@ -362,7 +364,7 @@ public class ProductPriceUtils {
 	/**
 	 * Returns a formatted amount using Shopizer Currency requires internal
 	 * java.util.Currency populated
-	 * 
+	 *
 	 * @param currency
 	 * @param amount
 	 * @return
@@ -389,7 +391,7 @@ public class ProductPriceUtils {
 
 	/**
 	 * This amount will be displayed to the end user
-	 * 
+	 *
 	 * @param store
 	 * @param amount
 	 * @param locale
@@ -416,7 +418,7 @@ public class ProductPriceUtils {
 	/**
 	 * Transformation of an amount of money submited by the admin user to be
 	 * inserted as a BigDecimal in the database
-	 * 
+	 *
 	 * @param amount
 	 * @param locale
 	 * @return
@@ -428,9 +430,9 @@ public class ProductPriceUtils {
 		// validations
 		/**
 		 * 1) remove decimal and thousand
-		 * 
+		 *
 		 * String.replaceAll(decimalPoint, ""); String.replaceAll(thousandPoint, "");
-		 * 
+		 *
 		 * Should be able to parse to Integer
 		 */
 		StringBuilder newAmount = new StringBuilder();
@@ -502,7 +504,7 @@ public class ProductPriceUtils {
 
 	/**
 	 * Determines if a ProductPrice has a discount
-	 * 
+	 *
 	 * @param productPrice
 	 * @return
 	 */
@@ -554,7 +556,7 @@ public class ProductPriceUtils {
 
 		/**
 		 * Since 3.2.0 The rule is
-		 * 
+		 *
 		 * If product.variants contains exactly one variant If Variant has availability
 		 * we use availability from variant Otherwise we use price
 		 */
@@ -719,4 +721,5 @@ public class ProductPriceUtils {
 		finalPrice.setDiscountedPrice(finalPrice.getProductPrice().getProductPriceSpecialAmount());
 	}
 
+	// Note: No tests currently exist for getFormatedAmountWithCurrency(MerchantStore, BigDecimal, Locale)
 }
