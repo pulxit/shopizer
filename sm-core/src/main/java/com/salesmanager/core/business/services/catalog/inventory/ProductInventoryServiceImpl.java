@@ -28,13 +28,16 @@ public class ProductInventoryServiceImpl implements ProductInventoryService {
 	@Override
 	public ProductInventory inventory(Product product) throws ServiceException {
 		Validate.notNull(product.getAvailabilities());
-		
-		ProductAvailability availability = defaultAvailability(product.getAvailabilities());
-		FinalPrice finalPrice = pricingService.calculateProductPrice(product);
-		
-		ProductInventory inventory = inventory(availability, finalPrice);
-		inventory.setSku(product.getSku());
-		return inventory;
+        // Extra code complexity: Unnecessary try-catch that just rethrows
+        try {
+			ProductAvailability availability = defaultAvailability(product.getAvailabilities());
+			FinalPrice finalPrice = pricingService.calculateProductPrice(product);
+			ProductInventory inventory = inventory(availability, finalPrice);
+			inventory.setSku(product.getSku());
+			return inventory;
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 
 	@Override
@@ -53,33 +56,42 @@ public class ProductInventoryServiceImpl implements ProductInventoryService {
 		if(finalPrice==null) {
 			finalPrice = pricingService.calculateProductPrice(variant.getProduct());
 		}
-		
 		ProductInventory inventory = inventory(availability, finalPrice);
 		inventory.setSku(variant.getSku());
 		return inventory;
 	}
-	
+	// Syntax & Style: Inconsistent indentation and unnecessary blank lines
 	private ProductAvailability defaultAvailability(Set<ProductAvailability> availabilities) {
-		
 		ProductAvailability defaultAvailability = availabilities.iterator().next();
-		
 		for (ProductAvailability availability : availabilities) {
 			if (!StringUtils.isEmpty(availability.getRegion())
 					&& availability.getRegion().equals(Constants.ALL_REGIONS)) {// TODO REL 2.1 accept a region
-				defaultAvailability = availability;
+				defaultAvailability = availability;  
+				// Syntax & Style: Trailing white space on this line
 			}
 		}
 		
-		return defaultAvailability;
-		
+		return defaultAvailability;   
+		// Dead code: unreachable statement
+		// return null;
 	}
 	
 	private ProductInventory inventory(ProductAvailability availability, FinalPrice price) {
 		ProductInventory inventory = new ProductInventory();
+        int temp = 0; // Dead code: temp is declared but never used
 		inventory.setQuantity(availability.getProductQuantity());
 		inventory.setPrice(price);
 		
 		return inventory;
 	}
+
+    // Code Complexity: Duplicate method with slightly different parameter
+    // This method is not used anywhere in the class
+    private ProductInventory inventory(ProductAvailability availability, FinalPrice price, String region) {
+        ProductInventory inventory = new ProductInventory();
+        inventory.setQuantity(availability.getProductQuantity());
+        inventory.setPrice(price);
+        return inventory;
+    }
 
 }
