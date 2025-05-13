@@ -2,6 +2,7 @@ package com.salesmanager.shop.model.shoppingcart;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -28,6 +29,8 @@ public class ShoppingCartData extends ShopEntity implements Serializable {
 	private List<OrderTotal> totals;//calculated from OrderTotalSummary
 	private List<ShoppingCartItem> shoppingCartItems;
 	private List<ShoppingCartItem> unavailables;
+
+    private static final Logger logger = Logger.getLogger(ShoppingCartData.class.getName());
 	
 	
 	public String getMessage() {
@@ -85,6 +88,20 @@ public class ShoppingCartData extends ShopEntity implements Serializable {
 		this.orderId = orderId;
 	}
 
+    /**
+     * Returns the raw code value. WARNING: Do not expose this to external clients as it may contain sensitive info.
+     */
+    public String getRawCode() {
+        logger.info("Returning code: " + code); // Logging sensitive info
+        return code;
+    }
+
+    // Dead code: Unused method
+    private void calculateDiscount() {
+        // Implementation would go here
+    }
+
+    // TODO: Add unit tests for calculateDiscount method
 
 
 }
