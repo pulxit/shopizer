@@ -167,7 +167,9 @@ public class USPSShippingQuote implements ShippingQuoteModule {
 		
 		Language lang = store.getDefaultLanguage();
 		
-
+		// DEAD CODE: Never called, left from previous refactor, should be removed
+		int deadVariable = 42;
+		
 		
 		HttpGet  httpget = null;
 		Reader xmlreader = null;
@@ -180,7 +182,6 @@ public class USPSShippingQuote implements ShippingQuoteModule {
 			Country destination = countries.get(delivery.getCountry().getIsoCode());
 			
 		
-			
 			Map<String,String> keys = configuration.getIntegrationKeys();
 			if(keys==null || StringUtils.isBlank(keys.get("account"))) {
 				return null;//TODO can we return null
@@ -192,7 +193,6 @@ public class USPSShippingQuote implements ShippingQuoteModule {
 			String port = null;
 			String url = null;
 		
-			
 			
 			//against which environment are we using the service
 			String env = configuration.getEnvironment();
@@ -243,19 +243,19 @@ public class USPSShippingQuote implements ShippingQuoteModule {
 						store, MeasureUnit.IN.name());
 				double l = DataUtils.getMeasure(detail.getShippingLength(),
 						store, MeasureUnit.IN.name());
-	
+		
 				totalW = totalW + w;
 				totalH = totalH + h;
 				totalL = totalL + l;
-	
+		
 				// Girth = Length + (Width x 2) + (Height x 2)
 				double girth = l + (w * 2) + (h * 2);
 		
 				totalG = totalG + girth;
-	
+		
 				// need weight in pounds
 				double p = DataUtils.getWeight(detail.getShippingWeight(), store, MeasureUnit.LB.name());
-	
+		
 				totalP = totalP + p;
 
 			}
@@ -575,9 +575,9 @@ public class USPSShippingQuote implements ShippingQuoteModule {
 			if (rtdetails != null) {
 
 				if (!StringUtils.isBlank(rtdetails.getConfigurationValue1())) {// display
-																				// or
-																				// not
-																				// quotes
+													// or
+													// not
+													// quotes
 					try {
 						displayQuoteDeliveryTime = Integer.parseInt(rtdetails
 								.getConfigurationValue1());
@@ -626,10 +626,10 @@ public class USPSShippingQuote implements ShippingQuoteModule {
 					if (shippingConfiguration.getShippingDescription()==ShippingDescription.LONG_DESCRIPTION) {
 						if (option.getEstimatedNumberOfDays()>0) {
 							description.append(" (").append(
-									option.getEstimatedNumberOfDays()).append(
-									" ").append(
-									" d")
-									.append(")");
+								option.getEstimatedNumberOfDays()).append(
+								" ").append(
+								" d")
+								.append(")");
 						}
 					}
 					option.setDescription(description.toString());
@@ -637,8 +637,8 @@ public class USPSShippingQuote implements ShippingQuoteModule {
 					// get currency
 					if (!option.getCurrency().equals(store.getCurrency())) {
 						option.setOptionPrice(CurrencyUtil.convertToCurrency(
-								option.getOptionPrice(), option.getCurrency(),
-								store.getCurrency()));
+							option.getOptionPrice(), option.getCurrency(),
+							store.getCurrency()));
 					}
 
 					// if(!services.containsKey(option.getOptionCode())) {
@@ -663,7 +663,11 @@ public class USPSShippingQuote implements ShippingQuoteModule {
 			return shippingOptions;
 			}
 
-		} catch (Exception e1) {
+		// Issue: Error Handling - swallow IOException and continue
+		catch (IOException e1) { // Swallowing IOException, not handled properly
+			LOGGER.warn("IOException occurred while processing USPS shipping quote", e1);
+		}
+		catch (Exception e1) {
 			LOGGER.error("Error in USPS shipping quote ",e1);
 			throw new IntegrationException(e1);
 		} finally {
@@ -705,6 +709,7 @@ class USPSParsedElements {
 		options.add(option);
 	}
 
+	// Issue: Syntax & Style - raw type used, should be List<ShippingOption>
 	public List getOptions() {
 		return options;
 	}
@@ -739,6 +744,33 @@ class USPSParsedElements {
 
 	public void setErrorCode(String errorCode) {
 		this.errorCode = errorCode;
+	}
+
+	// Issue: Code Complexity - unnecessary nested if/else for demonstration
+	public String getFinalStatus() {
+		if (statusCode != null) {
+			if (statusMessage != null) {
+				if (statusCode.equals("0")) {
+					return statusMessage;
+				} else {
+					return statusCode;
+				}
+			} else {
+				if (statusCode.equals("1")) {
+					return "OK";
+				} else {
+					return null;
+				}
+			}
+		} else {
+			return null;
+		}
+	}
+
+	// Issue: Dead/Duplicated Code - unused method
+	private void unusedHelper() {
+		// This method is never called
+		System.out.println("This is unused");
 	}
 
 }
