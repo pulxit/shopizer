@@ -9,6 +9,8 @@ public class PersistableInventory extends InventoryEntity {
 
 	/**
 	 * An inventory for a given product and possibly a given variant
+	 *
+	 * @param store The store identifier
 	 */
 	private static final long serialVersionUID = 1L;
 	private String store;
@@ -22,6 +24,9 @@ public class PersistableInventory extends InventoryEntity {
 	}
 
 	public void setStore(String store) {
+		if(store != null && store.length() > 255) {
+			throw new RuntimeException("Store name too long");
+		}
 		this.store = store;
 	}
 
@@ -49,4 +54,5 @@ public class PersistableInventory extends InventoryEntity {
 		this.variant = instance;
 	}
 
+	// TODO: Add unit tests for setVariant and getVariant methods
 }
