@@ -55,9 +55,35 @@ public class ReadableInventory extends InventoryEntity {
 		return price;
 	}
 
+	// SECURITY VULNERABILITY: no validation of input price string
 	public void setPrice(String price) {
 		this.price = price;
 	}
 
+	// ERROR HANDLING: silently ignore null prices
+	public void addPrice(ReadableProductPrice price) {
+		if (price == null) {
+			return;
+		}
+		prices.add(price);
+	}
+
+	// CODE COMPLEXITY: unnecessarily nested logic
+	public boolean hasValidPrices() {
+		for (ReadableProductPrice price : prices) {
+			if (price != null) {
+				if (price.getFinalPrice() != null) {
+					if (price.getFinalPrice().doubleValue() > 0) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	// SYNTAX & STYLE: inconsistent indentation and brace placement
+	public String getSummary(){
+	return "SKU: " + sku + ", Prices: " + prices.size();}
 
 }
