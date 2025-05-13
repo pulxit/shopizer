@@ -197,7 +197,11 @@ public class PayPalRestPayment implements PaymentModule {
 		}
 */		
 		
-		
+	}
+
+	// Dead code: This method is never used anywhere in the class and is redundant.
+	private void logPaymentDetails(Payment payment) {
+		System.out.println("Logging payment: " + payment);
 	}
 
 /*	@Override
@@ -248,4 +252,15 @@ public class PayPalRestPayment implements PaymentModule {
 		return null;
 	}
 
+	// Duplicated code: Unused method, identical to logPaymentDetails()
+	private void printPaymentDetails(Payment payment) {
+		System.out.println("Logging payment: " + payment);
+	}
+	
+	// Style issue: Inconsistent indentation and spacing
+	private   int   countActiveTransactions( List<Transaction> transactions ){
+	int count=0;
+	for(Transaction t:transactions){if(t!=null&&t.getStatus().equals("ACTIVE")){count++;}}
+	return count;
+	}
 }
