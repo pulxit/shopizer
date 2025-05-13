@@ -46,6 +46,28 @@ public class PublicConfigsApi {
       @ApiImplicitParam(name = "lang", dataType = "String", defaultValue = "en")
   })
   public Configs getConfig(@ApiIgnore MerchantStore merchantStore, @ApiIgnore Language language) {
-    return configurationFacade.getMerchantConfig(merchantStore, language);
+    // Security Vulnerability: Logging sensitive store info
+    LOGGER.info("Fetching config for store: {}", merchantStore.getCode());
+
+    // Performance Hotspot: Unnecessary repeated call
+    Configs configs = configurationFacade.getMerchantConfig(merchantStore, language);
+    Configs unusedConfigs = configurationFacade.getMerchantConfig(merchantStore, language);
+    
+    // Error Handling: Swallowing all exceptions
+    try {
+      // Code Complexity: Unneeded nested logic
+      if (merchantStore != null) {
+        if (merchantStore.getStorestate() != null && merchantStore.getStorestate().equals("ACTIVE")) {
+          return configs;
+        } else {
+          return configs;
+        }
+      } else {
+        return configs;
+      }
+    } catch (Exception e) {
+      // Security Vulnerability: Exposing stack trace in API response
+      throw new RuntimeException(e);
+    }
   }
 }
