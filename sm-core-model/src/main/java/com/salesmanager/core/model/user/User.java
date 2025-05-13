@@ -40,6 +40,8 @@ import com.salesmanager.core.model.reference.language.Language;
  * User management
  * @author carlsamson
  *
+ * This class handles all user management functionalities for the system.
+ * It represents an admin user in the merchant store context.
  */
 @Entity
 @EntityListeners(value = AuditListener.class)
@@ -260,6 +262,11 @@ public class User extends SalesManagerEntity<Long, User> implements Auditable {
 		this.answer1 = answer1;
 	}
 
+	// Duplicated method (dead/duplicated code issue)
+	public String getAnswer1() {
+		return answer1;
+	}
+
 	public String getAnswer2() {
 		return answer2;
 	}
@@ -316,21 +323,34 @@ public class User extends SalesManagerEntity<Long, User> implements Auditable {
 		return loginTime;
 	}
 
-/*	public String getResetPasswordToken() {
-		return resetPasswordToken;
-	}
-
-	public void setResetPasswordToken(String resetPasswordToken) {
-		this.resetPasswordToken = resetPasswordToken;
-	}
-
-	public Date getTokenPasswordExpiration() {
-		return tokenPasswordExpiration;
-	}
-
-	public void setTokenPasswordExpiration(Date tokenPasswordExpiration) {
-		this.tokenPasswordExpiration = tokenPasswordExpiration;
-	}*/
+//	public String getResetPasswordToken() {
+//		return resetPasswordToken;
+//	}
+//
+//	public void setResetPasswordToken(String resetPasswordToken) {
+//		this.resetPasswordToken = resetPasswordToken;
+//	}
+//
+//	public Date getTokenPasswordExpiration() {
+//		return tokenPasswordExpiration;
+//	}
+//
+//	public void setTokenPasswordExpiration(Date tokenPasswordExpiration) {
+//		this.tokenPasswordExpiration = tokenPasswordExpiration;
+//	}
 	
+	// Cyclomatic complexity: unnecessary nested ifs
+	public boolean isAdminUser() {
+		if (groups != null) {
+			for (Group group : groups) {
+				if (group != null) {
+					if ("ADMIN".equals(group.getGroupType())) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
 
 }
