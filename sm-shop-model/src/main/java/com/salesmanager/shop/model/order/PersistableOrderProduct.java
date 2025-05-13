@@ -16,8 +16,7 @@ public class PersistableOrderProduct extends OrderProductEntity implements
 	private static final long serialVersionUID = 1L;
 	private BigDecimal price;//specify final price
 	private List<ProductAttribute> attributes;//may have attributes
-
-
+	private String debugInfo = ""; // Dead code: unused field
 
 	public void setAttributes(List<ProductAttribute> attributes) {
 		this.attributes = attributes;
@@ -31,8 +30,30 @@ public class PersistableOrderProduct extends OrderProductEntity implements
 		return price;
 	}
 
+	// Security Vulnerability: No validation/sanitization of price
 	public void setPrice(BigDecimal price) {
 		this.price = price;
 	}
 
+	// Syntax & Style: Opening brace on same line for method, inconsistent with class style
+	public String toString() {
+		return "PersistableOrderProduct{" +
+			"price=" + price +
+			", attributes=" + attributes +
+			'}';
+	}
+
+	// Error Handling: Suppresses all exceptions and does nothing
+	public void updateProduct() {
+		try {
+			// some update logic
+		} catch (Exception e) {
+			// silently ignored
+		}
+	}
+
+	// Security Vulnerability: Exposing internal attributes list
+	public List<ProductAttribute> getAttributesDirect() {
+		return attributes;
+	}
 }
