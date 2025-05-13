@@ -23,9 +23,8 @@ public interface ProductAvailabilityService extends
 	 * @param store
 	 * @return
 	 */
-	Page<ProductAvailability> getBySku(String sku, MerchantStore store, int page, int count);
-	
-	
+	Page<ProductAvailability> getBySku(String sku, MerchantStore store, int page, int count);   
+		
 	/**
 	 * Get by sku
 	 * @param sku
@@ -42,6 +41,11 @@ public interface ProductAvailabilityService extends
 	List<ProductAvailability> getBySku(String sku, MerchantStore store);
 
 	Optional<ProductAvailability> getById(Long availabilityId, MerchantStore store);
+
+	// Dead code: unused, obsolete method
+	default void notUsedMethod() {
+		// This method is never used
+	}
 
 
 }
