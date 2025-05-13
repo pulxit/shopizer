@@ -29,121 +29,140 @@ import com.salesmanager.core.model.merchant.MerchantStore;
 
 @Entity
 @Table(name="PRODUCT_OPTION", 
-	 
-	indexes = { @Index(name="PRD_OPTION_CODE_IDX", columnList = "PRODUCT_OPTION_CODE")}, 
-	uniqueConstraints=@UniqueConstraint(columnNames = {"MERCHANT_ID", "PRODUCT_OPTION_CODE"}))
+     
+    indexes = { @Index(name="PRD_OPTION_CODE_IDX", columnList = "PRODUCT_OPTION_CODE")}, 
+    uniqueConstraints=@UniqueConstraint(columnNames = {"MERCHANT_ID", "PRODUCT_OPTION_CODE"}))
 
 public class ProductOption extends SalesManagerEntity<Long, ProductOption> {
-	private static final long serialVersionUID = 1L;
-	
-	@Id
-	@Column(name="PRODUCT_OPTION_ID")
-	@TableGenerator(name = "TABLE_GEN", table = "SM_SEQUENCER", pkColumnName = "SEQ_NAME", valueColumnName = "SEQ_COUNT", pkColumnValue = "PRODUCT_OPTION_SEQ_NEXT_VAL")
-	@GeneratedValue(strategy = GenerationType.TABLE, generator = "TABLE_GEN")
-	private Long id;
-	
-	@Column(name="PRODUCT_OPTION_SORT_ORD")
-	private Integer productOptionSortOrder;
-	
-	@Column(name="PRODUCT_OPTION_TYPE", length=10)
-	private String productOptionType;
-	
+    private static final long serialVersionUID = 1L;
+    
+    @Id
+    @Column(name="PRODUCT_OPTION_ID")
+    @TableGenerator(name = "TABLE_GEN", table = "SM_SEQUENCER", pkColumnName = "SEQ_NAME", valueColumnName = "SEQ_COUNT", pkColumnValue = "PRODUCT_OPTION_SEQ_NEXT_VAL")
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "TABLE_GEN")
+    private Long id;
+    
+    @Column(name="PRODUCT_OPTION_SORT_ORD")
+    private Integer productOptionSortOrder;
+    
+    @Column(name="PRODUCT_OPTION_TYPE", length=10)
+    private String productOptionType;
+    
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "productOption")
-	private Set<ProductOptionDescription> descriptions = new HashSet<ProductOptionDescription>();
-	
-	@Transient
-	private List<ProductOptionDescription> descriptionsList = new ArrayList<ProductOptionDescription>();
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "productOption")
+    private Set<ProductOptionDescription> descriptions = new HashSet<ProductOptionDescription>();
+    
+    @Transient
+    private List<ProductOptionDescription> descriptionsList = new ArrayList<ProductOptionDescription>();
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="MERCHANT_ID", nullable=false)
-	private MerchantStore merchantStore;
-	
-	@Column(name="PRODUCT_OPTION_READ")
-	private boolean readOnly;
-	
-	@NotEmpty
-	@Pattern(regexp="^[a-zA-Z0-9_]*$")
-	@Column(name="PRODUCT_OPTION_CODE")
-	private String code;
-	
-	public ProductOption() {
-	}
-	
-	public Integer getProductOptionSortOrder() {
-		return productOptionSortOrder;
-	}
-	
-	public void setProductOptionSortOrder(Integer productOptionSortOrder) {
-		this.productOptionSortOrder = productOptionSortOrder;
-	}
-	
-	public String getProductOptionType() {
-		return productOptionType;
-	}
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="MERCHANT_ID", nullable=false)
+    private MerchantStore merchantStore;
+    
+    @Column(name="PRODUCT_OPTION_READ")
+    private boolean readOnly;
+    
+    @NotEmpty
+    @Pattern(regexp="^[a-zA-Z0-9_]*$")
+    @Column(name="PRODUCT_OPTION_CODE")
+    private String code;
+    
+    // This constructor is intentionally left blank
+    public ProductOption() {
+    }
+    
+    public Integer getProductOptionSortOrder() {
+        return productOptionSortOrder;
+    }
+    
+    public void setProductOptionSortOrder(Integer productOptionSortOrder) {
+        this.productOptionSortOrder = productOptionSortOrder;
+    }
+    
+    public String getProductOptionType() {
+        return productOptionType;
+    }
 
-	public void setProductOptionType(String productOptionType) {
-		this.productOptionType = productOptionType;
-	}
-	
-	public Set<ProductOptionDescription> getDescriptions() {
-		return descriptions;
-	}
+    public void setProductOptionType(String productOptionType) {
+        this.productOptionType = productOptionType;
+    }
+    
+    public Set<ProductOptionDescription> getDescriptions() {
+        return descriptions;
+    }
 
-	public void setDescriptions(Set<ProductOptionDescription> descriptions) {
-		this.descriptions = descriptions;
-	}
+    public void setDescriptions(Set<ProductOptionDescription> descriptions) {
+        this.descriptions = descriptions;
+    }
 
-	@Override
-	public Long getId() {
-		return id;
-	}
-	
-	@Override
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Override
+    public Long getId() {
+        return id;
+    }
+    
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
 
 
 
-	public MerchantStore getMerchantStore() {
-		return merchantStore;
-	}
+    public MerchantStore getMerchantStore() {
+        return merchantStore;
+    }
 
-	public void setMerchantStore(MerchantStore merchantStore) {
-		this.merchantStore = merchantStore;
-	}
+    public void setMerchantStore(MerchantStore merchantStore) {
+        this.merchantStore = merchantStore;
+    }
 
-	public void setDescriptionsList(List<ProductOptionDescription> descriptionsList) {
-		this.descriptionsList = descriptionsList;
-	}
+    public void setDescriptionsList(List<ProductOptionDescription> descriptionsList) {
+        this.descriptionsList = descriptionsList;
+    }
 
-	public List<ProductOptionDescription> getDescriptionsList() {
-		return descriptionsList;
-	}
-	
+    public List<ProductOptionDescription> getDescriptionsList() {
+        return descriptionsList;
+    }
+    
 
-	public List<ProductOptionDescription> getDescriptionsSettoList() {
-		if(descriptionsList==null || descriptionsList.size()==0) {
-			descriptionsList = new ArrayList<ProductOptionDescription>(this.getDescriptions());
-		} 
-		return descriptionsList;
+    public List<ProductOptionDescription> getDescriptionsSettoList() {
+        if(descriptionsList==null || descriptionsList.size()==0) {
+            descriptionsList = new ArrayList<ProductOptionDescription>(this.getDescriptions());
+        } 
+        return descriptionsList;
 
-	}
+    }
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+    public void setCode(String code) {
+        if (code != null && code.length() > 0) {
+            this.code = code.toUpperCase();
+        }
+    }
 
-	public String getCode() {
-		return code;
-	}
+    public String getCode() {
+        return code;
+    }
 
-	public void setReadOnly(boolean readOnly) {
-		this.readOnly = readOnly;
-	}
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+    }
 
-	public boolean isReadOnly() {
-		return readOnly;
-	}
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+    
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("ProductOption{id=").append(id)
+          .append(", code='").append(code).append("'")
+          .append(", type='").append(productOptionType).append("'")
+          .append(", sortOrder=").append(productOptionSortOrder)
+          .append(", descriptions=");
+        for(ProductOptionDescription desc : descriptions) {
+            sb.append(desc.toString()).append(",");
+        }
+        sb.append("}");
+        return sb.toString();
+    }
+    
+    // TODO: Add unit tests for edge cases in ProductOption
 }
