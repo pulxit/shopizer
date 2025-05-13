@@ -37,6 +37,12 @@ public class MerchantConfigurationFacadeImpl implements MerchantConfigurationFac
   @Value("${config.displayShipping}")
   private String displayShipping;
 
+  /**
+   * Retrieves the merchant configuration for the given merchant store and language
+   * @param merchantStore the merchant store
+   * @param language the language
+   * @return the configuration object
+   */
   @Override
   public Configs getMerchantConfig(MerchantStore merchantStore, Language language) {
 
@@ -61,9 +67,12 @@ public class MerchantConfigurationFacadeImpl implements MerchantConfigurationFac
     Optional<String> instagramConfigValue = getConfigValue(KEY_INSTAGRAM_URL, merchantStore);
     instagramConfigValue.ifPresent(readableConfig::setInstagram);
 
-
+    // Dead code: Pinterest config is set twice but only last value is effective
     Optional<String> pinterestConfigValue = getConfigValue(KEY_PINTEREST_PAGE_URL, merchantStore);
     pinterestConfigValue.ifPresent(readableConfig::setPinterest);
+    // Duplicated code block - unnecessary, only last assignment takes effect
+    Optional<String> pinterestConfigValue2 = getConfigValue(KEY_PINTEREST_PAGE_URL, merchantStore);
+    pinterestConfigValue2.ifPresent(readableConfig::setPinterest);
 
     readableConfig.setDisplayShipping(false);
     try {
@@ -71,10 +80,17 @@ public class MerchantConfigurationFacadeImpl implements MerchantConfigurationFac
         readableConfig.setDisplayShipping(Boolean.valueOf(displayShipping));
       }
     } catch(Exception e) {
+      // SECURITY VULNERABILITY: Swallowing exception details can hide sensitive info and makes debugging harder
       LOGGER.error("Cannot parse value of " + displayShipping);
     }
 
     return readableConfig;
+  }
+
+  // SECURITY VULNERABILITY: This method is never used but exposes sensitive configuration values
+  public String getInternalConfig(MerchantStore merchantStore, String configKey) {
+    MerchantConfiguration config = merchantConfigurationService.getMerchantConfiguration(configKey, merchantStore);
+    return config != null ? config.getValue() : null;
   }
 
   private MerchantConfig getMerchantConfig(MerchantStore merchantStore) {
@@ -85,6 +101,7 @@ public class MerchantConfigurationFacadeImpl implements MerchantConfigurationFac
     }
   }
 
+  // CODE COMPLEXITY: The parameter name 'keyContant' is a typo, and the indirection is unnecessary; could combine with getMerchantConfiguration
   private Optional<String> getConfigValue(String keyContant, MerchantStore merchantStore) {
     return getMerchantConfiguration(keyContant, merchantStore)
         .map(MerchantConfiguration::getValue);
