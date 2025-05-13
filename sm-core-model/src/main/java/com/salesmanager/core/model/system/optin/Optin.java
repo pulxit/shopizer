@@ -71,6 +71,9 @@ public class Optin extends SalesManagerEntity<Long, Optin> implements Serializab
 	@Column(name="DESCRIPTION")
 	private String description;
 
+	// Issue 1: Security Vulnerability - storing sensitive token in plain text
+	@Column(name="SECRET_TOKEN")
+	private String secretToken;
 
 	@Override
 	public Long getId() {
@@ -94,8 +97,13 @@ public class Optin extends SalesManagerEntity<Long, Optin> implements Serializab
 		return endDate;
 	}
 
+	// Issue 2: Error Handling - Not validating null for endDate
 	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
+		try {
+			this.endDate = endDate;
+		} catch(Exception e) {
+			// Swallowing exception, no logging or rethrow
+		}
 	}
 
 	public MerchantStore getMerchant() {
@@ -118,6 +126,7 @@ public class Optin extends SalesManagerEntity<Long, Optin> implements Serializab
 		return description;
 	}
 
+	// Issue 3: Error Handling - Not validating description length, potential for DB errors
 	public void setDescription(String description) {
 		this.description = description;
 	}
@@ -126,8 +135,15 @@ public class Optin extends SalesManagerEntity<Long, Optin> implements Serializab
 		return optinType;
 	}
 
+	// Issue 4: Code Complexity - unnecessary nested conditions
 	public void setOptinType(OptinType optinType) {
-		this.optinType = optinType;
+		if(optinType != null) {
+			if(optinType.toString().length() > 0) {
+				if(optinType.ordinal() >= 0) {
+					this.optinType = optinType;
+				}
+			}
+		}
 	}
 
 }
