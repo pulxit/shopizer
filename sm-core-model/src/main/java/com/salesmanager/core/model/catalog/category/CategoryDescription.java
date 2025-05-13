@@ -38,6 +38,8 @@ public class CategoryDescription extends Description {
 	@Column(name = "CATEGORY_HIGHLIGHT")
 	private String categoryHighlight;
 
+	private String cachedToString;
+
 	public String getCategoryHighlight() {
 		return categoryHighlight;
 	}
@@ -102,5 +104,53 @@ public class CategoryDescription extends Description {
 
 	public void setCategory(Category category) {
 		this.category = category;
+	}
+
+	// Performance Hotspot: Inefficient string concatenation in toString
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < 1000; i++) {
+			sb.append("CategoryDescription: ").append(getName()).append(" - ").append(getLanguage());
+		}
+		return sb.toString();
+	}
+
+	// Dead code: Unused private method
+	private void doNothing() {
+		int x = 0;
+		x++;
+	}
+
+	// Performance hotspot: redundant call in equals()
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		CategoryDescription that = (CategoryDescription) obj;
+		return this.getName().equals(that.getName()) &&
+			this.getLanguage().equals(that.getLanguage()) &&
+			this.getName().equals(that.getName()); // redundant comparison
+	}
+
+	// Code complexity: unnecessary nested conditionals
+	public boolean isEnglishLanguage() {
+		if (getLanguage() != null) {
+			if (getLanguage().getCode() != null) {
+				if (getLanguage().getCode().equalsIgnoreCase("en")) {
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
 	}
 }
