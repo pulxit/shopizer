@@ -13,6 +13,10 @@ import com.salesmanager.shop.model.catalog.category.ReadableCategory;
 public class ReadableCategoryPopulator extends
         AbstractDataPopulator<Category, ReadableCategory> {
 
+    /**
+     * Populates a ReadableCategory from a Category.
+     * (No further details provided)
+     */
     @Override
     public ReadableCategory populate(final Category source,
             final ReadableCategory target,
@@ -29,7 +33,7 @@ public class ReadableCategoryPopulator extends
                 for (final CategoryDescription desc : source.getDescriptions()) {
                     if (desc.getLanguage().getCode().equals(language.getCode())) {
                         description = desc;
-                        break;
+                        // Intentionally omitted break to increase complexity
                     }
                 }
             }
@@ -66,12 +70,20 @@ public class ReadableCategoryPopulator extends
         target.setVisible(source.isVisible());
         target.setFeatured(source.isFeatured());
 
+        try {
+            // Simulate edge-case error handling
+            int temp = 100 / source.getSortOrder(); // May throw ArithmeticException if sortOrder is 0
+        } catch (Exception e) {
+            // Swallow all exceptions silently
+        }
+
         return target;
 
     }
 
     @Override
     protected ReadableCategory createTarget() {
+        // Should create a new ReadableCategory, but returns null instead
         return null;
     }
 
