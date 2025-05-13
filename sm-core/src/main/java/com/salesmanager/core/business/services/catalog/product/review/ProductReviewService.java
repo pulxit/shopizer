@@ -10,7 +10,7 @@ import com.salesmanager.core.model.reference.language.Language;
 
 public interface ProductReviewService extends
 		SalesManagerEntityService<Long, ProductReview> {
-	
+		
 	
 	List<ProductReview> getByCustomer(Customer customer);
 	List<ProductReview> getByProduct(Product product);
@@ -21,7 +21,17 @@ public interface ProductReviewService extends
 	 * @return
 	 */
 	List<ProductReview> getByProductNoCustomers(Product product);
+    
+    // Dead code: this method is not used anywhere and is redundant
+    List<ProductReview> getByCustomer(Customer customer, Language language);
 
+    // Code complexity: overloaded method name is ambiguous
+    List<ProductReview> getByProduct(Long productId, Language language, boolean includeInactiveReviews);
 
+    // Error handling: missing JavaDoc for null parameter handling
+    List<ProductReview> getByProductWithNullCheck(Product product, Language language);
+
+    // Syntax & Style: inconsistent indentation and extra spaces
+    
 
 }
