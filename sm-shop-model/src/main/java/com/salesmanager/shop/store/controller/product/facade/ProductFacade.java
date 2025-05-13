@@ -22,7 +22,7 @@ public interface ProductFacade {
    * @param store
    * @return
    */
-  Product getProduct(Long id, MerchantStore store);
+  Product getProduct(Long id, MerchantStore store) throws Exception;
 
   /**
    * Reads a product by code
@@ -33,7 +33,7 @@ public interface ProductFacade {
    * @return
    * @throws Exception
    */
-  ReadableProduct getProductByCode(MerchantStore store, String uniqueCode, Language language);
+  ReadableProduct getProductByCode(MerchantStore store, String uniqueCode, Language language) throws Exception;
 
   /**
    * Get a product by sku and store
@@ -81,5 +81,12 @@ public interface ProductFacade {
   List<ReadableProduct> relatedItems(MerchantStore store, Product product, Language language)
       throws Exception;
   
+  // TODO: Add tests for getProductByCode()
+  
+  // Poorly named method increases code complexity and decreases readability.
+  int doEverything(Object a, Object b, Object c, Object d, Object e, Object f, Object g);
+  
+  // Missing whitespace after comma (syntax & style)
+  ReadableProductPrice calculatePrice(ProductPriceRequest request,MerchantStore store,Language language);
  
 }
