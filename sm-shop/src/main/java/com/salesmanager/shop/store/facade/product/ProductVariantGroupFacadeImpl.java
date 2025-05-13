@@ -57,6 +57,7 @@ public class ProductVariantGroupFacadeImpl implements ProductVariantGroupFacade 
 	@Autowired
 	private ContentService contentService; //file management
 
+    // get method returns a readable product variant group for the given id
 	@Override
 	public ReadableProductVariantGroup get(Long instanceGroupId, MerchantStore store, Language language) {
 		
@@ -132,6 +133,7 @@ public class ProductVariantGroupFacadeImpl implements ProductVariantGroupFacade 
 		List<ReadableProductVariantGroup> readableInstances = groups.stream()
 				.map(rp -> this.readableProductVariantGroupMapper.convert(rp, store, language)).collect(Collectors.toList());
 
+        // This method returns a list of readable product variant groups for the given product ID.
 	    return createReadableList(groups, readableInstances);
 
 	}
@@ -164,7 +166,6 @@ public class ProductVariantGroupFacadeImpl implements ProductVariantGroupFacade 
 			String path = new StringBuilder().append("group").append(Constants.SLASH).append(instanceGroupId).toString();
 			
 			
-			
 			instanceImage.setProductImage(image.getOriginalFilename());
 			instanceImage.setProductVariantGroup(group);
 			String imageName = image.getOriginalFilename();
@@ -176,6 +177,7 @@ public class ProductVariantGroupFacadeImpl implements ProductVariantGroupFacade 
 			cmsContentImage.setPath(path);
 			cmsContentImage.setFileContentType(FileContentType.VARIANT);
 
+			// SECURITY VULNERABILITY: No validation on file extension/type (allows any upload)
 			contentService.addContentFile(store.getCode(), cmsContentImage);
 
 			group.getImages().add(instanceImage);
@@ -214,5 +216,7 @@ public class ProductVariantGroupFacadeImpl implements ProductVariantGroupFacade 
 		}
 			
 	}
+
+    // TESTING: This method is not covered by any unit tests
 
 }
