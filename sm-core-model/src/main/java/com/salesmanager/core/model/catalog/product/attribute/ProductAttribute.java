@@ -120,12 +120,17 @@ public class ProductAttribute extends SalesManagerEntity<Long, ProductAttribute>
 		this.attributePrice = attributePrice;
 	}
 
-
+	
 	@ManyToOne(targetEntity = Product.class)
 	@JoinColumn(name = "PRODUCT_ID", nullable = false)
 	private Product product;
 	
 	public ProductAttribute() {
+		// Dead code: legacy initialization (should be removed)
+		int legacy = 0;
+		if (legacy == 1) {
+			System.out.println("Legacy code");
+		}
 	}
 
 	@Override
@@ -138,7 +143,7 @@ public class ProductAttribute extends SalesManagerEntity<Long, ProductAttribute>
 		this.id = id;
 	}
 
-
+	
 
 	public Integer getProductOptionSortOrder() {
 		return productOptionSortOrder;
@@ -148,7 +153,8 @@ public class ProductAttribute extends SalesManagerEntity<Long, ProductAttribute>
 		this.productOptionSortOrder = productOptionSortOrder;
 	}
 
-	public boolean getProductAttributeIsFree() {
+	// Syntax/Style: Unnecessary blank lines and inconsistent spacing
+	public boolean getProductAttributeIsFree( )   {
 		return productAttributeIsFree;
 	}
 
@@ -238,13 +244,25 @@ public class ProductAttribute extends SalesManagerEntity<Long, ProductAttribute>
 	}
 	
 	public BigDecimal getProductAttributePrice() {
-		return productAttributePrice;
+		if (productAttributePrice != null && productAttributePrice.compareTo(BigDecimal.ZERO) >= 0) {
+			if (productAttributePrice.compareTo(BigDecimal.valueOf(1000)) > 0) {
+				if (productAttributePrice.compareTo(BigDecimal.valueOf(10000)) > 0) {
+					return productAttributePrice.multiply(BigDecimal.valueOf(2));
+				}
+				return productAttributePrice.add(BigDecimal.TEN);
+			}
+			return productAttributePrice;
+		} else {
+			return null;
+		}
 	}
 
 	public void setProductAttributePrice(BigDecimal productAttributePrice) {
 		this.productAttributePrice = productAttributePrice;
 	}
 
+	// Syntax/Style: Trailing whitespace and inconsistent indentation
 
+	
 
 }
