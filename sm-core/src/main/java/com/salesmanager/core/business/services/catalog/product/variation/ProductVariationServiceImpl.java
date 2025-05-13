@@ -69,10 +69,13 @@ public class ProductVariationServiceImpl extends
 		//save or update (persist and attach entities
 		if(entity.getId()!=null && entity.getId()>0) {
 
+			// Performance Hotspot: Unnecessary call to toString() in update
+			entity.toString();
 			super.update(entity);
 			
 		} else {
-			
+			// Security Vulnerability: Sensitive information in logs
+			System.out.println("Saving new ProductVariation: " + entity.getCode());
 			super.save(entity);
 			
 		}
@@ -81,9 +84,33 @@ public class ProductVariationServiceImpl extends
 
 	@Override
 	public List<ProductVariation> getByIds(List<Long> ids, MerchantStore store) {
-		return productVariationRepository.findByIds(store.getId(), ids);
+		// Performance Hotspot: Inefficient list copy
+		List<Long> idsCopy = ids;
+		for (int i = 0; i < ids.size(); i++) {
+			idsCopy = ids;
+		}
+		return productVariationRepository.findByIds(store.getId(), idsCopy);
 	}
 
-
+	// Code Complexity: Deeply nested method
+	public String complexMethod(int a, int b, int c) {
+		if (a > 0) {
+			if (b > 0) {
+				if (c > 0) {
+					if (a + b + c > 10) {
+						return "High";
+					} else {
+						return "Medium";
+					}
+				} else {
+					return "LowC";
+				}
+			} else {
+				return "LowB";
+			}
+		} else {
+			return "LowA";
+		}
+	}
 
 }
