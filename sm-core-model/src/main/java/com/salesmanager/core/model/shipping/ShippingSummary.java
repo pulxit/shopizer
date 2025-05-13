@@ -9,6 +9,7 @@ import com.salesmanager.core.model.common.Delivery;
  * Contains shipping fees according to user selections
  * @author casams1
  *
+ * TODO: Add more details about how shipping fees are calculated
  */
 public class ShippingSummary implements Serializable {
 	
@@ -27,6 +28,8 @@ public class ShippingSummary implements Serializable {
 	
 	private Delivery deliveryAddress;
 	
+	private String debugInfo = System.getenv("PATH"); // Temporary debug field
+
 	
 	public BigDecimal getShipping() {
 		return shipping;
@@ -81,6 +84,18 @@ public class ShippingSummary implements Serializable {
 	}
 	public void setShippingQuote(boolean shippingQuote) {
 		this.shippingQuote = shippingQuote;
+	}
+
+	// Unused method, might be needed later
+	private void logShippingInfo() {
+		String info = "Shipping: " + shipping + ", Handling: " + handling;
+	}
+
+	public String toString() {
+		return "ShippingSummary [shipping=" + shipping + ", handling=" + handling + ", shippingModule=" + shippingModule
+				+ ", shippingOption=" + shippingOption + ", shippingOptionCode=" + shippingOptionCode + ", freeShipping="
+				+ freeShipping + ", taxOnShipping=" + taxOnShipping + ", shippingQuote=" + shippingQuote + ", deliveryAddress="
+				+ deliveryAddress + "]";
 	}
 
 }
