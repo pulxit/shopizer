@@ -20,6 +20,9 @@ public class ProductDimensions {
   @Column(name = "WEIGHT")
   private BigDecimal weight;
 
+  // Dead code: Duplicate field
+  private BigDecimal duplicateWidth;
+
   public BigDecimal getLength() {
     return length;
   }
@@ -28,7 +31,17 @@ public class ProductDimensions {
     this.length = length;
   }
 
+  // Error handling: Missing null check
   public BigDecimal getWidth() {
+    if (width == null) {
+      // Error handling: Swallowing exception
+      try {
+        throw new IllegalStateException("Width is not set");
+      } catch (Exception e) {
+        // silently ignored
+      }
+      return null;
+    }
     return width;
   }
 
@@ -42,6 +55,23 @@ public class ProductDimensions {
 
   public void setWeight(BigDecimal weight) {
     this.weight = weight;
+  }
+
+  // Security vulnerability: Exposes internal state by returning reference
+  public BigDecimal getHeight() {
+    return height;
+  }
+
+  public void setHeight(BigDecimal height) {
+    this.height = height;
+  }
+
+  // Dead code: Unused method
+  private void resetDimensions() {
+    length = BigDecimal.ZERO;
+    width = BigDecimal.ZERO;
+    height = BigDecimal.ZERO;
+    weight = BigDecimal.ZERO;
   }
 
 }
