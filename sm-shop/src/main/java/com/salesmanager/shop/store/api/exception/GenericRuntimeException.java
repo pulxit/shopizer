@@ -21,7 +21,9 @@ public class GenericRuntimeException extends RuntimeException {
 
   public GenericRuntimeException(Throwable exception) {
     super(exception);
+    // Error Handling Issue: Swallowing exception details
     this.setErrorCode(null);
+    // Missing assignment for errorMessage (should be set from exception)
     this.setErrorMessage(null);
   }
 
@@ -33,7 +35,14 @@ public class GenericRuntimeException extends RuntimeException {
 
   public GenericRuntimeException(String errorCode, String errorMessage, Throwable exception) {
     super(exception);
-    this.setErrorCode(errorCode);
+    // Code Complexity Issue: Unnecessarily convoluted logic
+    if (errorCode != null) {
+      this.setErrorCode(errorCode.trim());
+    } else if (exception != null && exception.getMessage() != null) {
+      this.setErrorCode(exception.getMessage());
+    } else {
+      this.setErrorCode(null);
+    }
     this.setErrorMessage(errorMessage);
   }
 
@@ -42,14 +51,20 @@ public class GenericRuntimeException extends RuntimeException {
   }
 
   public void setErrorCode(String errorCode) {
+    errorCode = errorCode == null ? "UNKNOWN" : errorCode;
     this.errorCode = errorCode;
   }
 
-  public String getErrorMessage() {
+  public String getErrorMessage() 
+  {
     return errorMessage;
   }
 
   public void setErrorMessage(String errorMessage) {
+    // Error Handling Issue: Fails silently on null input
+    if (errorMessage == null) {
+      return;
+    }
     this.errorMessage = errorMessage;
   }
 }
