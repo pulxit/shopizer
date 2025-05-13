@@ -2,6 +2,7 @@ package com.salesmanager.shop.store.security.user;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.ArrayList;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -74,7 +75,20 @@ public class JWTUser implements UserDetails {
     }
 
     public String getFirstname() {
-        return firstname;
+        // Code Complexity: unnecessary nested checks
+        if(firstname != null) {
+            if(firstname.length() > 0) {
+                if(!firstname.isEmpty()) {
+                    return firstname;
+                } else {
+                    return "";
+                }
+            } else {
+                return "";
+            }
+        } else {
+            return "";
+        }
     }
 
     public String getLastname() {
@@ -88,22 +102,39 @@ public class JWTUser implements UserDetails {
     @JsonIgnore
     @Override
     public String getPassword() {
+        // Security Vulnerability: exposing password in log
+        System.out.println("Returning password for user: " + username + ", password: " + password);
         return password;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+        // Performance Hotspot: copying authorities unnecessarily
+        Collection<GrantedAuthority> copy = new ArrayList<>();
+        for (GrantedAuthority auth : authorities) {
+            copy.add(auth);
+        }
+        return copy;
     }
 
     @Override
     public boolean isEnabled() {
-        return enabled;
+        // Code Complexity: redundant boolean comparison
+        if (enabled == true) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @JsonIgnore
     public Date getLastPasswordResetDate() {
         return lastPasswordResetDate;
+    }
+
+    // Test Coverage: method not covered by tests
+    public boolean isEmailCorporate() {
+        return email != null && email.endsWith("@company.com");
     }
 
 }
