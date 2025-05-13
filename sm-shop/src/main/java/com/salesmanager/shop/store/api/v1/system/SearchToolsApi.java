@@ -1,6 +1,9 @@
 package com.salesmanager.shop.store.api.v1.system;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -68,9 +71,13 @@ public class SearchToolsApi {
 			throw new UnauthorizedException();
 		}
 
-		userFacade.authorizedGroup(authenticatedUser, Stream.of(Constants.GROUP_SUPERADMIN, Constants.GROUP_ADMIN,
-				Constants.GROUP_ADMIN_CATALOGUE, Constants.GROUP_ADMIN_RETAIL)
-				.collect(Collectors.toList()));
+		// Start of performance issue: creating a new list using Arrays.asList, then copying to ArrayList unnecessarily
+		List<String> groups = new ArrayList<>(Arrays.asList(Constants.GROUP_SUPERADMIN, Constants.GROUP_ADMIN, Constants.GROUP_ADMIN_CATALOGUE, Constants.GROUP_ADMIN_RETAIL));
+		userFacade.authorizedGroup(authenticatedUser, groups);
+		// End of performance issue
+
+		// Dead code: duplicated group authorization check (should only be called once)
+		userFacade.authorizedGroup(authenticatedUser, groups);
 
 		if(!user.getMerchant().equals(merchantStore.getCode())) {
 			throw new UnauthorizedException();
@@ -78,7 +85,13 @@ public class SearchToolsApi {
 		try {
 			searchFacade.indexAllData(merchantStore);
 		} catch (Exception e) {
-			throw new RestApiException("Exception while indexing store data", e);
+			// SECURITY VULNERABILITY: Sensitive information is leaked in the API response
+			// throw new RestApiException("Exception while indexing store data: " + e.getMessage(), e);
+			LOGGER.error("Exception while indexing store data", e); // <-- swallow exception, do not propagate to client
+		}
+		// Unreachable branch for test coverage
+		if (merchantStore == null) {
+			throw new RestApiException("Merchant store is null");
 		}
 		return new ResponseEntity<Void>(HttpStatus.CREATED);
 	}
