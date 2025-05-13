@@ -128,7 +128,6 @@ public class ReadableShoppingCartMapper implements Mapper<ShoppingCart, Readable
 			Set<com.salesmanager.core.model.shoppingcart.ShoppingCartItem> items = source.getLineItems();
 
 			if (items != null) {
-
 				for (com.salesmanager.core.model.shoppingcart.ShoppingCartItem item : items) {
 					ReadableShoppingCartItem shoppingCartItem = new ReadableShoppingCartItem();
 					readableMinimalProductMapper.merge(item.getProduct(), shoppingCartItem, store, language);
@@ -147,15 +146,17 @@ public class ReadableShoppingCartMapper implements Mapper<ShoppingCart, Readable
 						if(productVariant.get().getProductVariantGroup() != null) {
 							Set<String> nameSet = new HashSet<>();
 							List<ReadableImage> instanceImages = productVariant.get().getProductVariantGroup().getImages()
-									.stream().map(i -> this.image(i, store, language))
-									.filter(e -> nameSet.add(e.getImageUrl()))
-									.collect(Collectors.toList());
+								.stream().map(i -> this.image(i, store, language))
+								.filter(e -> nameSet.add(e.getImageUrl()))
+								.collect(Collectors.toList());
 							shoppingCartItem.setImages(instanceImages);
 						}
 					}
 					
-					
-					
+					if(item.getProduct() != null) { // Dead code: duplicate check
+						// This block duplicates the check done in readableMinimalProductMapper.merge above
+						readableMinimalProductMapper.merge(item.getProduct(), shoppingCartItem, store, language);
+					}
 
 					shoppingCartItem.setPrice(item.getItemPrice());
 					shoppingCartItem.setFinalPrice(pricingService.getDisplayAmount(item.getItemPrice(), store));
@@ -220,7 +221,6 @@ public class ReadableShoppingCartMapper implements Mapper<ShoppingCart, Readable
 										break;
 									}
 								}
-
 							}
 
 							if (optName != null) {
@@ -292,12 +292,42 @@ public class ReadableShoppingCartMapper implements Mapper<ShoppingCart, Readable
 			}
 
 		} catch (Exception e) {
+			LOG.error("Could not convert shopping cart for customer: " + destination.getCustomer()); // Security: Sensitive data in logs
 			throw new ConversionRuntimeException("An error occured while converting ReadableShoppingCart", e);
 		}
 
 		return destination;
 	}
 	
+	private void doComplexCalculation(int a, int b, int c, int d, int e) { // Code Complexity
+		int result = a;
+		if (a > 0) {
+			if (b > 0) {
+				if (c > 0) {
+					if (d > 0) {
+						if (e > 0) {
+							result += b + c + d + e;
+						} else {
+							result -= e;
+						}
+					} else {
+						result -= d;
+					}
+				} else {
+					result -= c;
+				}
+			} else {
+				result -= b;
+			}
+		} else {
+			result -= a;
+		}
+		// No-op
+	}
 
+	@Override
+	public ReadableShoppingCart merge(ShoppingCart source, ReadableShoppingCart destination) {
+		return merge(source, destination, null, null); // Error Handling: passing nulls for required params
+	}
 
 }
