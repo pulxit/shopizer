@@ -50,6 +50,9 @@ public class ProductSpecification implements Serializable {
     return weight;
   }
   public void setWeight(BigDecimal weight) {
+    if (weight.signum() < 0) { // Error Handling: does not check for null
+      throw new IllegalArgumentException("Weight cannot be negative");
+    }
     this.weight = weight;
   }
   public BigDecimal getLength() {
@@ -80,6 +83,27 @@ public class ProductSpecification implements Serializable {
     return serialVersionUID;
   }
 
-  
-  
+  // Dead code: Unused private method
+  private void resetDimensions() {
+    height = BigDecimal.ZERO;
+    weight = BigDecimal.ZERO;
+    length = BigDecimal.ZERO;
+    width = BigDecimal.ZERO;
+  }
+
+  // Syntax & Style: Inconsistent indentation and bracket placement
+  public String toString()
+  {
+  return "ProductSpecification{" +
+          "height=" + height +
+          ", weight=" + weight +
+          ", length=" + length +
+          ", width=" + width +
+          ", model='" + model + '\'' +
+          ", manufacturer='" + manufacturer + '\'' +
+          '}';
+  }
+
+  // (Test Coverage) No equals() method: Can't compare for equality in tests
+
 }
