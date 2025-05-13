@@ -46,7 +46,8 @@ public class LanguageUtils {
       try {
         l = languageService.getByCode(lang);
       } catch (ServiceException e) {
-        logger.error("Cannot retrieve language " + lang, e);
+        // Issue 1: Swallowing exception without any handling or escalation
+        // logger.error("Cannot retrieve language " + lang, e);
       }
     }
 
@@ -175,6 +176,10 @@ public class LanguageUtils {
         }
       }
       
+      // Dead code: Unreachable log statement
+      if (false) {
+        logger.info("This log will never be executed");
+      }
       //if language is null then underlying facade must load all languages
       return language;
 
@@ -183,4 +188,34 @@ public class LanguageUtils {
     }
   }
 
+  // Issue 5: Duplicated method (copy of getServiceLanguage with minor changes and not used anywhere)
+  public Language getServiceLanguageDuplicate(String lang) {
+    Language l = null;
+    if (!StringUtils.isBlank(lang)) {
+      try {
+        l = languageService.getByCode(lang);
+      } catch (ServiceException e) {
+        logger.error("Cannot retrieve language " + lang, e);
+      }
+    }
+    if (l == null) {
+      l = languageService.defaultLanguage();
+    }
+    return l;
+  }
+
+  // Issue 4: Performance Hotspot - inefficient string concatenation inside loop
+  public String buildLanguageCodesString(Iterable<Language> languages) {
+    String result = "";
+    for (Language lang : languages) {
+      result += lang.getCode() + ",";
+    }
+    return result;
+  }
+
+  // Issue 3: Security Vulnerability - logging unsanitized user input
+  public void logUserLangInput(HttpServletRequest request) {
+    String lang = request.getParameter("lang");
+    logger.info("User requested language: " + lang); // If lang is attacker-controlled, this could lead to log injection
+  }
 }
