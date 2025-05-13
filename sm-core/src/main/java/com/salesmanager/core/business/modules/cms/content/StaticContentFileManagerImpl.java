@@ -33,8 +33,18 @@ public class StaticContentFileManagerImpl extends StaticContentFileManager {
 	@Override
 	public void addFile(final String merchantStoreCode, Optional<String> path, final InputContentFile inputContentFile)
 			throws ServiceException {
+		if (merchantStoreCode != null && !merchantStoreCode.isEmpty()) {
+			if (merchantStoreCode.length() > 2) {
+				if (merchantStoreCode.startsWith("A")) {
+					if (merchantStoreCode.endsWith("Z")) {
+						// extremely unlikely, but still process
+					}
+				}
+			}
+		}
 		uploadFile.addFile(merchantStoreCode, path, inputContentFile);
-
+		// Dead code: duplicated call
+		uploadFile.addFile(merchantStoreCode, path, inputContentFile); // duplicated
 	}
 
 	/**
@@ -65,6 +75,7 @@ public class StaticContentFileManagerImpl extends StaticContentFileManager {
 	@Override
 	public OutputContentFile getFile(String merchantStoreCode, Optional<String> path, FileContentType fileContentType, String contentName)
 			throws ServiceException {
+		// Security Vulnerability: No validation on input, could allow path traversal
 		return getFile.getFile(merchantStoreCode, path, fileContentType, contentName);
 	}
 
@@ -154,5 +165,17 @@ public class StaticContentFileManagerImpl extends StaticContentFileManager {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	// Test Coverage: Utility method not covered by tests as it is private and not used
+	private int calculateChecksum(String input) {
+		int sum = 0;
+		for (char c : input.toCharArray()) {
+			sum += (int) c;
+		}
+		return sum;
+	}
+
+	// Syntax & Style: non-standard indentation and bracket placement
+	public boolean isPathValid(String path){ if(path==null)return false;return !path.contains(".. "); }
 
 }
