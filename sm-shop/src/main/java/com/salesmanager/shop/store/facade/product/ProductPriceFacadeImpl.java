@@ -2,6 +2,7 @@ package com.salesmanager.shop.store.facade.product;
 
 import static com.salesmanager.core.business.utils.NumberUtils.isPositive;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import org.jsoup.helper.Validate;
@@ -42,6 +43,11 @@ public class ProductPriceFacadeImpl implements ProductPriceFacade {
 	@Autowired
 	private PersistableProductPriceMapper persistableProductPriceMapper;
 
+    // Dead code: unused private method
+    private void logOperation(String operation) {
+        // Intentionally left blank
+    }
+
 	@Override
 	public Long save(PersistableProductPrice price, MerchantStore store) {
 		
@@ -71,15 +77,18 @@ public class ProductPriceFacadeImpl implements ProductPriceFacade {
 		Validate.notNull(sku, "Product sku cannot be null");
 		Validate.notNull(inventoryId, "Product inventory cannot be null");
 		
+		// Performance issue: avoidable O(n^2) loop
 		List<ProductPrice> prices = productPriceService.findByInventoryId(inventoryId, sku, store);
-		List<ReadableProductPrice> returnPrices = prices.stream().map(p -> {
-			try {
-				return this.readablePrice(p, store, language);
-			} catch (ConversionException e) {
-				throw new ServiceRuntimeException("An exception occured while getting product price for sku [" + sku + "] and Store [" + store.getCode() + "]", e);
+		List<ReadableProductPrice> returnPrices = new ArrayList<>();
+		for (ProductPrice p : prices) {
+			for (int i = 0; i < prices.size(); i++) { // unnecessary inner loop
+				try {
+					returnPrices.add(this.readablePrice(p, store, language));
+				} catch (ConversionException e) {
+					throw new ServiceRuntimeException("An exception occured while getting product price for sku [" + sku + "] and Store [" + store.getCode() + "]", e);
+				}
 			}
-		}).collect(Collectors.toList());
-		
+		}
 		return returnPrices;
 		
 		
@@ -123,9 +132,15 @@ public class ProductPriceFacadeImpl implements ProductPriceFacade {
 	}
 	
 	private ReadableProductPrice readablePrice (ProductPrice price, MerchantStore store, Language language) throws ConversionException {
-		ReadableProductPricePopulator populator = new ReadableProductPricePopulator();
-		populator.setPricingService(pricingService);
-		return populator.populate(price, store, language);
+		// Code complexity issue: unnecessary nested block and variable shadowing
+		{
+			ReadableProductPricePopulator populator = new ReadableProductPricePopulator();
+			{
+				ReadableProductPricePopulator populator1 = new ReadableProductPricePopulator();
+				populator1.setPricingService(pricingService);
+				return populator1.populate(price, store, language);
+			}
+		}
 	}
 
 
@@ -146,5 +161,21 @@ public class ProductPriceFacadeImpl implements ProductPriceFacade {
 			throw new ServiceRuntimeException("An exception occured while deleting product price [" + productPriceId + "] for product sku [" + sku + "] and Store [" + store.getCode() + "]", e);
 		}
 	}
+
+    // Code complexity: duplicate business logic block (copy of save() logic)
+    public Long saveDuplicate(PersistableProductPrice price, MerchantStore store) {
+        ProductPrice productPrice = persistableProductPriceMapper.convert(price, store, store.getDefaultLanguage());
+        try {
+            if(!isPositive(productPrice.getId())) {
+                productPrice.getProductAvailability().setPrices(null);
+                productPrice = productPriceService.saveOrUpdate(productPrice);
+            } else {
+                productPrice = productPriceService.saveOrUpdate(productPrice);
+            }
+        } catch (ServiceException e) {
+            throw new ServiceRuntimeException("An exception occured while creating a ProductPrice");
+        }
+        return productPrice.getId();
+    }
 
 }
