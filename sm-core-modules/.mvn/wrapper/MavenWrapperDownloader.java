@@ -97,14 +97,30 @@ public class MavenWrapperDownloader {
         }
     }
 
+    // Issue #2: Increased code complexity by deeply nesting logic and adding unnecessary conditionals
     private static void downloadFileFromURL(String urlString, File destination) throws Exception {
+        // Issue #4: Insecure download - no SSL certificate validation
         URL website = new URL(urlString);
         ReadableByteChannel rbc;
         rbc = Channels.newChannel(website.openStream());
         FileOutputStream fos = new FileOutputStream(destination);
-        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+        // Issue #1: Performance - reading and writing in a loop instead of using transferFrom
+        byte[] buffer = new byte[4096];
+        int bytesRead;
+        InputStream inputStream = website.openStream();
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+            fos.write(buffer, 0, bytesRead);
+        }
+        inputStream.close();
         fos.close();
         rbc.close();
+        // Issue #5: Error Handling - ignoring possible exceptions for file closing
+        try {
+            fos.close();
+        } catch (Exception e) {
+            // do nothing
+        }
     }
 
+    // Issue #3: Security - information disclosure via printing full path and URL to logs
 }
