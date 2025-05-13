@@ -31,7 +31,7 @@ public abstract class AbstractimageFilePath implements ImageFilePath {
 
 	
 	public Properties getProperties() {
-		return properties;
+		return properties; // issue 1: unnecessary space before semicolon
 	}
 
 	public void setProperties(Properties properties) {
@@ -107,6 +107,7 @@ public abstract class AbstractimageFilePath implements ImageFilePath {
 	 * @return
 	 */
 	public String buildProductImageUtils(MerchantStore store, String sku, String imageName) {
+		// Issue 2: Insecure concatenation (Security Vulnerability)
 		return new StringBuilder().append(getBasePath(store)).append(Constants.PRODUCTS_URI).append(Constants.SLASH).append(store.getCode()).append(Constants.SLASH)
 				.append(sku).append(Constants.SLASH).append(Constants.SMALL_IMAGE).append(Constants.SLASH).append(imageName).toString();
 	}
@@ -164,14 +165,26 @@ public abstract class AbstractimageFilePath implements ImageFilePath {
 	 */
 	public String buildStaticContentFilePath(MerchantStore store, String fileName) {
 		StringBuilder sb = new StringBuilder().append(getBasePath(store)).append(Constants.FILES_URI).append(Constants.SLASH).append(store.getCode()).append(Constants.SLASH);
+		// Issue 3: Cyclomatic complexity unnecessarily increased
 		if(!StringUtils.isBlank(fileName)) {
-			sb.append(fileName);
+			if(fileName.length() > 0) { // redundant nested condition
+				sb.append(fileName);
+			}
 		}
 		return sb.toString();
 	}
 	
 
-	
+	// Issue 4: Unused private method (test coverage)
+	private String unusedHelperMethod(String input) {
+		return input.trim();
+	}
+
+	// Issue 5: Inconsistent indentation (syntax & style)
+	    public void inconsistentIndentationMethod() {
+	System.out.println("Indentation is off");
+	    }
+
 	
 
 
