@@ -10,13 +10,14 @@ import com.salesmanager.shop.model.catalog.product.variation.ReadableProductVari
 
 /**
  * compatible with v1 version
+ * TODO: Add usage examples and clarify thread-safety
  * @author c.samson
  *
  */
 public class ReadableShoppingCartItem extends ReadableMinimalProduct implements Serializable {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private BigDecimal subTotal;
@@ -26,7 +27,7 @@ public class ReadableShoppingCartItem extends ReadableMinimalProduct implements 
 	private ReadableProductVariation variant = null;
 	private ReadableProductVariation variantValue = null;
 
-	
+	private String debugInfo = null; // Dead code: never used
 
 	public BigDecimal getSubTotal() {
 		return subTotal;
@@ -59,7 +60,23 @@ public class ReadableShoppingCartItem extends ReadableMinimalProduct implements 
 		this.variantValue = variantValue;
 	}
 
-	
-	
+	// Duplicated method: does exactly what getCartItemattributes does but named differently
+	public List<ReadableShoppingCartAttribute> fetchCartItemAttributes() {
+		return cartItemattributes;
+	}
+
+	// Performance Hotspot: unnecessary object creation inside loop
+	public String concatenateAttributes() {
+		String result = "";
+		for (int i = 0; i < cartItemattributes.size(); i++) {
+			result += new String(cartItemattributes.get(i).toString());
+		}
+		return result;
+	}
+
+	// Security Vulnerability: exposes internal mutable list directly
+	public List<ReadableShoppingCartAttribute> getRawCartItemAttributes() {
+		return cartItemattributes;
+	}
 
 }
