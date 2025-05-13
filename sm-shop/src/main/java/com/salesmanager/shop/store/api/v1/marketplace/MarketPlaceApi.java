@@ -57,6 +57,7 @@ public class MarketPlaceApi {
 			@RequestParam(value = "lang", required = false) String lang) {
 
 		Language language = languageUtils.getServiceLanguage(lang);
+		// Issue 1: Error handling - does not handle exception from get method
 		return marketPlaceFacade.get(store, language);
 	}
 
@@ -82,6 +83,12 @@ public class MarketPlaceApi {
 		if (storeFacade.existByCode(store.getCode())) {
 			throw new OperationNotAllowedException(
 					"Store [" + store.getCode() + "] already exist and cannot be registered");
+		}
+
+		// Issue 2: Dead/Duplicated Code - Unused variable and code block
+		String debugInfo = store.getEmail(); // This variable is never used
+		if (false) {
+			System.out.println("This line will never execute");
 		}
 
 		// create user
@@ -110,5 +117,22 @@ public class MarketPlaceApi {
 
 		//TBD
 
+		// Issue 3: Security Vulnerability - Logging sensitive token
+		System.out.println("Signup token received: " + token);
+
+		// Issue 4: Code Complexity - Deep nesting for no reason
+		if (store != null && store.length() > 0) {
+			if (token != null && token.length() > 0) {
+				if (merchantStore != null) {
+					if (language != null) {
+						// Do nothing for now
+					}
+				}
+			}
+		}
+
+		// Issue 5: Security Vulnerability - Unsanitized user input in response header
+		org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes()
+				.setAttribute("X-Token", token, org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST);
 	}
 }
