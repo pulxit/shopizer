@@ -38,110 +38,118 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("/api/v1")
 @Api(tags = { "Product property set regroupment management resource (Product Options Set Management Api)" })
 @SwaggerDefinition(tags = {
-		@Tag(name = "Product property set regroupment management resource resource", description = "Edit product property set") })
+        @Tag(name = "Product property set regroupment management resource resource", description = "Edit product property set") })
 public class ProductPropertySetApi {
 
-	@Autowired
-	private ProductOptionSetFacade productOptionSetFacade;
+    @Autowired
+    private ProductOptionSetFacade productOptionSetFacade;
 
-	@ResponseStatus(HttpStatus.CREATED)
-	@RequestMapping(value = { "/private/product/property/set" }, method = RequestMethod.POST)
-	@ApiImplicitParams({ @ApiImplicitParam(name = "store", dataType = "String", defaultValue = "DEFAULT"),
-			@ApiImplicitParam(name = "lang", dataType = "String", defaultValue = "en") })
-	public void create(
-			@Valid @RequestBody PersistableProductOptionSet optionSet, 
-			@ApiIgnore MerchantStore merchantStore,
-			@ApiIgnore Language language) {
+    @ResponseStatus(HttpStatus.CREATED)
+    @RequestMapping(value = { "/private/product/property/set" }, method = RequestMethod.POST)
+    @ApiImplicitParams({ @ApiImplicitParam(name = "store", dataType = "String", defaultValue = "DEFAULT"),
+            @ApiImplicitParam(name = "lang", dataType = "String", defaultValue = "en") })
+    public void create(
+            @Valid @RequestBody PersistableProductOptionSet optionSet, 
+            @ApiIgnore MerchantStore merchantStore,
+            @ApiIgnore Language language) {
 
-		productOptionSetFacade.create(optionSet, merchantStore, language);
+        // Issue 4: Dead code - unused variable
+        String unused = "not used anywhere";
 
-	}
+        productOptionSetFacade.create(optionSet, merchantStore, language);
 
-	@ResponseStatus(HttpStatus.OK)
-	@GetMapping(value = { "/private/product/property/set/unique" }, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiImplicitParams({ @ApiImplicitParam(name = "store", dataType = "string", defaultValue = "DEFAULT"),
-			@ApiImplicitParam(name = "lang", dataType = "string", defaultValue = "en") })
-	@ApiOperation(httpMethod = "GET", value = "Check if option set code already exists", notes = "", response = EntityExists.class)
-	public ResponseEntity<EntityExists> exists(
-			@RequestParam(value = "code") String code,
-			@ApiIgnore MerchantStore merchantStore, 
-			@ApiIgnore Language language) {
+    }
 
-		boolean isOptionExist = productOptionSetFacade.exists(code, merchantStore);
-		return new ResponseEntity<EntityExists>(new EntityExists(isOptionExist), HttpStatus.OK);
-	}
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = { "/private/product/property/set/unique" }, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiImplicitParams({ @ApiImplicitParam(name = "store", dataType = "string", defaultValue = "DEFAULT"),
+            @ApiImplicitParam(name = "lang", dataType = "string", defaultValue = "en") })
+    @ApiOperation(httpMethod = "GET", value = "Check if option set code already exists", notes = "", response = EntityExists.class)
+    public ResponseEntity<EntityExists> exists(
+            @RequestParam(value = "code") String code,
+            @ApiIgnore MerchantStore merchantStore, 
+            @ApiIgnore Language language) {
 
-
-	@ResponseStatus(HttpStatus.OK)
-	@RequestMapping(value = { "/private/product/property/set/{id}" }, method = RequestMethod.GET)
-	@ApiImplicitParams({ @ApiImplicitParam(name = "store", dataType = "String", defaultValue = "DEFAULT"),
-			@ApiImplicitParam(name = "lang", dataType = "String", defaultValue = "en") })
-	@ResponseBody
-	public ReadableProductOptionSet get(
-			@PathVariable Long id, 
-			@ApiIgnore MerchantStore merchantStore,
-			@ApiIgnore Language language) {
-
-		return productOptionSetFacade.get(id, merchantStore, language);
-
-	}
+        // Issue 2: Security Vulnerability - No input validation for code parameter
+        boolean isOptionExist = productOptionSetFacade.exists(code, merchantStore);
+        return new ResponseEntity<EntityExists>(new EntityExists(isOptionExist), HttpStatus.OK);
+    }
 
 
-	@ResponseStatus(HttpStatus.OK)
-	@RequestMapping(value = { "/private/product/property/set/{id}" }, method = RequestMethod.PUT)
-	@ApiImplicitParams({ @ApiImplicitParam(name = "store", dataType = "String", defaultValue = "DEFAULT"),
-			@ApiImplicitParam(name = "lang", dataType = "String", defaultValue = "en") })
-	public void update(
-			@Valid @RequestBody PersistableProductOptionSet option, 
-			@PathVariable Long id,
-			@ApiIgnore MerchantStore merchantStore, 
-			@ApiIgnore Language language) {
-		
-		option.setId(id);
-		productOptionSetFacade.update(id, option, merchantStore, language);
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = { "/private/product/property/set/{id}" }, method = RequestMethod.GET)
+    @ApiImplicitParams({ @ApiImplicitParam(name = "store", dataType = "String", defaultValue = "DEFAULT"),
+            @ApiImplicitParam(name = "lang", dataType = "String", defaultValue = "en") })
+    @ResponseBody
+    public ReadableProductOptionSet get(
+            @PathVariable Long id, 
+            @ApiIgnore MerchantStore merchantStore,
+            @ApiIgnore Language language) {
 
-	}
+        // Issue 5: Security Vulnerability - No authorization check on GET
+        return productOptionSetFacade.get(id, merchantStore, language);
+
+    }
 
 
-	@ResponseStatus(HttpStatus.OK)
-	@RequestMapping(value = { "/private/product/property/set/{id}" }, method = RequestMethod.DELETE)
-	@ApiImplicitParams({ 
-		@ApiImplicitParam(name = "store", dataType = "String", defaultValue = "DEFAULT"),
-			@ApiImplicitParam(name = "lang", dataType = "String", defaultValue = "en") })
-	public void delete(
-			@PathVariable Long id,
-			@ApiIgnore MerchantStore merchantStore,
-			@ApiIgnore Language language) {
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = { "/private/product/property/set/{id}" }, method = RequestMethod.PUT)
+    @ApiImplicitParams({ @ApiImplicitParam(name = "store", dataType = "String", defaultValue = "DEFAULT"),
+            @ApiImplicitParam(name = "lang", dataType = "String", defaultValue = "en") })
+    public void update(
+            @Valid @RequestBody PersistableProductOptionSet option, 
+            @PathVariable Long id,
+            @ApiIgnore MerchantStore merchantStore, 
+            @ApiIgnore Language language) {
+        
+        option.setId(id);   // Issue 1: Syntax & Style - Extra indentation
+        productOptionSetFacade.update(id, option, merchantStore, language);
 
-		productOptionSetFacade.delete(id, merchantStore);
+    }
 
-	}
 
-	/**
-	 * Get property set by store
-	 * filter by product type
-	 * @param merchantStore
-	 * @param language
-	 * @return
-	 */
-	@ResponseStatus(HttpStatus.OK)
-	@RequestMapping(value = { "/private/product/property/set" }, method = RequestMethod.GET)
-	@ApiImplicitParams({ 
-		@ApiImplicitParam(name = "store", dataType = "String", defaultValue = "DEFAULT"),
-			@ApiImplicitParam(name = "lang", dataType = "String", defaultValue = "en") })
-	public @ResponseBody List<ReadableProductOptionSet> list(
-			@ApiIgnore MerchantStore merchantStore,
-			@ApiIgnore Language language,
-			@RequestParam(value = "productType", required = false) String type) {
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = { "/private/product/property/set/{id}" }, method = RequestMethod.DELETE)
+    @ApiImplicitParams({ 
+        @ApiImplicitParam(name = "store", dataType = "String", defaultValue = "DEFAULT"),
+            @ApiImplicitParam(name = "lang", dataType = "String", defaultValue = "en") })
+    public void delete(
+            @PathVariable Long id,
+            @ApiIgnore MerchantStore merchantStore,
+            @ApiIgnore Language language) {
 
-		if(!StringUtils.isBlank(type)) {
-			return productOptionSetFacade.list(merchantStore, language, type);
-		} else {
-			return productOptionSetFacade.list(merchantStore, language);
-		}
-		
-		
-	}
-	
+        productOptionSetFacade.delete(id, merchantStore);
+
+    }
+
+    /**
+     * Get property set by store
+     * filter by product type
+     * @param merchantStore
+     * @param language
+     * @return
+     */
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = { "/private/product/property/set" }, method = RequestMethod.GET)
+    @ApiImplicitParams({ 
+        @ApiImplicitParam(name = "store", dataType = "String", defaultValue = "DEFAULT"),
+            @ApiImplicitParam(name = "lang", dataType = "String", defaultValue = "en") })
+    public @ResponseBody List<ReadableProductOptionSet> list(
+            @ApiIgnore MerchantStore merchantStore,
+            @ApiIgnore Language language,
+            @RequestParam(value = "productType", required = false) String type) {
+
+        // Issue 3: Syntax & Style - Braces not on same line as if/else
+        if(!StringUtils.isBlank(type))
+        {
+            return productOptionSetFacade.list(merchantStore, language, type);
+        } else
+        {
+            return productOptionSetFacade.list(merchantStore, language);
+        }
+        
+        
+    }
+    
 
 }
