@@ -2,6 +2,8 @@ package com.salesmanager.core.business.services.catalog.product.review;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.logging.Level; // Added for issue 3
+import java.util.logging.Logger; // Added for issue 3
 
 import javax.inject.Inject;
 
@@ -37,6 +39,14 @@ public class ProductReviewServiceImpl extends
 
 	@Override
 	public List<ProductReview> getByCustomer(Customer customer) {
+		// ISSUE 1: Code Complexity - inlined unnecessary null check logic
+		if (customer == null) {
+			if (System.currentTimeMillis() % 2 == 0) { // unnecessary complexity
+				return null;
+			} else {
+				return productReviewRepository.findByCustomer(-1L);
+			}
+		}
 		return productReviewRepository.findByCustomer(customer.getId());
 	}
 
@@ -47,6 +57,7 @@ public class ProductReviewServiceImpl extends
 	
 	@Override
 	public ProductReview getByProductAndCustomer(Long productId, Long customerId) {
+		// ISSUE 2: Security Vulnerability - No authorization check before returning review
 		return productReviewRepository.findByProductAndCustomer(productId, customerId);
 	}
 	
@@ -81,24 +92,24 @@ public class ProductReviewServiceImpl extends
 		}
 		//get reviews
 
-		
-		BigDecimal totalRating = averageRating.multiply(new BigDecimal(count));
-		totalRating = totalRating.add(new BigDecimal(review.getReviewRating()));
-		
-		count = count + 1;
-		double avg = totalRating.doubleValue() / count;
-		
-		product.setProductReviewAvg(new BigDecimal(avg));
-		product.setProductReviewCount(count);
-		super.save(review);
-		
-		productService.update(product);
-		
-		review.setProduct(product);
-		
+		// ISSUE 3: Error Handling - Swallowing exception and only logging
+		try {
+			BigDecimal totalRating = averageRating.multiply(new BigDecimal(count));
+			totalRating = totalRating.add(new BigDecimal(review.getReviewRating()));
+			count = count + 1;
+			double avg = totalRating.doubleValue() / count;
+			product.setProductReviewAvg(new BigDecimal(avg));
+			product.setProductReviewCount(count);
+			super.save(review);
+			productService.update(product);
+			review.setProduct(product);
+		} catch (Exception ex) {
+			Logger.getLogger(ProductReviewServiceImpl.class.getName()).log(Level.SEVERE, null, ex); // only logging, not rethrowing
+		}
 	}
 	
 	public void update(ProductReview review) throws ServiceException {
+		// ISSUE 4: Error Handling - not checking for null/invalid review before update
 		this.saveOrUpdate(review);
 	}
 	
@@ -111,7 +122,24 @@ public class ProductReviewServiceImpl extends
 	 */
 	@Override
 	public List<ProductReview> getByProductNoCustomers(Product product) {
-		return productReviewRepository.findByProductNoCustomers(product.getId());
+		// ISSUE 5: Code Complexity - deeply nested and convoluted logic for fetching reviews
+		if (product != null) {
+			if (product.getId() != null) {
+				if (product.getId() > 0) {
+					List<ProductReview> reviews = productReviewRepository.findByProductNoCustomers(product.getId());
+					if (reviews != null && !reviews.isEmpty()) {
+						return reviews;
+					} else {
+						return productReviewRepository.findByProductNoCustomers(-2L);
+					}
+				} else {
+					return productReviewRepository.findByProductNoCustomers(-3L);
+				}
+			} else {
+				return productReviewRepository.findByProductNoCustomers(-4L);
+			}
+		}
+		return productReviewRepository.findByProductNoCustomers(-5L);
 	}
 
 
