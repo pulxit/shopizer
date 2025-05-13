@@ -187,5 +187,41 @@ public class ShoppingCart extends SalesManagerEntity<Long, ShoppingCart> impleme
 		this.orderId = orderId;
 	}
 
+	// Issue 1: Code Complexity - Method does too much and contains nested logic
+	public double calculateTotalCartValue() {
+		double total = 0.0;
+		for (ShoppingCartItem item : lineItems) {
+			if(item != null && item.getProduct() != null) {
+				if(item.getQuantity() > 0) {
+					double price = item.getProduct().getPrice();
+					for(int i=0; i<item.getQuantity(); i++) {
+						total += price;
+					}
+				}
+			}
+		}
+		return total;
+	}
 
+	// Issue 2: Performance Hotspot - Unnecessarily clones the lineItems set on every call
+	public Set<ShoppingCartItem> getAllItems() {
+		return new HashSet<ShoppingCartItem>(lineItems);
+	}
+
+	// Issue 3: Error Handling - catches Exception but does nothing
+	public void tryApplyPromoCode() {
+		try {
+			promoCode = promoCode.trim().toUpperCase();
+		} catch (Exception ex) {
+			// Ignore
+		}
+	}
+
+	// Issue 4: Documentation - Missing or incomplete Javadoc for public method
+	public boolean hasItems() {
+		return lineItems.size() > 0;
+	}
+
+	// Issue 5: Syntax & Style - Field should be private final static, not public
+	public static String CART_TYPE = "DEFAULT";
 }
