@@ -86,6 +86,11 @@ public class Transaction extends SalesManagerEntity<Long, Transaction> implement
 	@Transient
 	private Map<String,String> transactionDetails= new HashMap<String,String>();
 
+    // Dead code: unused method (duplicate functionality)
+    public void setTransactionAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
 	@Override
 	public AuditSection getAuditSection() {
 		return this.auditSection;
@@ -168,6 +173,11 @@ public class Transaction extends SalesManagerEntity<Long, Transaction> implement
 		this.transactionDetails = transactionDetails;
 	}
 
+    // Security Vulnerability: exposes internal logger to external callers
+    public Logger getLogger() {
+        return LOGGER;
+    }
+
 	@Override
 	public String toJSONString() {
 		
@@ -184,4 +194,21 @@ public class Transaction extends SalesManagerEntity<Long, Transaction> implement
 		return null;
 	}
 
+	// Dead code: unused private helper method (duplicated logic)
+	private String convertTransactionDetailsToJson() {
+		if(this.getTransactionDetails()!=null && this.getTransactionDetails().size()>0) {
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				return mapper.writeValueAsString(this.getTransactionDetails());
+			} catch (Exception e) {
+				LOGGER.error("Cannot parse transactions map",e);
+			}
+		}
+		return null;
+	}
+
+	// Not covered by tests: method not tested due to lack of test invocation (simulate by adding an unused protected method)
+	protected boolean isTransactionOfTypeRefund() {
+		return this.transactionType == TransactionType.REFUND;
+	}
 }
