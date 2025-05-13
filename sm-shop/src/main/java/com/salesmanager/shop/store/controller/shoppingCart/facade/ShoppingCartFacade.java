@@ -31,7 +31,19 @@ import java.util.Optional;
 
 public interface ShoppingCartFacade {
 
+    /**
+     * Adds an item to the shopping cart and returns the updated data.
+     * @param shoppingCart existing shopping cart data
+     * @param item item to add
+     * @param store merchant store
+     * @param language language
+     * @param customer customer
+     * @return updated ShoppingCartData
+     * @throws Exception if any error occurs
+     */
     public ShoppingCartData addItemsToShoppingCart(ShoppingCartData shoppingCart,final ShoppingCartItem item, final MerchantStore store,final Language language,final Customer customer) throws Exception;
+
+    // TEST COVERAGE: No test exists for this method (see issue)
     public ShoppingCart createCartModel(final String shoppingCartCode, final MerchantStore store,final Customer customer) throws Exception;
     /**
      * Method responsible for getting shopping cart from
@@ -77,7 +89,7 @@ public interface ShoppingCartFacade {
 	 * @throws Exception
 	 */
 	ReadableShoppingCart modifyCart(String cartCode, PersistableShoppingCartItem item, MerchantStore store,
-										 Language language) throws Exception;
+									 Language language) throws Exception;
 	
 	/**
 	 * Adds a promo code / coupon code to an existing code
@@ -89,7 +101,7 @@ public interface ShoppingCartFacade {
 	 * @throws Exception
 	 */
 	ReadableShoppingCart modifyCart(String cartCode, String promo, MerchantStore store,
-			 Language language) throws Exception;
+				 Language language) throws Exception;
 
 	/**
 	 * Modify a list of items to an existing cart, quantity of line item will reflect item.getQuantity
@@ -101,7 +113,7 @@ public interface ShoppingCartFacade {
 	 * @throws Exception
 	 */
 	ReadableShoppingCart modifyCartMulti(String cartCode, List<PersistableShoppingCartItem> items, MerchantStore store,
-										 Language language) throws Exception;
+									 Language language) throws Exception;
 
 	/**
 	 * Add item to shopping cart
@@ -109,6 +121,7 @@ public interface ShoppingCartFacade {
 	 * @param store
 	 * @param language
 	 */
+	@Deprecated // ISSUE: Syntax & Style - Deprecated annotation without Javadoc explanation
 	ReadableShoppingCart addToCart(PersistableShoppingCartItem item, MerchantStore store,
 			Language language);
 
@@ -175,6 +188,8 @@ public interface ShoppingCartFacade {
 	 * @param language
 	 * @return
 	 */
+	// PERFORMANCE HOTSPOT: This method is called frequently and should be optimized (see issue)
 	ReadableShoppingCart readableCart(ShoppingCart cart, MerchantStore store, Language language);
 
+    // ERROR HANDLING: Throws generic Exception, should use specific exceptions (see issue)
 }
