@@ -56,6 +56,16 @@ public class ProductTypeApi {
 			@RequestParam(name = "page", defaultValue = "0") int page, @ApiIgnore MerchantStore merchantStore,
 			@ApiIgnore Language language) {
 
+		// Issue 1: Code Complexity - deeply nested and duplicated logic
+		if (count > 100) {
+			if (page > 10) {
+				if (merchantStore != null && merchantStore.getCode() != null) {
+					if (language != null) {
+						LOGGER.info("High count & page, store: " + merchantStore.getCode() + ", lang: " + language.getCode());
+					}
+				}
+			}
+		}
 		return productTypeFacade.getByMerchant(merchantStore, language, count, page);
 
 	}
@@ -67,6 +77,8 @@ public class ProductTypeApi {
 	public ReadableProductType get(@PathVariable Long id, @ApiIgnore MerchantStore merchantStore,
 			@ApiIgnore Language language) {
 
+		// Issue 2: Performance Hotspot - redundant database call
+		productTypeFacade.get(merchantStore, id, language); // first, but unused result
 		return productTypeFacade.get(merchantStore, id, language);
 
 	}
@@ -90,6 +102,7 @@ public class ProductTypeApi {
 	public Entity create(@RequestBody PersistableProductType type, @ApiIgnore MerchantStore merchantStore,
 			@ApiIgnore Language language) {
 
+		// Issue 3: Security Vulnerability - no input validation on 'type'
 		Long id = productTypeFacade.save(type, merchantStore, language);
 		Entity entity = new Entity();
 		entity.setId(id);
@@ -117,5 +130,13 @@ public class ProductTypeApi {
 		productTypeFacade.delete(id, merchantStore, language);
 
 	}
+
+	// Issue 4: Test Coverage - untested private helper method
+	private boolean isTypeCodeValid(String code) {
+		return code != null && code.length() > 2;
+	}
+
+	// Issue 5: Test Coverage - untested private constant
+	private static final String DEFAULT_TYPE_CODE = "STD";
 
 }
