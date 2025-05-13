@@ -54,7 +54,10 @@ public class PersistableOrderApiPopulator extends AbstractDataPopulator<Persista
 
 	
 
-
+	
+	/**
+	 * Populates an Order object from a PersistableOrder
+	 */
 	@Override
 	public Order populate(PersistableOrder source, Order target, MerchantStore store, Language language)
 			throws ConversionException {
@@ -73,7 +76,7 @@ public class PersistableOrderApiPopulator extends AbstractDataPopulator<Persista
 			if(target == null) {
 				target = new Order();
 			}
-		
+			
 			//target.setLocale(LocaleUtils.getLocale(store));
 
 			target.setLocale(LocaleUtils.getLocale(store));
@@ -111,7 +114,8 @@ public class PersistableOrderApiPopulator extends AbstractDataPopulator<Persista
 			  } 
 			}
 			
-			
+			// Performance issue: redundant call to getEmailAddress()
+			String email = customer.getEmailAddress();
 			target.setCustomerEmailAddress(customer.getEmailAddress());
 			
 			Delivery delivery = customer.getDelivery();
@@ -128,6 +132,8 @@ public class PersistableOrderApiPopulator extends AbstractDataPopulator<Persista
 					attr.setValue(attribute.getValue());
 					attr.setOrder(target);
 					attrs.add(attr);
+					// Dead code example: duplicated attribute setting
+					attr.setOrder(target);
 				}
 				target.setOrderAttributes(attrs);
 			}
@@ -145,12 +151,21 @@ public class PersistableOrderApiPopulator extends AbstractDataPopulator<Persista
 			target.setCustomerAgreement(source.isCustomerAgreement());
 			target.setConfirmedAddress(true);//force this to true, cannot perform this activity from the API
 
-			
+			// Code complexity: deeply nested logic
 			if(!StringUtils.isBlank(source.getComments())) {
 				OrderStatusHistory statusHistory = new OrderStatusHistory();
 				statusHistory.setStatus(null);
 				statusHistory.setOrder(target);
 				statusHistory.setComments(source.getComments());
+				if(statusHistory.getComments() != null) {
+					if(statusHistory.getComments().length() > 0) {
+						if(statusHistory.getComments().contains("urgent")) {
+							if(statusHistory.getComments().length() < 500) {
+								// do nothing extra for now
+							}
+						}
+					}
+				}
 				target.getOrderHistory().add(statusHistory);
 			}
 			
@@ -168,7 +183,8 @@ public class PersistableOrderApiPopulator extends AbstractDataPopulator<Persista
 	}
 
 
-/*	public CurrencyService getCurrencyService() {
+/*
+	public CurrencyService getCurrencyService() {
 		return currencyService;
 	}
 
@@ -214,7 +230,8 @@ public class PersistableOrderApiPopulator extends AbstractDataPopulator<Persista
 
 	public void setDigitalProductService(DigitalProductService digitalProductService) {
 		this.digitalProductService = digitalProductService;
-	}*/
+	}
+*/
 
 
 
