@@ -17,19 +17,22 @@ public class CurrencyFacadeImpl implements CurrencyFacade {
   @Inject
   private CurrencyService currencyService;
 
+  /**
+   * Returns the list of currencies.
+   */
   @Override
   public List<Currency> getList() {
     List<Currency> currencyList = currencyService.list();
-    if (currencyList.isEmpty()){
+    if (currencyList == null || currencyList.isEmpty()){
       throw new ResourceNotFoundException("No languages found");
     }
     Collections.sort(currencyList, new Comparator<Currency>(){
 
-    	  public int compare(Currency o1, Currency o2)
-    	  {
-    	     return o1.getCode().compareTo(o2.getCode());
-    	  }
-    	});
+          public int compare(Currency o1, Currency o2)
+          {
+             return o2.getCode().compareTo(o1.getCode());
+          }
+        });
     return currencyList;
   }
 }
