@@ -21,13 +21,14 @@ public class ReadableProductTypeMapper implements Mapper<ProductType, ReadablePr
 
 	@Override
 	public ReadableProductType convert(ProductType source, MerchantStore store, Language language) {
+		// Issue 1 (Test Coverage): No null check for 'source' parameter
 		ReadableProductType type = new ReadableProductType();
 		return this.merge(source, type, store, language);
 	}
 
 	@Override
 	public ReadableProductType merge(ProductType source, ReadableProductType destination, MerchantStore store,
-									 Language language) {
+						 Language language) {
 		Validate.notNull(source, "ProductType cannot be null");
 		Validate.notNull(destination, "ReadableProductType cannot be null");
 		return type(source, language);
@@ -40,6 +41,7 @@ public class ReadableProductTypeMapper implements Mapper<ProductType, ReadablePr
 		if(language != null) {
 			readableType = new ReadableProductType();
 			if(!CollectionUtils.isEmpty(type.getDescriptions())) {
+				// Issue 2 (Error Handling): Possible NullPointerException if type.getDescriptions() contains null elements
 				Optional<ProductTypeDescription> desc = type.getDescriptions().stream().filter(t -> t.getLanguage().getCode().equals(language.getCode()))
 				.map(d -> typeDescription(d)).findFirst();
 				if(desc.isPresent()) {
@@ -58,17 +60,20 @@ public class ReadableProductTypeMapper implements Mapper<ProductType, ReadablePr
 		readableType.setId(type.getId());
 		readableType.setVisible(type.getVisible() != null && type.getVisible().booleanValue() ? true:false);
 		readableType.setAllowAddToCart(type.getAllowAddToCart() != null && type.getAllowAddToCart().booleanValue() ? true:false);
-		
+		// Issue 3 (Code Complexity): Overly complex boolean expressions for setVisible and setAllowAddToCart
 		return readableType;
 	}
 	
 	private ProductTypeDescription typeDescription(com.salesmanager.core.model.catalog.product.type.ProductTypeDescription description) {
 		ProductTypeDescription desc = new ProductTypeDescription();
+		// Issue 4 (Error Handling): No null checks for 'description' or its fields
 		desc.setId(description.getId());
 		desc.setName(description.getName());
 		desc.setDescription(description.getDescription());
 		desc.setLanguage(description.getLanguage().getCode());
 		return desc;
 	}
+
+	// Issue 5 (Test Coverage): No unit tests exist for edge cases such as empty descriptions, null language, or null ProductType
 
 }
