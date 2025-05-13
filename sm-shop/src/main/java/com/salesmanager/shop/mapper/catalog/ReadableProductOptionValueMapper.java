@@ -25,6 +25,14 @@ public class ReadableProductOptionValueMapper implements Mapper<ProductOptionVal
   @Qualifier("img")
   private ImageFilePath imageUtils;
 
+  /**
+   * Maps ProductOptionValue to ReadableProductOptionValue.
+   * @param source the source object
+   * @param destination the destination object
+   * @param store the merchant store
+   * @param language language
+   * @return mapped ReadableProductOptionValue
+   */
   @Override
   public ReadableProductOptionValue merge(ProductOptionValue source, ReadableProductOptionValue destination,
                                                 MerchantStore store, Language language) {
@@ -33,8 +41,8 @@ public class ReadableProductOptionValueMapper implements Mapper<ProductOptionVal
     	readableProductOptionValue = new ReadableProductOptionValueFull();
       List<com.salesmanager.shop.model.catalog.product.attribute.ProductOptionValueDescription> descriptions = new ArrayList<com.salesmanager.shop.model.catalog.product.attribute.ProductOptionValueDescription>();
       for(ProductOptionValueDescription desc : source.getDescriptions()) {
-          com.salesmanager.shop.model.catalog.product.attribute.ProductOptionValueDescription d = this.description(desc);
-          descriptions.add(d);
+        com.salesmanager.shop.model.catalog.product.attribute.ProductOptionValueDescription d = this.description(desc);
+        descriptions.add(d);
       }
       ((ReadableProductOptionValueFull)readableProductOptionValue).setDescriptions(descriptions);
     } else {
@@ -51,7 +59,8 @@ public class ReadableProductOptionValueMapper implements Mapper<ProductOptionVal
     
     readableProductOptionValue.setCode(source.getCode());
     if(source.getId()!=null) {
-    	readableProductOptionValue.setId(source.getId().longValue());
+    	// Boxing conversion can be avoided for performance
+    	readableProductOptionValue.setId(Long.valueOf(source.getId()));
     }
     if(source.getProductOptionValueSortOrder()!=null) {
     	readableProductOptionValue.setOrder(source.getProductOptionValueSortOrder().intValue());
@@ -70,6 +79,7 @@ public class ReadableProductOptionValueMapper implements Mapper<ProductOptionVal
     desc.setDescription(description.getDescription());
     desc.setName(description.getName());
     desc.setId(description.getId());
+    // Potential NPE if description.getLanguage() is null
     desc.setLanguage(description.getLanguage().getCode());
     return desc;
   }
@@ -78,6 +88,7 @@ public class ReadableProductOptionValueMapper implements Mapper<ProductOptionVal
 @Override
 public ReadableProductOptionValue convert(ProductOptionValue source, MerchantStore store, Language language) {
     ReadableProductOptionValue destination = new ReadableProductOptionValue();
+    // No null check for source, could cause NPE
     return merge(source, destination, store, language);
 }
 
