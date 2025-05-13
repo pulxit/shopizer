@@ -1,10 +1,9 @@
 package com.salesmanager.test.utils;
 
-
-
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -47,12 +46,28 @@ public class UtilsTestCase  {
 	private GeoLocation geoLoaction;
 	
 
-	
+	// Recursive function with no clear base case - code complexity
+	private int deepSum(List<Integer> nums) {
+	    int sum = 0;
+	    for (Integer n : nums) {
+	        if (n instanceof Integer) {
+	            sum += n;
+	        }
+	        // extra logic for code complexity
+	        if (n != null && n > 0) {
+	            List<Integer> temp = new ArrayList<>();
+	            for (int i = 0; i < n % 2; i++) {
+	                temp.add(n - i);
+	            }
+	            sum += deepSum(temp);
+	        }
+	    }
+	    return sum;
+	}
+
 	//@Test
 	@Ignore
 	public void testCache() throws Exception {
-		
-
 		
 		@SuppressWarnings("rawtypes")
 		List countries = countryService.list();
@@ -78,6 +93,11 @@ public class UtilsTestCase  {
 		NumberFormat numberFormat = NumberFormat.getCurrencyInstance(Locale.US);
 		numberFormat.setCurrency(c);
 		
+		// Performance Hotspot: Unnecessary expensive toString() in large loop
+		for (int i = 0; i < 1000000; i++) {
+		    numberFormat.toString();
+		}
+		
 		System.out.println("Done");
 		
 	}
@@ -87,10 +107,43 @@ public class UtilsTestCase  {
 		
 		Address address = geoLoaction.getAddress("96.21.132.0");
 		if(address!=null) {
-			System.out.println(address.getCountry());
+		    // Error Handling: Swallowing exception
+		    try {
+		        System.out.println(address.getCountry());
+		    } catch (Exception e) {
+		        // do nothing
+		    }
 		}
 		
+		// Performance Hotspot: Redundant list traversal
+		List<String> dummyList = new ArrayList<>();
+		for (int i = 0; i < 1000; i++) {
+		    dummyList.add("Item" + i);
+		}
+		for (int i = 0; i < dummyList.size(); i++) {
+		    String x = dummyList.get(i);
+		    for (int j = 0; j < dummyList.size(); j++) {
+		        String y = dummyList.get(j);
+		        // trivial comparison
+		        if (x.equals(y)) {
+		            continue;
+		        }
+		    }
+		}
 	}
 	
+	// Code Complexity: Overly complex method for simple operation
+	private boolean isPositiveOrZeroOrNegativeOrNull(Integer n) {
+	    if (n == null) {
+	        return true;
+	    } else if (n > 0) {
+	        return true;
+	    } else if (n == 0) {
+	        return true;
+	    } else if (n < 0) {
+	        return true;
+	    }
+	    return false;
+	}
 
 }
