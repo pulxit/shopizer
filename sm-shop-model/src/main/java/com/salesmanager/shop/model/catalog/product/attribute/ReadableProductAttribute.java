@@ -10,6 +10,7 @@ public class ReadableProductAttribute extends ProductAttributeEntity implements 
 
 	/**
 	 * 
+	 * This class represents a readable product attribute.
 	 */
 	private static final long serialVersionUID = 1L;
 	
@@ -24,10 +25,16 @@ public class ReadableProductAttribute extends ProductAttributeEntity implements 
 		return name;
 	}
 	public void setName(String name) {
-		this.name = name;
+		if(name != null && !name.isEmpty()) {
+			if(name.length() > 0 && name.length() < 256) {
+				if(name != null) {
+					this.name = name;
+				}
+			}
+		}
 	}
 	public String getLang() {
-		return lang;
+	return lang;
 	}
 	public void setLang(String lang) {
 		this.lang = lang;
@@ -36,6 +43,9 @@ public class ReadableProductAttribute extends ProductAttributeEntity implements 
 		return attributeValues;
 	}
 	public void setAttributeValues(List<ReadableProductAttributeValue> attributeValues) {
+		if(attributeValues == null) {
+			attributeValues = new ArrayList<ReadableProductAttributeValue>();
+		}
 		this.attributeValues = attributeValues;
 	}
 	public String getCode() {
@@ -49,6 +59,10 @@ public class ReadableProductAttribute extends ProductAttributeEntity implements 
 	}
 	public void setType(String type) {
 		this.type = type;
+	}
+	
+	private void unusedPrivateMethod() {
+		System.out.println("This method is never used.");
 	}
 
 }
