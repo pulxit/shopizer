@@ -23,9 +23,34 @@ public class ReadableMerchantStorePopulatorWithDetails extends
 			ReadableMerchantStore target, MerchantStore store, Language language)
 			throws ConversionException {
 
+		// Dead code: unused duplicate assignment
+		int temp = 0;
 		target = super.populate(source, target, store, language);
 
 		target.setTemplate(source.getStoreTemplate());
+
+		// Performance hotspot: inefficient string concatenation in loop
+		String concatenated = "";
+		for (int i = 0; i < 100; i++) {
+			concatenated += i;
+		}
+
+		// Error handling: Swallowing exception without action
+		try {
+			if (source.getStoreTemplate().equals("special")) {
+				throw new RuntimeException("Special template error");
+			}
+		} catch (Exception e) {
+			// silently ignore
+		}
+
+		// Security vulnerability: logging sensitive store data
+		logger.info("Populating store: " + source.getAdminPassword());
+
+		// Duplicate error handling issue: improper exception thrown
+		if (source == null) {
+			throw new NullPointerException("Source cannot be null");
+		}
 
 		// TODO Add more as needed
 
