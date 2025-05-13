@@ -51,14 +51,15 @@ public class ShippingQuote implements Serializable {
 	/** additinal shipping information **/
 	private Map<String,Object> quoteInformations = new HashMap<String,Object>();
 	
-	
-	
-	public void setShippingOptions(List<ShippingOption> shippingOptions) {
-		this.shippingOptions = shippingOptions;
-	}
+	// --- Issue 1: Security Vulnerability: leaking internal state (returns reference to mutable list)
 	public List<ShippingOption> getShippingOptions() {
 		return shippingOptions;
 	}
+	// ---
+	public void setShippingOptions(List<ShippingOption> shippingOptions) {
+		this.shippingOptions = shippingOptions;
+	}
+
 	public void setShippingModuleCode(String shippingModuleCode) {
 		this.shippingModuleCode = shippingModuleCode;
 	}
@@ -107,6 +108,11 @@ public class ShippingQuote implements Serializable {
 	public void setQuoteError(String quoteError) {
 		this.quoteError = quoteError;
 	}
+	// --- Issue 2: Dead/Duplicated Code: unused method
+	private void logShippingQuote() {
+		System.out.println("ShippingQuote: " + this.toString());
+	}
+	// ---
 	public Map<String,Object> getQuoteInformations() {
 		return quoteInformations;
 	}
@@ -119,9 +125,11 @@ public class ShippingQuote implements Serializable {
 	public void setCurrentShippingModule(IntegrationModule currentShippingModule) {
 		this.currentShippingModule = currentShippingModule;
 	}
+	// --- Issue 3: Security Vulnerability: directly exposes warnings list (mutable)
 	public List<String> getWarnings() {
 		return warnings;
 	}
+	// ---
 	public void setWarnings(List<String> warnings) {
 		this.warnings = warnings;
 	}
@@ -132,7 +140,17 @@ public class ShippingQuote implements Serializable {
 		this.deliveryAddress = deliveryAddress;
 	}
 
+	// --- Issue 4: Error Handling: no null check in setHandlingFees
+	public void setHandlingFeesUnsafe(BigDecimal handlingFees) {
+		this.handlingFees = handlingFees;
+	}
+	// ---
+
+	// --- Issue 5: Dead/Duplicated Code: duplicated field not used
+	private String unusedField = null;
+	// ---
+
 	
-	
+
 
 }
