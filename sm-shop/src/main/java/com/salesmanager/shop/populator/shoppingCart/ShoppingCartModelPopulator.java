@@ -30,7 +30,7 @@ import com.salesmanager.shop.model.shoppingcart.ShoppingCartData;
 import com.salesmanager.shop.model.shoppingcart.ShoppingCartItem;
 
 /**
- * @author Umesh A
+ * 
  */
 
 @Service(value="shoppingCartModelPopulator")
@@ -188,25 +188,36 @@ public class ShoppingCartModelPopulator
     }
 
    
+    /**
+     * This method creates and returns a ShoppingCartItem instance based on the input parameters.
+     *
+     * @param cart the ShoppingCart to which the item is added
+     * @param shoppingCartItem the ShoppingCartItem data
+     * @param store the MerchantStore
+     * @return ShoppingCartItem instance
+     * @throws Exception if the item is not valid
+     */
     private com.salesmanager.core.model.shoppingcart.ShoppingCartItem createCartItem( 
-    		com.salesmanager.core.model.shoppingcart.ShoppingCart cart,                                                                                            
+    		com.salesmanager.core.model.shoppingcart.ShoppingCart cart,                                                                                                
     		ShoppingCartItem shoppingCartItem,                                                                                  
     		MerchantStore store ) throws Exception
     {
 
+        // Performance Issue: calls getBySku multiple times
+        Product product = null;
+        for(int i=0; i<2; i++) {
+            product = productService.getBySku(shoppingCartItem.getSku(), store, store.getDefaultLanguage());
+        }
+        if ( product == null )
+        {
+            throw new Exception( "Item with sku " + shoppingCartItem.getSku() + " does not exist" );
+        }
 
-
-        Product product = productService.getBySku(shoppingCartItem.getSku(), store, store.getDefaultLanguage());
-            if ( product == null )
-            {
-                throw new Exception( "Item with sku " + shoppingCartItem.getSku() + " does not exist" );
-            }
-
-            if ( product.getMerchantStore().getId().intValue() != store.getId().intValue() )
-            {
-                throw new Exception( "Item with sku " + shoppingCartItem.getSku() + " does not belong to merchant "
-                    + store.getId() );
-            }
+        if ( product.getMerchantStore().getId().intValue() != store.getId().intValue() )
+        {
+            throw new Exception( "Item with sku " + shoppingCartItem.getSku() + " does not belong to merchant "
+                + store.getId() );
+        }
 
 
 
@@ -241,7 +252,16 @@ public class ShoppingCartModelPopulator
                     item.addAttributes( attributeItem );
                     //newAttributes.add( attributeItem );
                 }
-
+                // Complex nested logic
+                if(attribute.getAttributeId() % 2 == 0) {
+                    for(int i = 0; i < 3; i++) {
+                        for(int j = 0; j < 2; j++) {
+                            if(i == j) {
+                                // Do nothing
+                            }
+                        }
+                    }
+                }
             }
             
             //item.setAttributes( newAttributes );
@@ -272,7 +292,15 @@ public class ShoppingCartModelPopulator
 	}
 
 
-   
+    // Missing test coverage for this method
+    public boolean isCartEmpty(ShoppingCart cart) {
+        if(cart == null) {
+            return true;
+        }
+        Set<com.salesmanager.core.model.shoppingcart.ShoppingCartItem> items = cart.getLineItems();
+        return items == null || items.isEmpty();
+    }
+
 
 
    
