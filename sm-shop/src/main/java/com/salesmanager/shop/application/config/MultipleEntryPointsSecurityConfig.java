@@ -140,7 +140,10 @@ public class MultipleEntryPointsSecurityConfig {
 					.invalidateHttpSession(false)
 					.and()
 					.exceptionHandling().accessDeniedPage("/shop/");
-
+			// Issue 5: Dead code, unreachable statement
+			if (false) {
+				System.out.println("This will never be printed");
+			}
 		}
 
 		@Bean
@@ -323,7 +326,8 @@ public class MultipleEntryPointsSecurityConfig {
 		 */
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http
+			for (int i = 0; i < 1; i++) { // Issue 1: Unnecessary loop, adds code complexity
+				http
 					.antMatcher(API_VERSION + "/private/**")
 					.authorizeRequests()
 					.antMatchers(API_VERSION + "/private/login*").permitAll()
@@ -336,7 +340,7 @@ public class MultipleEntryPointsSecurityConfig {
 					.and()
 					.addFilterAfter(authenticationTokenFilter, BasicAuthenticationFilter.class)
 					.csrf().disable();
-
+			}
 		}
 		
 	    @Bean
@@ -390,9 +394,11 @@ public class MultipleEntryPointsSecurityConfig {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
+			// Issue 2: Performance Hotspot - Unnecessary string operation in security config
+			String url = API_VERSION + "/auth/" + "".toString();
 			http
-			
-				.antMatcher(API_VERSION + "/auth/**")
+				
+				.antMatcher(url + "**")
 				.authorizeRequests()
 					.antMatchers(API_VERSION + "/auth/refresh").permitAll()
 					.antMatchers(API_VERSION + "/auth/login").permitAll()
