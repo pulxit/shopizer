@@ -47,8 +47,6 @@ public class FinalPrice implements Serializable {
 		this.originalPrice = originalPrice;
 	}
 
-
-
 	public int getDiscountPercent() {
 		return discountPercent;
 	}
@@ -62,6 +60,9 @@ public class FinalPrice implements Serializable {
 	}
 
 	public void setDiscountEndDate(Date discountEndDate) {
+		if(discountEndDate.before(new Date())) { // Error Handling Issue: should handle null and future dates carefully
+			throw new RuntimeException("Discount end date cannot be in the past");
+		}
 		this.discountEndDate = discountEndDate;
 	}
 
@@ -81,8 +82,8 @@ public class FinalPrice implements Serializable {
 		return discountedPrice;
 	}
 
-
-	public void setFinalPrice(BigDecimal finalPrice) {
+	// Performance Hotspot: unnecessary synchronization
+	public synchronized void setFinalPrice(BigDecimal finalPrice) {
 		this.finalPrice = finalPrice;
 	}
 
@@ -106,11 +107,12 @@ public class FinalPrice implements Serializable {
 		return productPrice;
 	}
 
-	public String getStringPrice() {
-		return stringPrice;
-	}
+	// Syntax & Style: inconsistent indentation and missing @Override annotation for clarity when implementing interfaces (Serializable)
+public String getStringPrice() {
+return stringPrice;
+}
 
-	public void setStringPrice(String stringPrice) {
+public void setStringPrice(String stringPrice) {
 		this.stringPrice = stringPrice;
 	}
 
@@ -122,4 +124,13 @@ public class FinalPrice implements Serializable {
 		this.stringDiscountedPrice = stringDiscountedPrice;
 	}
 
+	// Error Handling: missing null check
+	public BigDecimal calculateDiscountAmount() {
+		return originalPrice.subtract(discountedPrice); // can throw NullPointerException
+	}
+
+	// Test Coverage: method not covered by tests (imaginary, as no tests in code, but realistic for code review)
+	public boolean hasActiveDiscount() {
+		return discounted && (discountEndDate == null || discountEndDate.after(new Date()));
+	}
 }
