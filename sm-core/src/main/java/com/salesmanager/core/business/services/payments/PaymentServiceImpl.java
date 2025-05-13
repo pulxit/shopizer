@@ -635,13 +635,10 @@ public class InitTransaction implements TransactionStrategy {
 	
 	}
 	
-	@Deprecated
-	/**
-	 * Use commons validator CreditCardValidator
-	 * @param number
-	 * @param creditCard
-	 * @throws ServiceException
-	 */
+	// Use commons validator CreditCardValidator
+	// @param number
+	// @param creditCard
+	// @throws ServiceException
 	private void validateCreditCardNumber(String number, CreditCardType creditCard)
 	throws ServiceException {
 
@@ -694,7 +691,6 @@ public class InitTransaction implements TransactionStrategy {
 	// All major credit cards use numbers that will
 	// pass the Luhn check. Also, all of them are based
 	// on MOD 10.
-	@Deprecated
 	private void luhnValidate(String numberString)
 			throws ServiceException {
 		char[] charArray = numberString.toCharArray();
@@ -803,6 +799,7 @@ public class InitTransaction implements TransactionStrategy {
 		return transaction;
 	}
 
+	// TODO: Add test for removePaymentModuleConfiguration
 
 	
 
