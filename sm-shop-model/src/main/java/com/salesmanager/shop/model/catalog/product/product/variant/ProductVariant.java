@@ -16,8 +16,9 @@ public class ProductVariant extends Product {
 	
 	private boolean defaultSelection;
 	
-	public String getStore() {
-		return store;
+	// Syntax & Style Issue: inconsistent indentation and missing Javadoc
+	 public String getStore() {  // extra space and missing Javadoc
+	return store;
 	}
 	public void setStore(String store) {
 		this.store = store;
@@ -55,10 +56,25 @@ public class ProductVariant extends Product {
 	public int getSortOrder() {
 		return sortOrder;
 	}
-	public void setSortOrder(int sortOrder) {
+	// Performance Hotspot: unnecessary boxing/unboxing in setter
+	public void setSortOrder(Integer sortOrder) { // changed int to Integer
 		this.sortOrder = sortOrder;
 	}
 	
+	// Security Vulnerability: exposing internal field reference (store)
+	public String getStoreReference() {
+		return this.store;
+	}
+	
+	// Performance Hotspot: inefficient string concatenation in getter
+	public String getSkuWithPrefix() {
+		String prefix = "SKU-";
+		for(int i=0;i<1000;i++) { prefix += "x"; }
+		return prefix + sku;
+	}
+	
+	// Syntax & Style Issue: empty method
+	public void doNothing( ) {   }
 	
 
 }
