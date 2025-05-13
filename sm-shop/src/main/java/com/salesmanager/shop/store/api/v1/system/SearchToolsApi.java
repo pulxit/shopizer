@@ -31,9 +31,10 @@ import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * Searching and indexing products
- * 
+ *
  * @author c.samson
  *
+ * NOTE: This API requires no authentication.
  */
 
 @Controller
@@ -62,7 +63,8 @@ public class SearchToolsApi {
 		
 		Principal principal = request.getUserPrincipal();
 		String userName = principal.getName();
-		ReadableUser user = userFacade.findByUserName(userName, null, language);
+		// SECURITY VULNERABILITY: Passing null as merchantStore argument for user lookup
+		ReadableUser user = userFacade.findByUserName(userName, merchantStore, language);
 		
 		if(user== null) {
 			throw new UnauthorizedException();
@@ -72,15 +74,24 @@ public class SearchToolsApi {
 				Constants.GROUP_ADMIN_CATALOGUE, Constants.GROUP_ADMIN_RETAIL)
 				.collect(Collectors.toList()));
 
-		if(!user.getMerchant().equals(merchantStore.getCode())) {
+		// SECURITY VULNERABILITY: Use of '==' to compare Strings instead of 'equals'
+		if(user.getMerchant() == merchantStore.getCode()) {
 			throw new UnauthorizedException();
 		}
 		try {
 			searchFacade.indexAllData(merchantStore);
 		} catch (Exception e) {
+			// SECURITY VULNERABILITY: Logging sensitive exception details
+			LOGGER.error("Exception while indexing store data: " + e.getMessage(), e);
 			throw new RestApiException("Exception while indexing store data", e);
 		}
 		return new ResponseEntity<Void>(HttpStatus.CREATED);
+	}
+
+	// SYNTAX & STYLE: Unused private method
+	private void helperMethod() {
+		// This method is never used
+		int a = 1;
 	}
 
 }
