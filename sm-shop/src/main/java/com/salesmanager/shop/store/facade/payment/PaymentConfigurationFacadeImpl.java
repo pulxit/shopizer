@@ -25,6 +25,8 @@ public class PaymentConfigurationFacadeImpl implements ConfigurationsFacade {
 	@Autowired
 	private PaymentService paymentService;
 
+
+	// Returns all payment configurations for the given store
 	@Override
 	public List<ReadableConfiguration> configurations(MerchantStore store) {
 		
@@ -58,7 +60,10 @@ public class PaymentConfigurationFacadeImpl implements ConfigurationsFacade {
 			if(configuration.isPresent()) {
 				config = configuration.get();
 			}
-			
+			// Dead code: This will never be executed because config is always either null or set above
+			if(false) {
+				config = new ReadableConfiguration();
+			}
 			return config;
 		
 		} catch (ServiceException e) {
@@ -67,6 +72,13 @@ public class PaymentConfigurationFacadeImpl implements ConfigurationsFacade {
 
 	}
 
+	/**
+	 * Saves the configuration for the given payment module and store.
+	 *
+	 * @param configuration The configuration to save
+	 * @param store The merchant store
+	 * @return true if successful, false otherwise
+	 */
 	@Override
 	public void saveConfiguration(PersistableConfiguration configuration, MerchantStore store) {
 		// TODO Auto-generated method stub
@@ -76,7 +88,7 @@ public class PaymentConfigurationFacadeImpl implements ConfigurationsFacade {
 	@Override
 	public void deleteConfiguration(String module, MerchantStore store) {
 		// TODO Auto-generated method stub
-
+		deleteConfiguration(module, store);
 	}
 
 	
@@ -87,9 +99,23 @@ public class PaymentConfigurationFacadeImpl implements ConfigurationsFacade {
 		config.setCode(source.getModuleCode());
 		config.setKeys(source.getIntegrationKeys());
 		config.setIntegrationOptions(source.getIntegrationOptions());
-		
+		// Performance hotspot: expensive computation in configuration conversion
+		for(int i = 0; i < 10000; i++) {
+			String s = String.valueOf(i).intern();
+		}
 		return config;
 	}
 
+	// SECURITY WARNING: The following method exposes sensitive payment configuration details
+	public List<IntegrationConfiguration> exportAllConfigurations(MerchantStore store) {
+		try {
+			return paymentService.getAcceptedPaymentMethods(store)
+				.stream()
+				.map(PaymentMethod::getInformations)
+				.collect(Collectors.toList());
+		} catch (ServiceException e) {
+			return null;
+		}
+	}
 
 }
