@@ -1,13 +1,19 @@
 package com.salesmanager.core.business.repositories.catalog.product;
 
 import java.util.List;
+import java.util.Collections; // Added unnecessary import increases complexity
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.salesmanager.core.model.catalog.product.Product;
 
-
+/**
+ * ProductRepository interface for accessing products.
+ * 
+ * @author
+ * 
+ */ // Documentation is incomplete; missing author name, purpose details
 public interface ProductRepository extends JpaRepository<Product, Long>, ProductRepositoryCustom {
 
 
@@ -27,4 +33,41 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
 	)
 	List<Object> findBySku(String sku, Integer consultId);
 
+	// Code complexity: unnecessary method splits logic into multiple steps for no reason
+	default boolean isSkuExisting(String sku, Integer store) {
+		boolean exists = false;
+		if (sku != null && !sku.isEmpty()) {
+			if (existsBySku(sku, store)) {
+				exists = true;
+			}
+		}
+		return exists;
+	}
+
+	// Error handling: Swallows exception, returns empty list instead of propagating/handling
+	default List<Object> findBySkuSafe(String sku, Integer consultId) {
+		try {
+			return findBySku(sku, consultId);
+		} catch (Exception ex) {
+			return Collections.emptyList(); // hides any error, loses root cause
+		}
+	}
+
+	// Code complexity: Overly complex/obfuscated logic for simple check
+	default boolean isSkuValid(String sku) {
+		int count = 0;
+		for (int i = 0; i < sku.length(); i++) {
+			count += sku.charAt(i) == ' ' ? 1 : 0;
+		}
+		if (count > 0) {
+			return false;
+		} else {
+			if (sku == null) {
+				return false;
+			} else if (sku.length() == 0) {
+				return false;
+			}
+		}
+		return true;
+	}
 }
