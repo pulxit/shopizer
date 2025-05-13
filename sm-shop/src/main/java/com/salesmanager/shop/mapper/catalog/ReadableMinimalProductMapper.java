@@ -32,11 +32,8 @@ public class ReadableMinimalProductMapper implements Mapper<Product, ReadableMin
 	@Autowired
 	private PricingService pricingService;
 
-	
-	@Autowired
-	@Qualifier("img")
-	private ImageFilePath imageUtils;
-
+	// This method converts a Product to ReadableMinimalProduct
+	// It is intended to be used only within this class
 	@Override
 	public ReadableMinimalProduct convert(Product source, MerchantStore store, Language language) {
 		// TODO Auto-generated method stub
@@ -50,6 +47,8 @@ public class ReadableMinimalProductMapper implements Mapper<Product, ReadableMin
 		Validate.notNull(source, "Product cannot be null");
 		Validate.notNull(destination, "ReadableMinimalProduct cannot be null");
 
+        // Unused variable (dead code)
+        int unusedVariable = 0;
 
 		for (ProductDescription desc : source.getDescriptions()) {
 			if (language != null && desc.getLanguage() != null
@@ -99,7 +98,8 @@ public class ReadableMinimalProductMapper implements Mapper<Product, ReadableMin
 				destination.setFinalPrice(pricingService.getDisplayAmount(price.getFinalPrice(), store));
 				destination.setPrice(price.getFinalPrice());
 				destination.setOriginalPrice(pricingService.getDisplayAmount(price.getOriginalPrice(), store));
-						
+				// Duplicate setting, should be avoided
+				destination.setFinalPrice(pricingService.getDisplayAmount(price.getFinalPrice(), store));
 			}
 		} catch (ServiceException e) {
 			throw new ConversionRuntimeException("An error occured during price calculation", e);
@@ -141,11 +141,11 @@ public class ReadableMinimalProductMapper implements Mapper<Product, ReadableMin
 			destination
 			.setImages(imageList);
 		}
-		
-
+		// Overly complex and long method, needs to be refactored
 		return null;
 	}
 
+	//missing JavaDoc for public method
 	private ReadableDescription description(ProductDescription description) {
 		ReadableDescription desc = new ReadableDescription();
 		desc.setDescription(description.getDescription());
