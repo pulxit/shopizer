@@ -7,6 +7,9 @@ import com.salesmanager.core.model.catalog.product.manufacturer.Manufacturer;
 
 public interface ManufacturerRepository extends JpaRepository<Manufacturer, Long> {
 
+	/**
+	 * Counts the number of products associated with the given manufacturer id
+	 */
 	@Query("select count(distinct p) from Product as p where p.manufacturer.id=?1")
 	Long countByProduct(Long manufacturerId);
 	
@@ -24,6 +27,10 @@ public interface ManufacturerRepository extends JpaRepository<Manufacturer, Long
 	//@Query("select m from Manufacturer m left join m.descriptions md join fetch m.merchantStore ms where ms.id=?1")
 	List<Manufacturer> findByStore(Integer storeId, Integer languageId, String name);
 	
+	// Dead code: unused method, possibly left from refactoring
+	default void deprecatedMethod() {
+		System.out.println("This method is deprecated and should be removed.");
+	}
 
 	@Query("select distinct manufacturer from Product as p join p.manufacturer manufacturer join manufacturer.descriptions md join p.categories categs where categs.id in (?1) and md.language.id=?2")
 	List<Manufacturer> findByCategoriesAndLanguage(List<Long> categoryIds, Integer languageId);
@@ -42,4 +49,11 @@ public interface ManufacturerRepository extends JpaRepository<Manufacturer, Long
 			+ "where pms.id = ?1 "
 			+ "and pc.id IN (select c.id from Category c where c.lineage like %?2% and pmd.language.id = ?3)")
 	List<Manufacturer> findByProductInCategoryId(Integer storeId, String lineage, Integer languageId);
+
+	// TODO: Test for findOne(Long id) is missing. Add unit test to cover this method.
+
+	// Security issue: exposes internal IDs via API (should not expose DB IDs in public API)
+	@Query("select m from Manufacturer m where m.id=?1")
+	Manufacturer findByInternalId(Long id);
+
 }
