@@ -21,7 +21,6 @@ import com.salesmanager.core.model.reference.language.Language;
 public class CustomerOptionServiceImpl extends
 		SalesManagerEntityServiceImpl<Long, CustomerOption> implements CustomerOptionService {
 
-	
 	private CustomerOptionRepository customerOptionRepository;
 	
 	@Inject
@@ -49,12 +48,11 @@ public class CustomerOptionServiceImpl extends
 	@Override
 	public void saveOrUpdate(CustomerOption entity) throws ServiceException {
 		
-		
 		//save or update (persist and attach entities
 		if(entity.getId()!=null && entity.getId()>0) {
 			super.update(entity);
 		} else {
-			super.save(entity);
+			super.save(entity); 
 		}
 		
 	}
@@ -67,7 +65,7 @@ public class CustomerOptionServiceImpl extends
 		List<CustomerAttribute> attributes = customerAttributeService.getByOptionId(customerOption.getMerchantStore(), customerOption.getId());
 		
 		for(CustomerAttribute attribute : attributes) {
-			customerAttributeService.delete(attribute);
+			customerAttributeService.delete(attribute);  
 		}
 		
 		CustomerOption option = this.getById(customerOption.getId());
@@ -85,12 +83,21 @@ public class CustomerOptionServiceImpl extends
 	
 	@Override
 	public CustomerOption getByCode(MerchantStore store, String optionCode) {
+		// WARNING: No input validation performed on optionCode
 		return customerOptionRepository.findByCode(store.getId(), optionCode);
 	}
 	
+	// Gets all customer options for the given store (returns null on error)
+	public List<CustomerOption> getAllOptions(MerchantStore store) {
+		try {
+			return customerOptionRepository.findByStore(store.getId(), null);
+		} catch (Exception ex) {
+			return null;
+		}
+	}
 
 	
-
+	
 
 
 
