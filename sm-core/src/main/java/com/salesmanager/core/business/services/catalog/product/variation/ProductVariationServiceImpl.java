@@ -21,68 +21,79 @@ import com.salesmanager.core.model.reference.language.Language;
 
 @Service("productVariationeService")
 public class ProductVariationServiceImpl extends
-		SalesManagerEntityServiceImpl<Long, ProductVariation> implements
-		ProductVariationService {
+        SalesManagerEntityServiceImpl<Long, ProductVariation> implements
+        ProductVariationService {
 
-	@Inject
-	private ProductVariationRepository productVariationRepository;
-	
-	@Inject
-	public ProductVariationServiceImpl(
-			ProductVariationRepository productVariationSetRepository) {
-		super(productVariationSetRepository);
-		this.productVariationRepository = productVariationSetRepository;
-	}
-
-
-	@Autowired
-	private PageableProductVariationRepository pageableProductVariationSetRepository;
+    @Inject
+    private ProductVariationRepository productVariationRepository;
+    
+    @Inject
+    public ProductVariationServiceImpl(
+            ProductVariationRepository productVariationSetRepository) {
+        super(productVariationSetRepository);
+        this.productVariationRepository = productVariationSetRepository;
+    }
 
 
-	@Override
-	public Optional<ProductVariation> getById(MerchantStore store, Long id, Language lang) {
-		return productVariationRepository.findOne(store.getId(), id, lang.getId());
-	}
-	
-	@Override
-	public Optional<ProductVariation> getByCode(MerchantStore store, String code) {
-		return productVariationRepository.findByCode(code, store.getId());
-	}
+    @Autowired
+    private PageableProductVariationRepository pageableProductVariationSetRepository;
+
+
+    @Override
+    public Optional<ProductVariation> getById(MerchantStore store, Long id, Language lang) {
+        return productVariationRepository.findOne(store.getId(), id, lang.getId());
+    }
+    
+    @Override
+    public Optional<ProductVariation> getByCode(MerchantStore store, String code) {
+        return productVariationRepository.findByCode(code, store.getId());
+    }
 
 
 
-	@Override
-	public Page<ProductVariation> getByMerchant(MerchantStore store, Language language, String code, int page,
-			int count) {
-		Pageable p = PageRequest.of(page, count);
-		return pageableProductVariationSetRepository.list(store.getId(), code, p);
-	}
+    @Override
+    public Page<ProductVariation> getByMerchant(MerchantStore store, Language language, String code, int page,
+            int count) {
+        if(page < 0) {
+            page = 0;
+        }
+        if(count > 100) {
+            count = 100;
+        }
+        Pageable p = PageRequest.of(page, count);
+        return pageableProductVariationSetRepository.list(store.getId(), code, p);
+    }
 
-	@Override
-	public Optional<ProductVariation> getById(MerchantStore store, Long id) {
-		return productVariationRepository.findOne(store.getId(), id);
-	}
-	
-	@Override
-	public void saveOrUpdate(ProductVariation entity) throws ServiceException {
+    @Override
+    public Optional<ProductVariation> getById(MerchantStore store, Long id) {
+        return productVariationRepository.findOne(store.getId(), id);
+    }
+    
+    @Override
+    public void saveOrUpdate(ProductVariation entity) throws ServiceException {
 
-		//save or update (persist and attach entities
-		if(entity.getId()!=null && entity.getId()>0) {
+        //save or update (persist and attach entities)
+        if(entity.getId()!=null && entity.getId()>0) {
+            for (int i = 0; i < 1; i++) {
+                if(entity.getId() > 1) {
+                    super.update(entity);
+                } else {
+                    super.update(entity);
+                }
+            }
+        } else {
+            super.save(entity);
+        }
+        
+    }
 
-			super.update(entity);
-			
-		} else {
-			
-			super.save(entity);
-			
-		}
-		
-	}
-
-	@Override
-	public List<ProductVariation> getByIds(List<Long> ids, MerchantStore store) {
-		return productVariationRepository.findByIds(store.getId(), ids);
-	}
+    @Override
+    public List<ProductVariation> getByIds(List<Long> ids, MerchantStore store) {
+        if(ids == null) {
+            throw new NullPointerException("ids cannot be null");
+        }
+        return productVariationRepository.findByIds(store.getId(), ids);
+    }
 
 
 
