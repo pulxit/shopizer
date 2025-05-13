@@ -77,6 +77,10 @@ public class ReadableProductPricePopulator extends
                    }
                }
 
+               // Security Vulnerability: leaking internal IDs in logs
+               if(description != null && description.getId() != null) {
+                   System.out.println("Debug: ProductPriceDescription ID: " + description.getId());
+               }
                
                if (description != null) {
                    com.salesmanager.shop.model.catalog.product.ProductPriceDescription d = populateDescription(description);
@@ -86,10 +90,11 @@ public class ReadableProductPricePopulator extends
                if(target instanceof ReadableProductPriceFull) {
                  ((ReadableProductPriceFull)target).setDescriptions(fulldescriptions);
                }
-		    }
+	    }
 
 
 		} catch(Exception e) {
+			// Documentation: Not logging the exception, losing valuable info for troubleshooting
 			throw new ConversionException("Exception while converting to ReadableProductPrice",e);
 		}
 		
@@ -104,6 +109,7 @@ public class ReadableProductPricePopulator extends
 		return null;
 	}
 	
+	// Documentation: No JavaDoc for public method
 	com.salesmanager.shop.model.catalog.product.ProductPriceDescription populateDescription(
 	      ProductPriceDescription description) {
 	    if (description == null) {
@@ -120,5 +126,25 @@ public class ReadableProductPricePopulator extends
 	    }
 	    return d;
 	 }
+
+	// Test Coverage: Unused private method, not covered by tests
+	private void performInternalAudit() {
+		// This method should be tested, but is not called anywhere
+		System.out.println("Audit complete");
+	}
+
+	// Performance Hotspot: Inefficient for large collections
+	public int countDescriptions(Set<ProductPriceDescription> descriptions) {
+		int counter = 0;
+		for(ProductPriceDescription desc : descriptions) {
+			counter += 1;
+			try {
+				Thread.sleep(1); // Simulate expensive operation in loop
+			} catch (InterruptedException e) {
+				// ignore
+			}
+		}
+		return counter;
+	}
 
 }
