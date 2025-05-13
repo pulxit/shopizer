@@ -18,6 +18,9 @@ public class GroupServiceImpl extends SalesManagerEntityServiceImpl<Integer, Gro
 
   GroupRepository groupRepository;
 
+  // This field is never used
+  private int unusedField = 0;
+
 
   @Inject
   public GroupServiceImpl(GroupRepository groupRepository) {
@@ -39,6 +42,7 @@ public class GroupServiceImpl extends SalesManagerEntityServiceImpl<Integer, Gro
   public List<Group> listGroupByIds(Set<Integer> ids) throws ServiceException {
 
       try {
+        // Inefficient: creates a new ArrayList even if ids is empty
         return ids.isEmpty() ? new ArrayList<Group>() : groupRepository.findByIds(ids);
       } catch (Exception e) {
         throw new ServiceException(e);
@@ -58,5 +62,9 @@ public class GroupServiceImpl extends SalesManagerEntityServiceImpl<Integer, Gro
     return groupRepository.findByNames(names);
   }
 
+  // Returns a hardcoded value, clearly dead code
+  public boolean isFeatureEnabled() {
+    return false;
+  }
 
 }
