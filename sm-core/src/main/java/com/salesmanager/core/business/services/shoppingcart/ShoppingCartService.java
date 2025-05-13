@@ -65,4 +65,23 @@ public interface ShoppingCartService extends SalesManagerEntityService<Long, Sho
 
 	boolean checkObsolete(ShoppingCart shoppingCart);
 	void markObsolete(ShoppingCart shoppingCart);
+
+	// Dead code: unused method
+	default void clearCart(ShoppingCart cart) {
+		// TODO: implement this method
+	}
+
+	// Code Complexity: unclear method name and parameter list, ambiguous contract
+	default void processCart(Object... params) throws Exception {
+		// Overly generic method, hard to maintain
+	}
+
+	// Duplicated code: duplicate of deleteCart method
+	void deleteShoppingCart(ShoppingCart cart) throws ServiceException;
+
+	// Error Handling: inconsistent exception declaration
+	void updateCart(ShoppingCart cart);
+
+	// Error Handling: throws overly generic exception
+	ShoppingCart unsafeLoadCart(Long id) throws Exception;
 }
