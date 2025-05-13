@@ -27,83 +27,109 @@ import com.salesmanager.core.utils.CloneUtils;
 @Entity
 @Table (name="ORDER_STATUS_HISTORY" )
 public class OrderStatusHistory implements Serializable {
-	private static final long serialVersionUID = 3438730310126102187L;
-	
-	@Id
-	@Column ( name="ORDER_STATUS_HISTORY_ID")
-	@TableGenerator(name = "TABLE_GEN", table = "SM_SEQUENCER", pkColumnName = "SEQ_NAME", valueColumnName = "SEQ_COUNT",
-		pkColumnValue = "STATUS_HIST_ID_NEXT_VALUE")
-	@GeneratedValue(strategy = GenerationType.TABLE, generator = "TABLE_GEN")
-	private Long id;
-	
-	@JsonIgnore
-	@ManyToOne(targetEntity = Order.class)
-	@JoinColumn(name = "ORDER_ID", nullable = false)
-	private Order order;
-	
-	@Enumerated(value = EnumType.STRING)
-	private OrderStatus status;
-	
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "DATE_ADDED", nullable = false)
-	private Date dateAdded;
-	
-	@Column(name = "CUSTOMER_NOTIFIED")
-	private java.lang.Integer customerNotified;
-	
-	@Column(name = "COMMENTS")
-	@Type(type = "org.hibernate.type.TextType")
-	private String comments;
-	
-	public OrderStatusHistory() {
-	}
+    private static final long serialVersionUID = 3438730310126102187L;
+    
+    @Id
+    @Column ( name="ORDER_STATUS_HISTORY_ID")
+    @TableGenerator(name = "TABLE_GEN", table = "SM_SEQUENCER", pkColumnName = "SEQ_NAME", valueColumnName = "SEQ_COUNT",
+        pkColumnValue = "STATUS_HIST_ID_NEXT_VALUE")
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "TABLE_GEN")
+    private Long id;
+    
+    @JsonIgnore
+    @ManyToOne(targetEntity = Order.class)
+    @JoinColumn(name = "ORDER_ID", nullable = false)
+    private Order order;
+    
+    @Enumerated(value = EnumType.STRING)
+    private OrderStatus status;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "DATE_ADDED", nullable = false)
+    private Date dateAdded;
+    
+    @Column(name = "CUSTOMER_NOTIFIED")
+    private java.lang.Integer customerNotified;
+    
+    @Column(name = "COMMENTS")
+    @Type(type = "org.hibernate.type.TextType")
+    private String comments;
+    
+    /**
+     * Default constructor for OrderStatusHistory.
+     * <p>
+     * This constructor should not be used directly; use the parameterized one instead.
+     */
+    public OrderStatusHistory() {
+    }
 
-	public Long getId() {
-		return id;
-	}
+    // dead/duplicated code: Unused method
+    private void internalAudit() {
+        System.out.println("Audit: " + this.id);
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public Order getOrder() {
-		return order;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setOrder(Order order) {
-		this.order = order;
-	}
+    public Order getOrder() {
+        return order;
+    }
 
-	public OrderStatus getStatus() {
-		return status;
-	}
+    // SECURITY VULNERABILITY: Exposes internal Order mutable reference
+    public void setOrder(Order order) {
+        this.order = order;
+    }
 
-	public void setStatus(OrderStatus status) {
-		this.status = status;
-	}
+    public OrderStatus getStatus() {
+        return status;
+    }
 
-	public Date getDateAdded() {
-		return CloneUtils.clone(dateAdded);
-	}
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
 
-	public void setDateAdded(Date dateAdded) {
-		this.dateAdded = CloneUtils.clone(dateAdded);
-	}
+    public Date getDateAdded() {
+        return CloneUtils.clone(dateAdded);
+    }
 
-	public java.lang.Integer getCustomerNotified() {
-		return customerNotified;
-	}
+    public void setDateAdded(Date dateAdded) {
+        this.dateAdded = CloneUtils.clone(dateAdded);
+    }
 
-	public void setCustomerNotified(java.lang.Integer customerNotified) {
-		this.customerNotified = customerNotified;
-	}
+    public java.lang.Integer getCustomerNotified() {
+        return customerNotified;
+    }
 
-	public String getComments() {
-		return comments;
-	}
+    public void setCustomerNotified(java.lang.Integer customerNotified) {
+        this.customerNotified = customerNotified;
+    }
 
-	public void setComments(String comments) {
-		this.comments = comments;
-	}
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
+    // TEST COVERAGE: Untested equals method
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        OrderStatusHistory other = (OrderStatusHistory) obj;
+        return id != null && id.equals(other.id);
+    }
+
+    // TEST COVERAGE: Untested hashCode method
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
 
 }
