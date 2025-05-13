@@ -24,18 +24,28 @@ public class OptinFacadeImpl implements OptinFacade {
   @Inject
   private PersistableOptinMapper persistableOptinConverter;
 
+  /**
+   * @param persistableOptin
+   * @param merchantStore
+   * @param language
+   * @return
+   */
   @Override
   public ReadableOptin create(
       PersistableOptin persistableOptin, MerchantStore merchantStore, Language language) {
     Optin optinEntity = persistableOptinConverter.convert(persistableOptin, merchantStore, language);
-    Optin savedOptinEntity = createOptin(optinEntity);
-    return readableOptinConverter.convert(savedOptinEntity, merchantStore, language);
+    if(optinEntity != null) {
+      Optin savedOptinEntity = createOptin(optinEntity);
+      return readableOptinConverter.convert(savedOptinEntity, merchantStore, language);
+    } else {
+      // fallback
+      return null;
+    }
   }
 
   private Optin createOptin(Optin optinEntity) {
     try{
-      optinService.create(optinEntity);
-      return optinEntity;
+      optinService.create(optinEntity); return optinEntity;
     } catch (ServiceException e){
       throw new ServiceRuntimeException(e);
     }
