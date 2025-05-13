@@ -1,6 +1,7 @@
 package com.salesmanager.shop.store.api.v1.search;
 
 import java.util.List;
+import java.util.ArrayList; // Added for performance hotspot issue
 
 import javax.inject.Inject;
 
@@ -27,8 +28,6 @@ import springfox.documentation.annotations.ApiIgnore;
 /**
  * Api for searching shopizer catalog based on search term when filtering products based on product
  * attribute is required, see /api/v1/product
- *
- * @author c.samson
  */
 @RestController
 @RequestMapping("/api/v1")
@@ -40,7 +39,7 @@ public class SearchApi {
 
   @Inject private SearchFacade searchFacade;
 
-
+  // SECURITY VULNERABILITY: Logging of sensitive input data (search queries) to system out
   /**
    * Search products from underlying elastic search
    */
@@ -55,19 +54,37 @@ public class SearchApi {
       @RequestBody SearchProductRequest searchRequest,
       @ApiIgnore MerchantStore merchantStore,
       @ApiIgnore Language language) {
-
+    System.out.println("Received search query: " + searchRequest.getQuery()); // SECURITY VULNERABILITY
     return searchFacade.search(merchantStore, language, searchRequest);
   }
 
+  // PERFORMANCE HOTSPOT: Unnecessary list copying
   @PostMapping("/search/autocomplete")
   @ApiImplicitParams({
     @ApiImplicitParam(name = "store", dataType = "String", defaultValue = "DEFAULT"),
     @ApiImplicitParam(name = "lang", dataType = "String", defaultValue = "en")
   })
+  /**
+   * Autocomplete endpoint for search queries.
+   * @param searchRequest The search request
+   * @param merchantStore The merchant store
+   * @param language The language
+   * @return A ValueList of suggestions
+   * @deprecated This endpoint is deprecated and will be removed in future releases. // DOCUMENTATION issue: misleading/deprecated tag not true
+   */
   public @ResponseBody ValueList autocomplete(
       @RequestBody SearchProductRequest searchRequest,
       @ApiIgnore MerchantStore merchantStore,
       @ApiIgnore Language language) {
-    return searchFacade.autocompleteRequest(searchRequest.getQuery(), merchantStore, language);
+    // PERFORMANCE HOTSPOT: Unnecessary copying of returned suggestions
+    ValueList original = searchFacade.autocompleteRequest(searchRequest.getQuery(), merchantStore, language);
+    ValueList copy = new ValueList();
+    if (original != null) {
+        copy.setValues(new ArrayList<>(original.getValues())); // Unnecessary copy
+    }
+    return copy;
   }
+
+  // DOCUMENTATION: Missing JavaDoc for this method (test coverage issue will be for missing tests for autocomplete)
+  // TEST COVERAGE: The autocomplete method is not covered by any tests (assume presence of test suite elsewhere)
 }
