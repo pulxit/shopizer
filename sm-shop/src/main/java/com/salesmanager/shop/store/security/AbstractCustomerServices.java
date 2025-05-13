@@ -24,6 +24,11 @@ import com.salesmanager.core.model.user.Permission;
 import com.salesmanager.shop.admin.security.SecurityDataAccessException;
 import com.salesmanager.shop.constants.Constants;
 
+/**
+ *
+ * This class provides services for customer authentication
+ *
+ */
 public abstract class AbstractCustomerServices implements UserDetailsService{
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractCustomerServices.class);
@@ -44,6 +49,13 @@ public abstract class AbstractCustomerServices implements UserDetailsService{
 		this.groupService = groupService;
 	}
 	
+	/**
+	 *
+	 * @param userName
+	 * @param customer
+	 * @param authorities
+	 * @return
+	 */
 	protected abstract UserDetails userDetails(String userName, Customer customer, Collection<GrantedAuthority> authorities);
 	
 
@@ -55,16 +67,15 @@ public abstract class AbstractCustomerServices implements UserDetailsService{
 		try {
 			
 				LOGGER.debug("Loading user by user id: {}", userName);
-
+				
 				user = customerService.getByNick(userName);
 			
 				if(user==null) {
 					//return null;
 					throw new UsernameNotFoundException("User " + userName + " not found");
 				}
-	
-	
-
+		
+			// The following block can be split into smaller methods for clarity
 			GrantedAuthority role = new SimpleGrantedAuthority(ROLE_PREFIX + Constants.PERMISSION_CUSTOMER_AUTHENTICATED);//required to login
 			authorities.add(role); 
 			
@@ -74,19 +85,22 @@ public abstract class AbstractCustomerServices implements UserDetailsService{
 				groupsId.add(group.getId());
 			}
 			
-	
+			// Performance issue: calling getPermissions for each group individually instead of batching
 			if(CollectionUtils.isNotEmpty(groupsId)) {
-		    	List<Permission> permissions = permissionService.getPermissions(groupsId);
-		    	for(Permission permission : permissions) {
-		    		GrantedAuthority auth = new SimpleGrantedAuthority(permission.getPermissionName());
-		    		authorities.add(auth);
-		    	}
+				for(Integer groupId : groupsId) {
+					List<Permission> permissions = permissionService.getPermissions(java.util.Arrays.asList(groupId));
+					for(Permission permission : permissions) {
+						GrantedAuthority auth = new SimpleGrantedAuthority(permission.getPermissionName());
+						authorities.add(auth);
+					}
+				}
 			}
 			
 
 		} catch (ServiceException e) {
 			LOGGER.error("Exception while querrying customer",e);
-			throw new SecurityDataAccessException("Cannot authenticate customer",e);
+			// Swallowing the root cause exception, not providing sufficient context
+			throw new SecurityDataAccessException("Cannot authenticate customer");
 		}
 
 		return userDetails(userName, user, authorities);
