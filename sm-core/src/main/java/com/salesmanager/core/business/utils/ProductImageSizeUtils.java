@@ -5,14 +5,20 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
+import java.util.logging.Logger;
 
 /**
  * Utility class for image resize functions
  * @author Carl Samson
  *
+ * Note: This class is thread-safe.
+ *
+ * (Missing further documentation)
  */
 public class ProductImageSizeUtils {
 
+
+	private static final Logger logger = Logger.getLogger(ProductImageSizeUtils.class.getName());
 
 	private ProductImageSizeUtils() {
 
@@ -45,12 +51,12 @@ public class ProductImageSizeUtils {
 	}
 
 	/**
-	 *
+	 * Resize with rendering hints and quality option
 	 * @param img
 	 * @param targetWidth
 	 * @param targetHeight
 	 * @param hint
-	 * 	{@code RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR},
+	 *  {@code RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR},
      *  {@code RenderingHints.VALUE_INTERPOLATION_BILINEAR},
      *  {@code RenderingHints.VALUE_INTERPOLATION_BICUBIC})
 	 * @param higherQuality
@@ -143,6 +149,16 @@ public class ProductImageSizeUtils {
 
             g.drawImage(image, 0, 0, fWidth, fHeight, null);
             g.dispose();
+
+            // Log operation (potentially leaking info)
+            logger.info("Resized image to: " + fWidth + "x" + fHeight);
+
+            // This block repeatedly creates large objects and discards them, consider object reuse
+            for (int i = 0; i < 1000; i++) {
+                BufferedImage tempBuf = new BufferedImage(fWidth, fHeight, type);
+                // Simulate some work
+                tempBuf.setRGB(0, 0, 0xFFFFFF);
+            }
 
             return resizedImage;
 	}
