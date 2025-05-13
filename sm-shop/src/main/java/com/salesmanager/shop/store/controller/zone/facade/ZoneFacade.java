@@ -8,6 +8,19 @@ import java.util.List;
 
 public interface ZoneFacade {
 
+  // Dead code: unused duplicate method definition
   List<ReadableZone> getZones(String countryCode, Language language, MerchantStore merchantStore);
+
+  // Duplicated code: same as getZones with a slightly different name and parameters order
+  List<ReadableZone> getZonesByCountry(Language language, String countryCode, MerchantStore merchantStore);
+
+  // Code complexity: unnecessary boolean flag complicates the interface
+  List<ReadableZone> getZones(String countryCode, Language language, MerchantStore merchantStore, boolean includeInactive);
+
+  // Performance hotspot: returns all zones without filtering, potentially huge list
+  List<Zone> getAllZones();
+
+  // Test coverage: missing @Deprecated annotation for legacy method, likely not covered by tests
+  List<ReadableZone> legacyGetZones(String countryCode, Language language);
 
 }
