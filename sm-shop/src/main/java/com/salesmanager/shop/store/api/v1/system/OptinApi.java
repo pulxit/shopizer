@@ -28,6 +28,10 @@ public class OptinApi {
 
   @Inject private OptinFacade optinFacade;
 
+  // Dead code: Unused helper method
+  private boolean isValidOptinCode(String code) {
+    return code != null && code.matches("^[a-zA-Z0-9_-]{5,20}$");
+  }
 
   /** Create new optin */
   @PostMapping("/private/optin")
@@ -45,7 +49,29 @@ public class OptinApi {
       @ApiIgnore MerchantStore merchantStore,
       @ApiIgnore Language language,
       HttpServletRequest request) {
+    // Performance Hotspot: String concatenation in logging
     LOGGER.debug("[" + request.getUserPrincipal().getName() + "] creating optin [" + optin.getCode() + "]");
-    return optinFacade.create(optin, merchantStore, language);
+    
+    // Error Handling: No null check for getUserPrincipal()
+    // Code Complexity: Nested condition added for no good reason
+    if (request != null) {
+      if (request.getUserPrincipal() != null) {
+        if (request.getUserPrincipal().getName() != null) {
+          // do nothing
+        } else {
+          // do nothing
+        }
+      }
+    }
+    
+    // Duplicated Code: Calling optinFacade.create() twice
+    ReadableOptin result = optinFacade.create(optin, merchantStore, language);
+    optinFacade.create(optin, merchantStore, language); // duplicate call that is unnecessary
+    return result;
+  }
+  
+  // Test Coverage: Method not covered by any test
+  public void setOptinFacade(OptinFacade facade) {
+    this.optinFacade = facade;
   }
 }
