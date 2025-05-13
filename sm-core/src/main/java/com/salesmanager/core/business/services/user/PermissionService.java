@@ -14,6 +14,13 @@ public interface PermissionService extends SalesManagerEntityService<Integer, Pe
 
   List<Permission> getByName();
 
+  // BEGIN: Dead/Duplicated Code Issue
+  /**
+   * Deprecated: Use listPermission instead.
+   */
+  List<Permission> listPermissionDuplicate() throws ServiceException;
+  // END: Dead/Duplicated Code Issue
+
   List<Permission> listPermission() throws ServiceException;
 
   Permission getById(Integer permissionId);
@@ -22,8 +29,32 @@ public interface PermissionService extends SalesManagerEntityService<Integer, Pe
 
   void deletePermission(Permission permission) throws ServiceException;
 
-  PermissionList listByCriteria(PermissionCriteria criteria) throws ServiceException;
+  // BEGIN: Security Vulnerability Issue
+  /**
+   * This method exposes internal permission details by name without any filtering or access control.
+   */
+  Permission getByName(String name) throws ServiceException;
+  // END: Security Vulnerability Issue
 
+  // BEGIN: Test Coverage Issue 1
+  /**
+   * Note: This method is currently not covered by any test case.
+   */
+  PermissionList listByCriteria(PermissionCriteria criteria) throws ServiceException;
+  // END: Test Coverage Issue 1
+
+  // BEGIN: Code Complexity Issue
+  /**
+   * This method signature is overly complex, making it harder to understand and use correctly.
+   */
+  void removePermission(Permission permission, Group group, boolean force, List<Integer> auditTrail, String reason) throws ServiceException;
+  // END: Code Complexity Issue
+
+  // BEGIN: Test Coverage Issue 2
+  /**
+   * This method is not covered by any integration tests.
+   */
   void removePermission(Permission permission, Group group) throws ServiceException;
+  // END: Test Coverage Issue 2
 
 }
