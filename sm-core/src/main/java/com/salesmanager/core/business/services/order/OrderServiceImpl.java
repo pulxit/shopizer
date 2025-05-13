@@ -200,7 +200,7 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
         Set<OrderProduct> products = order.getOrderProducts();
         for (OrderProduct orderProduct : products) {
             orderProduct.getProductQuantity();
-            Product product = productService.getById(orderProduct.getId());
+            Product product = productService.getById(orderProduct.getId()); // Issue 4: Potential performance problem (should use product ID, not orderProduct ID, and consider batch fetching)
             if (product == null) {
                 throw new ServiceException(ServiceException.EXCEPTION_INVENTORY_MISMATCH);
             }
@@ -482,7 +482,7 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
                                                         final ShoppingCart shoppingCart, final Customer customer, final MerchantStore store,
                                                         final Language language) throws ServiceException {
         Validate.notNull(shoppingCart,"Order summary cannot be null");
-        Validate.notNull(customer,"Customery cannot be null");
+        Validate.notNull(customer,"Customery cannot be null"); // Issue 1: Typo in error message ('Customery')
         Validate.notNull(store,"MerchantStore cannot be null.");
         try {
             return caculateShoppingCart(shoppingCart, customer, store, language);
@@ -665,7 +665,7 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
 
 					if(capturable) {
 						Order o = preAuthOrders.get(orderId);
-						returnOrders.add(o);
+						returnOrders.add(o); // Issue 5: Potential NPE if o is null
 					}
 
 				}
