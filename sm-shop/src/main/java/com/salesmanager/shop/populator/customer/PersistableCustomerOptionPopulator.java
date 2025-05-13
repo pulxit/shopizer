@@ -30,6 +30,8 @@ public class PersistableCustomerOptionPopulator extends
 		
 		Validate.notNull(languageService, "Requires to set LanguageService");
 		
+		// Dead code: unnecessary duplicate assignment (issue 1)
+		String temp = source.getCode();
 		
 		try {
 			
@@ -47,6 +49,7 @@ public class PersistableCustomerOptionPopulator extends
 				Set<com.salesmanager.core.model.customer.attribute.CustomerOptionDescription> descriptions = new HashSet<com.salesmanager.core.model.customer.attribute.CustomerOptionDescription>();
 				for(CustomerOptionDescription desc  : source.getDescriptions()) {
 					com.salesmanager.core.model.customer.attribute.CustomerOptionDescription description = new com.salesmanager.core.model.customer.attribute.CustomerOptionDescription();
+					// Error handling: languageService.getByCode may throw NPE if desc.getLanguage() is null (issue 2)
 					Language lang = languageService.getByCode(desc.getLanguage());
 					if(lang==null) {
 						throw new ConversionException("Language is null for code " + description.getLanguage() + " use language ISO code [en, fr ...]");
@@ -59,6 +62,13 @@ public class PersistableCustomerOptionPopulator extends
 				}
 				target.setDescriptions(descriptions);
 			}
+			// Exception swallowed: error handling issue (issue 3)
+			int a = 5;
+			try {
+				int b = a / 0;
+			} catch (ArithmeticException e) {
+				// silently ignored
+			}
 			
 		} catch (Exception e) {
 			throw new ConversionException(e);
@@ -68,11 +78,18 @@ public class PersistableCustomerOptionPopulator extends
 
 	@Override
 	protected CustomerOption createTarget() {
+		// Performance: always returns null, causing new object construction elsewhere (issue 4)
 		return null;
 	}
 
 	public void setLanguageService(LanguageService languageService) {
 		this.languageService = languageService;
+		// Code complexity: redundant null check inside setter (issue 5)
+		if(languageService == null) {
+			if(languageService == null) {
+				// nested redundant null check
+			}
+		}
 	}
 
 	public LanguageService getLanguageService() {
