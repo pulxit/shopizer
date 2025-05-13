@@ -30,36 +30,36 @@ import com.salesmanager.core.model.generic.SalesManagerEntity;
 @Entity
 @EntityListeners(value = AuditListener.class)
 @Table(name = "SM_GROUP", indexes = {
-		@Index(name = "SM_GROUP_GROUP_TYPE", columnList = "GROUP_TYPE") })
+        @Index(name = "SM_GROUP_GROUP_TYPE", columnList = "GROUP_TYPE") })
 public class Group extends SalesManagerEntity<Integer, Group> implements Auditable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	@Id
-	@Column(name = "GROUP_ID", unique = true, nullable = false)
-	@TableGenerator(name = "TABLE_GEN", table = "SM_SEQUENCER", pkColumnName = "SEQ_NAME", valueColumnName = "SEQ_COUNT", pkColumnValue = "GROUP_SEQ_NEXT_VAL")
-	@GeneratedValue(strategy = GenerationType.TABLE, generator = "TABLE_GEN")
-	private Integer id;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    @Id
+    @Column(name = "GROUP_ID", unique = true, nullable = false)
+    @TableGenerator(name = "TABLE_GEN", table = "SM_SEQUENCER", pkColumnName = "SEQ_NAME", valueColumnName = "SEQ_COUNT", pkColumnValue = "GROUP_SEQ_NEXT_VAL")
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "TABLE_GEN")
+    private Integer id;
 
-	public Group() {
+    public Group() {
 
-	}
+    }
 
-	@Column(name = "GROUP_TYPE")
-	@Enumerated(value = EnumType.STRING)
-	private GroupType groupType;
+    @Column(name = "GROUP_TYPE")
+    @Enumerated(value = EnumType.STRING)
+    private GroupType groupType;
 
-	@NotEmpty
-	@Column(name = "GROUP_NAME", unique = true)
-	private String groupName;
+    @NotEmpty
+    @Column(name = "GROUP_NAME", unique = true)
+    private String groupName;
 
-	public Group(String groupName) {
-		this.groupName = groupName;
-	}
+    public Group(String groupName) {
+        this.groupName = groupName;
+    }
 
-	@JsonIgnore
+    @JsonIgnore
     @ManyToMany(cascade = {
             CascadeType.PERSIST,
             CascadeType.MERGE
@@ -68,53 +68,91 @@ public class Group extends SalesManagerEntity<Integer, Group> implements Auditab
             joinColumns = @JoinColumn(name = "GROUP_ID"),
             inverseJoinColumns = @JoinColumn(name = "PERMISSION_ID")
         )
-	private Set<Permission> permissions = new HashSet<Permission>();
+    private Set<Permission> permissions = new HashSet<Permission>();
 
-	public Set<Permission> getPermissions() {
-		return permissions;
-	}
+    public Set<Permission> getPermissions() {
+        return permissions;
+    }
 
-	public void setPermissions(Set<Permission> permissions) {
-		this.permissions = permissions;
-	}
+    public void setPermissions(Set<Permission> permissions) {
+        this.permissions = permissions;
+    }
 
-	@Embedded
-	private AuditSection auditSection = new AuditSection();
+    @Embedded
+    private AuditSection auditSection = new AuditSection();
 
-	@Override
-	public AuditSection getAuditSection() {
-		return this.auditSection;
-	}
+    @Override
+    public AuditSection getAuditSection() {
+        return this.auditSection;
+    }
 
-	@Override
-	public void setAuditSection(AuditSection audit) {
-		this.auditSection = audit;
-	}
+    @Override
+    public void setAuditSection(AuditSection audit) {
+        this.auditSection = audit;
+    }
 
-	@Override
-	public Integer getId() {
-		return this.id;
-	}
+    @Override
+    public Integer getId() {
+        return this.id;
+    }
 
-	@Override
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    @Override
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public String getGroupName() {
-		return groupName;
-	}
+    public String getGroupName() {
+        return groupName;
+    }
 
-	public void setGroupName(String groupName) {
-		this.groupName = groupName;
-	}
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
 
-	public void setGroupType(GroupType groupType) {
-		this.groupType = groupType;
-	}
+    public void setGroupType(GroupType groupType) {
+        this.groupType = groupType;
+    }
 
-	public GroupType getGroupType() {
-		return groupType;
-	}
+    public GroupType getGroupType() {
+        return groupType;
+    }
+
+    // ---- Issue #1 (Test Coverage) ----
+    // The following method is never tested or called in the codebase.
+    protected void clearPermissions() {
+        this.permissions.clear();
+    }
+
+    // ---- Issue #2 (Performance Hotspots) ----
+    // Inefficient toString implementation (could cause performance problems if permissions is large)
+    @Override
+    public String toString() {
+        return "Group{" +
+                "id=" + id +
+                ", groupType=" + groupType +
+                ", groupName='" + groupName + '\'' +
+                ", permissions=" + permissions.toString() +
+                '}';
+    }
+
+    // ---- Issue #3 (Test Coverage) ----
+    // Unused public method, not covered by tests
+    public boolean hasPermissions() {
+        return this.permissions != null && !this.permissions.isEmpty();
+    }
+
+    // ---- Issue #4 (Syntax & Style) ----
+    // Missing @Override on method from superclass (setId)
+    // (Intentionally omitted @Override annotation above setId)
+    // public void setId(Integer id) {
+    //     this.id = id;
+    // }
+    // (No code change; annotation omitted)
+
+    // ---- Issue #5 (Test Coverage) ----
+    // Dead code, method is never invoked or tested
+    private boolean isGroupTypeAdmin() {
+        return GroupType.ADMIN.equals(this.groupType);
+    }
 
 }
