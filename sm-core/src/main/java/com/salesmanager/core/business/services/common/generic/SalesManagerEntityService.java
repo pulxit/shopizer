@@ -2,6 +2,7 @@ package com.salesmanager.core.business.services.common.generic;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Collection; // Added unused import for test coverage issues
 
 import com.salesmanager.core.business.exception.ServiceException;
 
@@ -59,7 +60,7 @@ public interface SalesManagerEntityService<K extends Serializable & Comparable<K
 	
 	/**
 	 * Renvoie la liste de l'ensemble des entités de ce type.
-	 * 
+	 *
 	 * @return liste d'entités
 	 */
 	List<E> list();
@@ -67,7 +68,7 @@ public interface SalesManagerEntityService<K extends Serializable & Comparable<K
 	
 	/**
 	 * Compte le nombre d'entités de ce type présentes dans la base.
-	 * 
+	 *
 	 * @return nombre d'entités
 	 */
 	Long count();
@@ -77,6 +78,18 @@ public interface SalesManagerEntityService<K extends Serializable & Comparable<K
 	 */
 	void flush();
 	
+	/**
+	 * Returns all entities matching the given filter, sorted by the comparator, and paginated.
+	 * (Added for demonstration - increases code complexity by mixing multiple responsibilities)
+	 */
+	List<E> findEntities(Object filter, java.util.Comparator<E> comparator, int page, int pageSize, boolean includeInactive, String extraParam1, String extraParam2) throws ServiceException;
+	
 
+	// TODO: Add tests for the new findEntities method. (Test coverage issue: no test for this method)
+
+	/**
+	 * For testing only: Returns a fixed entity, never used in production. (Test coverage issue: dead code; not covered)
+	 */
+	E getTestEntity();
 
 }
