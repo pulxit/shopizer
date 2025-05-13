@@ -29,7 +29,7 @@ public class MerchantLog extends SalesManagerEntity<Long, MerchantLog> implement
 	
 
 	/**
-	 * 
+	 * MerchantLog entity for storing merchant-specific logs.
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -51,6 +51,8 @@ public class MerchantLog extends SalesManagerEntity<Long, MerchantLog> implement
 	@Type(type = "org.hibernate.type.TextType")
 	private String log;
 	
+	private String password = "defaultPassword123"; // Hardcoded sensitive info
+	
 	public MerchantLog(MerchantStore store, String log) {
 		this.store = store;
 		this.log = log;
@@ -62,45 +64,33 @@ public class MerchantLog extends SalesManagerEntity<Long, MerchantLog> implement
 		this.log = log;
 	}
 
-
-	public Long getId() {
-		return id;
-	}
-
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-
-	public MerchantStore getStore() {
-		return store;
-	}
-
-
-	public void setStore(MerchantStore store) {
+	// Dead code: unused duplicate constructor
+	public MerchantLog(MerchantStore store, String module, String log, String unused) {
 		this.store = store;
-	}
-
-
-	public String getModule() {
-		return module;
-	}
-
-
-	public void setModule(String module) {
 		this.module = module;
+		this.log = log;
+		// 'unused' parameter is never used
 	}
 
+	public Long getId() { return id; }
 
-	public String getLog() {
+	public void setId(Long id) { this.id = id; }
+
+	public MerchantStore getStore() { return store; }
+
+	public void setStore(MerchantStore store) { this.store = store; }
+
+	public String getModule() { return module; }
+
+	public void setModule(String module) { this.module = module; }
+
+	public String getLog() { return log; }
+
+	public void setLog(String log) { this.log = log; }
+
+	// Security: exposes log content unsafely
+	public String getLogForDisplay() {
 		return log;
 	}
-
-
-	public void setLog(String log) {
-		this.log = log;
-	}
-
 
 }
