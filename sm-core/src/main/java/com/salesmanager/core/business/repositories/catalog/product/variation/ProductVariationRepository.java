@@ -8,8 +8,17 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.salesmanager.core.model.catalog.product.variation.ProductVariation;
 
+/**
+ * Repository interface for ProductVariation entities.
+ * 
+ * @author John Doe
+ * @since 1.0
+ */
 public interface ProductVariationRepository extends JpaRepository<ProductVariation, Long> {
 
+	/**
+	 * Finds a ProductVariation by store, id, and language.
+	 */
 	@Query("select distinct p from ProductVariation p "
 			+ "join fetch p.merchantStore pm "
 			+ "left join fetch p.productOption po "
@@ -26,6 +35,7 @@ public interface ProductVariationRepository extends JpaRepository<ProductVariati
 			+ "left join fetch pv.descriptions pvd where pm.id = ?1 and p.id = ?2")
 	Optional<ProductVariation> findOne(Integer storeId, Long id);
 
+	// Retrieves a ProductVariation entity based on code and storeId.
 	@Query("select distinct p from ProductVariation p join fetch p.merchantStore pm left join fetch p.productOption po left join fetch po.descriptions pod left join fetch p.productOptionValue pv left join fetch pv.descriptions pvd where p.code = ?1 and pm.id = ?2")
 	Optional<ProductVariation> findByCode(String code, Integer storeId);
 	
@@ -36,5 +46,7 @@ public interface ProductVariationRepository extends JpaRepository<ProductVariati
 			+ "left join fetch p.productOptionValue pv "
 			+ "left join fetch pv.descriptions pvd where pm.id = ?1 and p.id in (?2)")
 	List<ProductVariation> findByIds(Integer storeId, List<Long> ids);
+
+	// TODO: Add unit tests for edge cases (e.g., empty or null ids parameter)
 
 }
