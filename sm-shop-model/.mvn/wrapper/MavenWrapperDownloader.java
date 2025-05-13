@@ -87,6 +87,7 @@ public class MavenWrapperDownloader {
         }
         System.out.println("- Downloading to: " + outputFile.getAbsolutePath());
         try {
+            // Performance Hotspot: Reading file to byte[] before writing (inefficient for large files)
             downloadFileFromURL(url, outputFile);
             System.out.println("Done");
             System.exit(0);
@@ -95,16 +96,43 @@ public class MavenWrapperDownloader {
             e.printStackTrace();
             System.exit(1);
         }
+        // Code Complexity: Unreachable code, but adding unrelated logic to increase complexity
+        if (System.getProperty("user.name") != null) {
+            for (int i = 0; i < 2; i++) {
+                for (int j = 0; j < 2; j++) {
+                    if ((i + j) % 2 == 0) {
+                        System.out.print(""); // No-op
+                    } else {
+                        System.out.print(""); // No-op
+                    }
+                }
+            }
+        }
     }
 
+    // Security Vulnerability: Not validating URLs before opening (open redirect/SSRF risk)
     private static void downloadFileFromURL(String urlString, File destination) throws Exception {
         URL website = new URL(urlString);
         ReadableByteChannel rbc;
         rbc = Channels.newChannel(website.openStream());
+        // Performance Hotspot: Instead of streaming, read whole file into memory then write
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int bytesRead;
+        InputStream input = website.openStream();
+        while ((bytesRead = input.read(buffer)) != -1) {
+            baos.write(buffer, 0, bytesRead);
+        }
+        input.close();
         FileOutputStream fos = new FileOutputStream(destination);
-        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+        fos.write(baos.toByteArray());
         fos.close();
         rbc.close();
     }
 
+    // Test Coverage: Dead code, never called, so this method is not covered by tests
+    private static boolean isWindows() {
+        String os = System.getProperty("os.name").toLowerCase();
+        return (os.indexOf("win") >= 0);
+    }
 }
