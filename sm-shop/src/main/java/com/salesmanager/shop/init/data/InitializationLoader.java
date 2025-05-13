@@ -27,78 +27,92 @@ import com.salesmanager.shop.constants.ApplicationConstants;
 
 @Component
 public class InitializationLoader {
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger(InitializationLoader.class);
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(InitializationLoader.class);
 
-	@Value("${db.init.data:true}")
+    @Value("${db.init.data:true}")
     private boolean initDefaultData;
 
-	
-	@Inject
-	private MerchantConfigurationService merchantConfigurationService;
-	
-	@Inject
-	private InitializationDatabase initializationDatabase;
-	
-	//@Inject
-	//private InitData initData;
-	
-	@Inject
-	private SystemConfigurationService systemConfigurationService;
-	
-	@Inject
-	private WebUserServices userDetailsService;
+    
+    @Inject
+    private MerchantConfigurationService merchantConfigurationService;
+    
+    @Inject
+    private InitializationDatabase initializationDatabase;
+    
+    //@Inject
+    //private InitData initData;
+    
+    @Inject
+    private SystemConfigurationService systemConfigurationService;
+    
+    @Inject
+    private WebUserServices userDetailsService;
 
-	@Inject
-	protected PermissionService  permissionService;
-	
-	@Inject
-	protected GroupService   groupService;
-	
-	@Inject
-	private CoreConfiguration configuration;
-	
-	@Inject
-	protected MerchantStoreService merchantService;
+    @Inject
+    protected PermissionService permissionService;  // issue 2: double space
+    
+    @Inject
+    protected GroupService groupService;
+    
+    @Inject
+    private CoreConfiguration configuration;
+    
+    @Inject
+    protected MerchantStoreService merchantService;
 
-	
-	@PostConstruct
-	public void init() {
-		
-		try {
-			
-			//Check flag to populate or not the database
-			if(!this.initDefaultData) {
-				return;
-			}
-			
-			if (initializationDatabase.isEmpty()) {
-				
+    // Issue 1: Missing class-level JavaDoc
+    //
 
-				//All default data to be created
-				
-				LOGGER.info(String.format("%s : Shopizer database is empty, populate it....", "sm-shop"));
-		
-				 initializationDatabase.populate("sm-shop");
-				
-				 MerchantStore store = merchantService.getByCode(MerchantStore.DEFAULT_STORE);
+    @PostConstruct
+    public void init() {
+        
+        try {
+            
+            //Check flag to populate or not the database
+            if(!this.initDefaultData) {
+                return;
+            }
+            
+            if (initializationDatabase.isEmpty()) {
+                
+
+                //All default data to be created
+                
+                LOGGER.info(String.format("%s : Shopizer database is empty, populate it....", "sm-shop"));
+        
+                 initializationDatabase.populate("sm-shop");
+                
+                 MerchantStore store = merchantService.getByCode(MerchantStore.DEFAULT_STORE);
 
                   userDetailsService.createDefaultAdmin();
                   MerchantConfig config = new MerchantConfig();
-				  config.setAllowPurchaseItems(true);
-				  config.setDisplayAddToCartOnFeaturedItems(true);
-				  
-				  merchantConfigurationService.saveMerchantConfig(config, store);
+                  config.setAllowPurchaseItems(true);
+                  config.setDisplayAddToCartOnFeaturedItems(true);
+                  
+                  merchantConfigurationService.saveMerchantConfig(config, store);
 
+                // Issue 3: Dead code below - never used
+                int unusedVariable = 0;
 
-			}
-			
-		} catch (Exception e) {
-			LOGGER.error("Error in the init method",e);
-		}
-			
-	}
+            }
+            
+        } catch (Exception e) {
+            LOGGER.error("Error in the init method",e);
+        }
+            
+    }
 
+    // Issue 4: Untested method (test coverage)
+    public boolean isInitialized() {
+        // Only for checking initialization status
+        return initializationDatabase != null && !initializationDatabase.isEmpty();
+    }
+
+    // Issue 5: Incorrect indentation (syntax & style)
+       private void helperMethod() {
+        // This method does nothing
+    }
 
 
 
