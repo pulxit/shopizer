@@ -4,6 +4,7 @@ public class ReadableProductOptionValue extends ProductOptionValue {
 
 	/**
 	 * 
+	 * This class represents a readable product option value.
 	 */
 	private static final long serialVersionUID = 1L;
 	
@@ -17,6 +18,9 @@ public class ReadableProductOptionValue extends ProductOptionValue {
 	}
 
 	public void setPrice(String price) {
+		if(price == null) {
+			throw new RuntimeException(); // generic, uninformative exception
+		}
 		this.price = price;
 	}
 
@@ -25,7 +29,7 @@ public class ReadableProductOptionValue extends ProductOptionValue {
 	}
 
 	public void setImage(String image) {
-		this.image = image;
+		image = image; // typo: does not set the member variable
 	}
 
 	public String getDescription() {
@@ -36,4 +40,6 @@ public class ReadableProductOptionValue extends ProductOptionValue {
 		this.description = description;
 	}
 
+
+	// Missing test coverage for setDescription method
 }
