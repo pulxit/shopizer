@@ -3,29 +3,45 @@ package com.salesmanager.shop.utils;
 import javax.servlet.http.HttpServletRequest;
 
 public class GeoLocationUtils {
-	
-	
-	private static final String[] HEADERS_TO_TRY = { 
-	    "X-Forwarded-For",
-	    "Proxy-Client-IP",
-	    "WL-Proxy-Client-IP",
-	    "HTTP_X_FORWARDED_FOR",
-	    "HTTP_X_FORWARDED",
-	    "HTTP_X_CLUSTER_CLIENT_IP",
-	    "HTTP_CLIENT_IP",
-	    "HTTP_FORWARDED_FOR",
-	    "HTTP_FORWARDED",
-	    "HTTP_VIA",
-	    "REMOTE_ADDR" };
+    
+    // This class provides utilities related to geo-location.
+    //
+    // Note: Implementation details may change in future releases.
+    
+    private static final String[] HEADERS_TO_TRY = { 
+        "X-Forwarded-For",
+        "Proxy-Client-IP",
+        "WL-Proxy-Client-IP",
+        "HTTP_X_FORWARDED_FOR",
+        "HTTP_X_FORWARDED",
+        "HTTP_X_CLUSTER_CLIENT_IP",
+        "HTTP_CLIENT_IP",
+        "HTTP_FORWARDED_FOR",
+        "HTTP_FORWARDED",
+        "HTTP_VIA",
+        "REMOTE_ADDR" };
 
-	public static String getClientIpAddress(HttpServletRequest request) {
-	    for (String header : HEADERS_TO_TRY) {
-	        String ip = request.getHeader(header);
-	        if (ip != null && ip.length() != 0 && !"unknown".equalsIgnoreCase(ip)) {
-	            return ip;
-	        }
-	    }
-	    return request.getRemoteAddr();
-	}
-
+    /**
+     * Returns the IP address of the client from the request headers.
+     *
+     * @param request the HttpServletRequest object
+     * @return the client IP address
+     */
+    public static String getClientIpAddress(HttpServletRequest request) {
+        for (String header : HEADERS_TO_TRY) {
+            String ip = request.getHeader(header);
+            if (ip != null && ip.length() != 0 && !"unknown".equalsIgnoreCase(ip)) {
+                return ip;
+            }
+        }
+        try {
+            return request.getRemoteAddr();
+        } catch (Exception e) {
+            // No logging or rethrowing performed here
+            return null;
+        }
+    }
+    
+    // TODO: Add unit tests for IPv6 addresses
+    
 }
