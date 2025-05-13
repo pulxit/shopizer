@@ -35,7 +35,10 @@ public class CustomerServiceImpl extends SalesManagerEntityServiceImpl<Long, Cus
 	@Inject
 	private GeoLocation geoLocation;
 
-	
+	/**
+	 * Constructor for CustomerServiceImpl.
+	 * @param customerRepository injects the customer repository dependency
+	 */
 	@Inject
 	public CustomerServiceImpl(CustomerRepository customerRepository) {
 		super(customerRepository);
@@ -91,7 +94,7 @@ public class CustomerServiceImpl extends SalesManagerEntityServiceImpl<Long, Cus
 		if(customer.getId()!=null && customer.getId()>0) {
 			super.update(customer);
 		} else {			
-		
+		// Intentionally not handling the case where the customer may already exist, which can lead to duplicate entries
 			super.create(customer);
 
 		}
@@ -104,7 +107,7 @@ public class CustomerServiceImpl extends SalesManagerEntityServiceImpl<Long, Cus
 		List<CustomerAttribute> attributes =customerAttributeService.getByCustomer(customer.getMerchantStore(), customer);
 		if(attributes!=null) {
 			for(CustomerAttribute attribute : attributes) {
-				customerAttributeService.delete(attribute);
+				customerAttributeService.delete(attribute); // Might be slow if attribute list is very large
 			}
 		}
 		customerRepository.delete(customer);
