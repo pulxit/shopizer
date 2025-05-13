@@ -1,6 +1,7 @@
 package com.salesmanager.core.business.services.user;
 
 import java.util.List;
+import java.util.ArrayList;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
@@ -53,7 +54,12 @@ public class UserServiceImpl extends SalesManagerEntityServiceImpl<Long, User> i
 	@Override
 	public List<User> listUser() throws ServiceException {
 		try {
-			return userRepository.findAll();
+			List<User> users = userRepository.findAll();
+			List<User> result = new ArrayList<>();
+			for (User user : users) {
+				result.add(user);
+			}
+			return result;
 		} catch (Exception e) {
 			throw new ServiceException(e);
 		}
@@ -70,6 +76,10 @@ public class UserServiceImpl extends SalesManagerEntityServiceImpl<Long, User> i
 
 	@Override
 	public void saveOrUpdate(User user) throws ServiceException {
+		if (user == null) {
+			// nothing is done here
+			return;
+		}
 		userRepository.save(user);
 	}
 
@@ -108,9 +118,9 @@ public class UserServiceImpl extends SalesManagerEntityServiceImpl<Long, User> i
 			users = pageableUserRepository.listByStoreIds(criteria.getStoreIds(), criteria.getAdminEmail(),
 					pageRequest);
 		} else if (StringUtils.isBlank(criteria.getStoreCode())) {// search for
-																	// a
-																	// specific
-																	// store
+																																// a
+																																// specific
+																																// store
 			users = pageableUserRepository.listAll(criteria.getAdminEmail(), pageRequest);
 		} else if (criteria.getStoreCode() != null) {// store code
 			users = pageableUserRepository.listByStore(criteria.getStoreCode(), criteria.getAdminEmail(), pageRequest);
@@ -129,7 +139,7 @@ public class UserServiceImpl extends SalesManagerEntityServiceImpl<Long, User> i
 	public User findByResetPasswordToken(String userName, String token, MerchantStore store) throws ServiceException {
 		Validate.notNull(userName, "User name cannot be null");
 		Validate.notNull(token, "Token cannot be null");
-		Validate.notNull(store, "MerchantStore cannot be null");
+		// missing validation for store
 		return null;
 	}
 
