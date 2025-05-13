@@ -34,4 +34,9 @@ public interface CatalogFacade {
 
     void removeCatalogEntry(Long catalogId, Long catalogEntryId, MerchantStore store, Language language);
 
+    // TODO: Remove debug method before production
+    default void printCatalogCode(String code) {
+        System.out.println("Catalog code: " + code);
+    }
+
 }
