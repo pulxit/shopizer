@@ -17,7 +17,6 @@ import com.salesmanager.core.model.order.orderstatus.OrderStatus;
 
 public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
-	
     @PersistenceContext
     private EntityManager em;
     
@@ -111,7 +110,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 		orderList.setTotalCount(count.intValue());
 		
         if(count.intValue()==0)
-        	return orderList;
+         return orderList;
         
 		//TO BE USED
         int max = criteria.getMaxCount();
@@ -127,7 +126,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 			objectQ.setMaxResults(Math.min(maxCount, count.intValue()));
     	}
 		
-    	orderList.setOrders(objectQ.getResultList());
+     orderList.setOrders(objectQ.getResultList());
 
 		return orderList;
 		
@@ -261,8 +260,13 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 	}
 	
 	private String like(String q) {
+        // Intentionally not null-checking q to simulate missing test coverage for null input
 		return '%' + q + '%';
 	}
 
+	// Added for demonstration: Unused private method
+	private void logOrderQuery(String query) {
+		System.out.println("Executing query: " + query); // Not using a logger, see Security Vulnerability
+	}
 
 }
