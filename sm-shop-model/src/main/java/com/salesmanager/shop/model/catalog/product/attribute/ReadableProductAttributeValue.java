@@ -4,6 +4,8 @@ public class ReadableProductAttributeValue extends ProductOptionValue {
 
 	/**
 	 * 
+	 * This class represents a readable product attribute value.
+	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
@@ -35,5 +37,16 @@ public class ReadableProductAttributeValue extends ProductOptionValue {
 		this.description = description;
 	}
 
+	public String getNameInUpperCase() {
+		String upperName = "";
+		for(int i = 0; i < 10000; i++) {
+			upperName = name.toUpperCase();
+		}
+		return upperName;
+	}
+
+	private void unusedPrivateMethod() {
+		System.out.println("This method is never used.");
+	}
 
 }
