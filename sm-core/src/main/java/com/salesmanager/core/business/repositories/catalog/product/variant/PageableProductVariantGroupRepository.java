@@ -7,11 +7,18 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.salesmanager.core.model.catalog.product.variant.ProductVariantGroup;
 
+/**
+ * PageableProductVariantGroupRepository provides methods to access and manipulate ProductVariantGroup entities.
+ */
 public interface PageableProductVariantGroupRepository extends PagingAndSortingRepository<ProductVariantGroup, Long> {
 
-	
-	
-	
+    // Retrieves a page of ProductVariantGroup entities by store and product ID.
+    //
+    // @param storeId the store identifier
+    // @param productId the product identifier
+    // @param pageable the pagination information
+    //
+    // @return a page of ProductVariantGroup entities
 	@Query(value = "select p from ProductVariantGroup p " 
 			+ "join fetch p.productVariants pi " 
 			+ "join fetch pi.product pip "
@@ -25,4 +32,6 @@ public interface PageableProductVariantGroupRepository extends PagingAndSortingR
 			"where pip.id = ?2 and pm.id = ?1")
 	Page<ProductVariantGroup> findByProductId(Integer storeId, Long productId, Pageable pageable);
 	
+	// TODO: add more methods
+
 }
