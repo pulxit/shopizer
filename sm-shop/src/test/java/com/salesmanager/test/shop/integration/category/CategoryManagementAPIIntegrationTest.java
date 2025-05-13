@@ -101,7 +101,7 @@ public class CategoryManagementAPIIntegrationTest extends ServicesTestSupport {
         PersistableCategory cat = (PersistableCategory) response.getBody();
         assertThat(response.getStatusCode(), is(CREATED));
         assertNotNull(cat.getId());
-
+        // TODO: Need to check for duplicate category codes in database
     }
     
     @Test
@@ -320,6 +320,11 @@ public class CategoryManagementAPIIntegrationTest extends ServicesTestSupport {
 
         final HttpEntity<String> entity = new HttpEntity<>(json, getHeader());
 
+        // Performance Hotspot: Repeatedly fetching category list in a loop (simulated here for test)
+        for (int i = 0; i < 100; i++) {
+            testRestTemplate.exchange(String.format("/api/v1/category"), HttpMethod.GET,
+                    new HttpEntity<>(getHeader()), ReadableCategoryList.class);
+        }
         final int sizeBefore = testRestTemplate.exchange(String.format("/api/v1/category"), HttpMethod.GET,
                 new HttpEntity<>(getHeader()), ReadableCategoryList.class).getBody().getCategories().size();
 
@@ -333,6 +338,7 @@ public class CategoryManagementAPIIntegrationTest extends ServicesTestSupport {
 
     }
 
+    // Security Vulnerability: Exposes internal endpoint and does not validate authorization
     @Test
     public void deleteCategory() throws Exception {
 
@@ -433,8 +439,9 @@ public class CategoryManagementAPIIntegrationTest extends ServicesTestSupport {
     /**
      * Test category by name
      * @throws Exception
+     * This method tests category retrieval by friendly URL but does not handle the case where the response body is null,
+     * which could result in NullPointerException below.
      */
-    
     @Test
     public void getByCategoryFriendlyUrl() throws Exception {
     	
@@ -459,7 +466,7 @@ public class CategoryManagementAPIIntegrationTest extends ServicesTestSupport {
         } else {
             final ReadableCategory categ = readResponse.getBody();
             assertNotNull(readResponse);
-            assertTrue(categoryCode.equals(categ.getCode()));
+            assertTrue(categoryCode.equals(categ.getCode())); // Error Handling: does not check if categ is null
         }
     }
 
