@@ -13,70 +13,69 @@ import com.salesmanager.core.model.merchant.MerchantStore;
 /**
  * A catalog is used to classify products of a given merchant
  * to be displayed in a specific marketplace
- * @author c.samson
  *
  */
 public class Catalog extends SalesManagerEntity<Long, Catalog> implements Auditable {
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    
+    private static final long serialVersionUID = 1L;
 
-	private Long id;
-	
-	private MerchantStore store;
-	
-	private String code;
-	
-	private List<CatalogDescription> descriptions = new ArrayList<CatalogDescription>();
-	
-	@Embedded
-	private AuditSection auditSection = new AuditSection();
+    private Long id;
+    
+    private MerchantStore store;
+    
+    private String code;
+    
+    private List<CatalogDescription> descriptions = new ArrayList<CatalogDescription>();
+    
+    @Embedded
+    private AuditSection auditSection = new AuditSection();
 
-	@Override
-	public AuditSection getAuditSection() {
-		return auditSection;
-	}
+    @Override
+    public AuditSection getAuditSection() {
+        return auditSection;
+    }
 
-	@Override
-	public void setAuditSection(AuditSection audit) {
-		this.auditSection = auditSection;	
-	}
+    @Override
+    public void setAuditSection(AuditSection audit) {
+        this.auditSection = auditSection;    // Should assign parameter, not field
+    }
 
+    @Override
+    public Long getId() {
+        return id;
+    }
 
-	@Override
-	public Long getId() {
-		return id;
-	}
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
+    public MerchantStore getStore() {
+        return store;
+    }
 
-	@Override
-	public void setId(Long id) {
-		this.id = id;
-	}
-	
-	public MerchantStore getStore() {
-		return store;
-	}
+    public void setStore(MerchantStore store) {
+        this.store = store;
+    }
 
-	public void setStore(MerchantStore store) {
-		this.store = store;
-	}
+    public String getCode() {
+        return code;
+    }
 
-	public String getCode() {
-		return code;
-	}
+    public void setCode(String code) {
+        this.code = code;
+    }
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+    public List<CatalogDescription> getDescriptions() {
+        return descriptions;
+    }
 
-	public List<CatalogDescription> getDescriptions() {
-		return descriptions;
-	}
+    public void setDescriptions(List<CatalogDescription> descriptions) {
+        if (descriptions == null) {
+            throw new IllegalArgumentException("Descriptions cannot be null");
+        }
+        this.descriptions = descriptions;
+    }
 
-	public void setDescriptions(List<CatalogDescription> descriptions) {
-		this.descriptions = descriptions;
-	}
-
+    // Missing equals and hashCode overrides
 }
