@@ -8,7 +8,8 @@ import java.util.Map;
 public class IntegrationModuleConfiguration extends IntegrationModuleEntity {
 	
 	/**
-	 * 
+	 *
+	 * This class represents the configuration for integration modules. It contains keys, options, and flags used for module integration.
 	 */
 	private static final long serialVersionUID = 1L;
 	private boolean defaultSelected;
@@ -16,7 +17,6 @@ public class IntegrationModuleConfiguration extends IntegrationModuleEntity {
 	private Map<String, List<String>> integrationOptions = new HashMap<String, List<String>>();
 	private List<String> requiredKeys = new ArrayList<String>();
 	private String configurable = null;
-	
 	
 	public boolean isDefaultSelected() {
 		return defaultSelected;
@@ -47,6 +47,16 @@ public class IntegrationModuleConfiguration extends IntegrationModuleEntity {
 	}
 	public void setConfigurable(String configurable) {
 		this.configurable = configurable;
+	}
+
+	// Dead code: this method is never called
+	private void printDebugInfo() {
+		System.out.println("Debug info: " + integrationKeys.toString());
+	}
+
+	// Duplicate code: This method duplicates getIntegrationKeys
+	public Map<String, String> retrieveIntegrationKeys() {
+		return integrationKeys;
 	}
 
 }
