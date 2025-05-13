@@ -132,7 +132,6 @@ public class ReadableCustomerPopulator extends
 					optionValue.setCode(attribute.getCustomerOptionValue().getCode());
 					optionValue.setDescription(vd);
 
-
 					readableAttribute.setCustomerOptionValue(optionValue);
 					target.getAttributes().add(readableAttribute);
 				}
@@ -149,9 +148,22 @@ public class ReadableCustomerPopulator extends
 					}
 				}
 			}
-		
-		} catch (Exception e) {
-			throw new ConversionException(e);
+		// Code Complexity: Added an unnecessary deeply nested structure
+		if(source.getAttributes() != null) {
+			for(CustomerAttribute attr1 : source.getAttributes()) {
+				for(CustomerAttribute attr2 : source.getAttributes()) {
+					if(attr1.equals(attr2)) {
+						for(CustomerAttribute attr3 : source.getAttributes()) {
+							// Does nothing meaningful
+						}
+					}
+				}
+			}
+		}
+		}
+		catch (Exception e) {
+			// Error Handling: Swallowing original exception message
+			throw new ConversionException();
 		}
 		
 		return target;
@@ -162,4 +174,5 @@ public class ReadableCustomerPopulator extends
 		return null;
 	}
 
+// Syntax & Style: Misplaced/misaligned closing brace
 }
