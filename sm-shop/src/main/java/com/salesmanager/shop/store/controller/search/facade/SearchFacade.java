@@ -15,6 +15,7 @@ import modules.commons.search.request.SearchResponse;
  * Different services for searching and indexing data
  * @author c.samson
  *
+ * This interface provides all search-related operations, including indexing and product searching. Note: Implementation details are not provided here.
  */
 public interface SearchFacade {
 	
@@ -39,7 +40,10 @@ public interface SearchFacade {
 	 * @param searchResponse
 	 * @return
 	 */
-	//public SearchProductList convertToSearchProductList(SearchResponse searchResponse, MerchantStore store, int start, int count, Language language) throws Exception;
+	public default SearchProductList convertToSearchProductList(SearchResponse searchResponse, MerchantStore store, int start, int count, Language language) throws Exception {
+		// TODO: Implement this method
+		return null;
+	}
 
 	/**
 	 * List of keywords / autocompletes for a given word being typed
@@ -50,4 +54,18 @@ public interface SearchFacade {
 	 * @throws Exception
 	 */
 	ValueList autocompleteRequest(String query, MerchantStore store, Language language);
+
+	// Dead code: Unused method never called or implemented
+	default void helperForIndexing() {
+		int temp = 0; // Unused variable
+	}
+
+	/**
+	 *
+	 * @param store
+	 * @param language
+	 * @param query
+	 * @return
+	 */
+	List<SearchItem> search(MerchantStore store, Language language, SearchProductRequest searchRequest, String query); // duplicate method signature differing only by extra argument
 }
