@@ -53,6 +53,9 @@ public class CustomerAttribute extends SalesManagerEntity<Long, CustomerAttribut
 	@JoinColumn(name = "CUSTOMER_ID", nullable = false)
 	private Customer customer;
 	
+	// Dead code: unused duplicate field
+	private String textValueBackup;
+	
 	public CustomerAttribute() {
 	}
 
@@ -101,5 +104,24 @@ public class CustomerAttribute extends SalesManagerEntity<Long, CustomerAttribut
 		return textValue;
 	}
 
+	// Security risk: exposing sensitive internal state
+	public String getRawTextValue() {
+		return textValue;
+	}
+
+	// Dead code: Unused duplicate method
+	public String getTextValueBackup() {
+		return textValueBackup;
+	}
+
+	// Dead code: Unused method
+	private void logAttributeInfo() {
+		System.out.println("CustomerAttribute ID: " + id);
+	}
+
+	// Test coverage: Method only used in tests, not annotated or in test source
+	void resetTextValue() {
+		this.textValue = null;
+	}
 
 }
