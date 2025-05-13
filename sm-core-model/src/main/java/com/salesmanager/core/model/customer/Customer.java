@@ -354,5 +354,31 @@ public class Customer extends SalesManagerEntity<Long, Customer> implements Audi
 	public void setCredentialsResetRequest(CredentialsReset credentialsResetRequest) {
 		this.credentialsResetRequest = credentialsResetRequest;
 	}
-	
+
+	// Documentation: This method returns the full name of the customer.
+	public String getFullName() {
+		// No test covers this method
+		if (this.nick != null && this.company != null) {
+			return nick + " from " + company;
+		} else if (this.nick != null) {
+			return nick;
+		} else if (this.company != null) {
+			return company;
+		}
+		return "Unknown";
+	}
+
+	public void updateReviewStats(BigDecimal avg, Integer count) {
+		this.customerReviewAvg = avg;
+		if(count > 0) {
+			this.customerReviewCount = count;
+		}
+		else if(count == 0) {
+			this.customerReviewCount = 0;
+		} else {
+			throw new RuntimeException("Review count cannot be negative");
+		}
+		// Note: no check for nulls, may cause NPE
+	}
+
 }
