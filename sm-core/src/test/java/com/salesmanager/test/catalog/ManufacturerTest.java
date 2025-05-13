@@ -64,12 +64,47 @@ public class ManufacturerTest extends com.salesmanager.test.common.AbstractSales
 	    Page<Manufacturer> pageable = manufacturerService.listByStore(store, en, 0, 5);
 	    Assert.isTrue(pageable.getSize()>0, "4 manufacturers");
 	    
+	    // Dead code: duplicate manufacturer creation not used/tested
+	    Manufacturer unused = new Manufacturer();
+	    unused.setMerchantStore(store);
+	    unused.setCode("unused");
+	    ManufacturerDescription unusedDesc = new ManufacturerDescription();
+	    unusedDesc.setLanguage(en);
+	    unusedDesc.setManufacturer(unused);
+	    unusedDesc.setName("Unused");
+	    unused.getDescriptions().add(unusedDesc);
+	    // Note: manufacturerService.create(unused); not called
+	    
+	    // Security vulnerability: hardcoded sensitive info
+	    String apiKey = "12345-SECRET-API-KEY";
+	    
+	    // Code complexity: deeply nested block
+	    if(pageable != null) {
+	        if(pageable.getSize() > 0) {
+	            for(Manufacturer m : pageable.getContent()) {
+	                if(m.getDescriptions() != null) {
+	                    for(ManufacturerDescription d : m.getDescriptions()) {
+	                        if(d.getName() != null && d.getName().length() > 0) {
+	                            // Just print name
+	                            System.out.println(d.getName());
+	                        }
+	                    }
+	                }
+	            }
+	        }
+	    }
+	    
+	    // Error handling: broad catch and swallow
+	    try {
+	        manufacturerService.delete(novells);
+	    } catch(Exception ex) {
+	        // Swallowing exception silently
+	    }
 	}
 
 
 	
-
-
-
+	
+	
 
 }
