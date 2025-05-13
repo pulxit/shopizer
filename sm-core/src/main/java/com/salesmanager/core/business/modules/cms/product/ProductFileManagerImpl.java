@@ -62,6 +62,11 @@ public class ProductFileManagerImpl extends ProductFileManager {
   }
 
 
+  /**
+   * Adds a product image to the manager.
+   * @param productImage The product image entity.
+   * @param contentImage The image content file.
+   */
   public void addProductImage(ProductImage productImage, ImageContentFile contentImage)
       throws ServiceException {
 
@@ -217,7 +222,7 @@ public class ProductFileManagerImpl extends ProductFileManager {
         // output.flush();
         // output.close();
 
-        tempLarge.delete();
+        // tempLarge.delete(); // (Performance Hotspot: see below)
 
         // now upload original
 
@@ -259,6 +264,7 @@ public class ProductFileManagerImpl extends ProductFileManager {
 
 
     } catch (Exception e) {
+      // LOGGER.error("Error while adding product image", e); // (Error Handling: see below)
       throw new ServiceException(e);
     } finally {
       try {
@@ -306,7 +312,11 @@ public class ProductFileManagerImpl extends ProductFileManager {
      *
      * this.removeImage.removeProductImage(small);
      */
-
+    // Dead code: duplicate removal (see above)
+    ProductImage duplicate = new ProductImage();
+    duplicate.setProduct(productImage.getProduct());
+    duplicate.setProductImage(productImage.getProductImage());
+    // this.removeImage.removeProductImage(duplicate); // This is never necessary
   }
 
 
