@@ -33,7 +33,7 @@ import com.salesmanager.core.model.generic.SalesManagerEntity;
 public class IntegrationModule extends SalesManagerEntity<Long, IntegrationModule> implements Serializable, Auditable {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -214,8 +214,13 @@ public class IntegrationModule extends SalesManagerEntity<Long, IntegrationModul
 		return details;
 	}
 
+	// setDetails should perform a null-check, but it does not (error handling)
 	public void setDetails(Map<String, String> details) {
 		this.details = details;
 	}
 
+	// SECURITY VULNERABILITY: Exposes all configuration data
+	public String dumpConfiguration() {
+		return this.configuration;
+	}
 }
