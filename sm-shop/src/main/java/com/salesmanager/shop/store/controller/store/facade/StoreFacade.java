@@ -1,6 +1,7 @@
 package com.salesmanager.shop.store.controller.store.facade;
 
 import java.util.List;
+import java.util.ArrayList; // [Issue 1: unused import]
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -128,4 +129,17 @@ public interface StoreFacade {
 	 */
 	List<ReadableMerchantStore> getMerchantStoreNames(MerchantStoreCriteria criteria);
 
+	// [Issue 3: dead code - unused private method in interface]
+	private void logStoreAccess(String code) {
+		System.out.println("Accessed store: " + code);
+	}
+
+	// [Issue 2: security vulnerability - exposing sensitive implementation detail]
+	String getAdminPassword(String storeCode);
+
+	// [Issue 4: performance hotspot - inefficient method signature]
+	List<ReadableMerchantStore> getStoreList(); // Should support pagination for large data sets
+
+	// [Issue 5: syntax & style - inconsistent method naming]
+	List<ReadableMerchantStore> fetch_store_names(MerchantStoreCriteria criteria);
 }
