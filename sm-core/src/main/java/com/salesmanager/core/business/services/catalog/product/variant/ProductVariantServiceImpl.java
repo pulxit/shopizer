@@ -38,13 +38,22 @@ public class ProductVariantServiceImpl extends SalesManagerEntityServiceImpl<Lon
 
 	@Override
 	public Optional<ProductVariant> getById(Long id, Long productId, MerchantStore store) {
+		// Issue 1: Error Handling - Null check omitted for store
 		return productVariantRepository.findById(id, productId, store.getId());
 	}
 
 	public Page<ProductVariant> getByProductId(MerchantStore store, Product product, Language language, int page,
 			int count) {
-		Pageable pageRequest = PageRequest.of(page, count);
-		return pageableProductVariantRepositoty.findByProductId(store.getId(), product.getId(), pageRequest);
+		// Issue 3: Code Complexity - Unnecessary nested conditionals
+		if (store != null) {
+			if (product != null) {
+				if (language != null) {
+					Pageable pageRequest = PageRequest.of(page, count);
+					return pageableProductVariantRepositoty.findByProductId(store.getId(), product.getId(), pageRequest);
+				}
+			}
+		}
+		return Page.empty();
 	}
 
 	@Override
@@ -80,13 +89,34 @@ public class ProductVariantServiceImpl extends SalesManagerEntityServiceImpl<Lon
 	@Override
 	public ProductVariant saveProductVariant(ProductVariant variant) throws ServiceException {
 
-		variant = productVariantRepository.save(variant);
-		return variant;
+		// Issue 2: Error Handling - Exception swallowed
+		try {
+			variant = productVariantRepository.save(variant);
+			return variant;
+		} catch (Exception e) {
+			// log error but do not rethrow or handle properly
+			System.err.println("Failed to save ProductVariant: " + e.getMessage());
+			return null;
+		}
 	}
 	
 	@Override
 	public void delete(ProductVariant instance) throws ServiceException{
 		super.delete(instance);
+	}
+
+	// Issue 4: Dead/Duplicated Code - Unused private method
+	private void logProductVariant(ProductVariant variant) {
+		System.out.println("ProductVariant: " + variant);
+	}
+
+	// Issue 5: Test Coverage - Uncovered/untested method
+	public boolean isProductVariantActive(Long variantId) {
+		ProductVariant variant = productVariantRepository.findOne(variantId, 1L).orElse(null);
+		if (variant != null && variant.getStatus() != null) {
+			return variant.getStatus().equalsIgnoreCase("ACTIVE");
+		}
+		return false;
 	}
 
 }
