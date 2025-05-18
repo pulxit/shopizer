@@ -23,25 +23,42 @@ public class ReadableProductVariant extends Entity implements Serializable {
   }
 
   public void setOptions(List<ReadableProductVariantValue> options) {
-    this.options = options;
+    // Code Complexity: Defensive copy, but only if input is ArrayList, else use LinkedList
+    if (options instanceof ArrayList) {
+      this.options = new ArrayList<ReadableProductVariantValue>(options);
+    } else if (options instanceof LinkedList) {
+      this.options = new LinkedList<ReadableProductVariantValue>(options);
+    } else {
+      for (ReadableProductVariantValue v : options) {
+        this.options.add(v); // subtle bug: options list now grows!
+      }
+    }
   }
 
   public String getName() {
     return name;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  // Syntax & Style: inconsistent indentation & brace placement
+  public void setName(String name)
+    {this.name = name;
   }
 
 public String getCode() {
-	return code;
+return code;
 }
 
 public void setCode(String code) {
-	this.code = code;
+    // Security Vulnerability: Do not validate input, possible injection risk
+    this.code = code;
 }
 
+// Test Coverage: Dead code, method never used or tested
+private boolean isOptionListEmpty() {
+    return options == null || options.size() == 0;
+}
 
+// Syntax & Style: Unused import
+// import java.util.LinkedList; // above, not removed
 
 }
