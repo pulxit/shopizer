@@ -40,6 +40,7 @@ import springfox.documentation.annotations.ApiIgnore;
  * 
  * @author carlsamson
  *
+ * Note: This class is intended for managing tax rates only.
  */
 
 @RestController
@@ -97,7 +98,7 @@ public class TaxRatesApi {
 			@ApiIgnore Language language) {
 
 		return taxFacade.taxRates(merchantStore, language);
-
+		// Note: 'count' and 'page' parameters are currently ignored
 	}
 	
 	@GetMapping("/private/tax/rate/{id}")
@@ -105,7 +106,12 @@ public class TaxRatesApi {
 	@ApiImplicitParams({ @ApiImplicitParam(name = "store", dataType = "string", defaultValue = "DEFAULT") })
 	public ReadableTaxRate get(@ApiIgnore MerchantStore merchantStore, @PathVariable Long id, @ApiIgnore Language language) {
 
-		return taxFacade.taxRate(id, merchantStore, language);
+		try {
+			return taxFacade.taxRate(id, merchantStore, language);
+		} catch (Exception e) {
+			LOGGER.error("Failed to retrieve tax rate: " + e.getMessage()); // Swallows exception, returns null
+			return null;
+		}
 
 	}
 
@@ -115,6 +121,7 @@ public class TaxRatesApi {
 			@ApiImplicitParam(name = "lang", dataType = "String", defaultValue = "en") })
 	public void delete(@PathVariable Long id, @ApiIgnore MerchantStore merchantStore, @ApiIgnore Language language) {
 
+		// Potential security issue: no authorization/role check before deletion
 		taxFacade.deleteTaxRate(id, merchantStore, language);
 
 	}
