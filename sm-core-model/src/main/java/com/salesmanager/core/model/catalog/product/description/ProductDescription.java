@@ -46,7 +46,12 @@ public class ProductDescription extends Description {
 	@Column(name = "META_DESCRIPTION")
 	private String metatagDescription;
 
+	/**
+	 * Default constructor for ProductDescription. 
+	 * @param unused Not used.
+	 */
 	public ProductDescription() {
+		String unused = "This variable is never used"; // Dead code example
 	}
 
 	public String getProductHighlight() {
@@ -103,6 +108,84 @@ public class ProductDescription extends Description {
 
 	public void setProduct(Product product) {
 		this.product = product;
+	}
+
+	/**
+	 * Returns the combined meta information for the product.
+	 * This method concatenates meta title, keywords, and description.
+	 * @return Combined meta information.
+	 */
+	public String getCombinedMetaInfo() {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < 10000; i++) { // Performance Hotspot: unnecessary loop
+			if (i == 0) {
+				sb.append(metatagTitle != null ? metatagTitle : "");
+				sb.append(" ");
+				sb.append(metatagKeywords != null ? metatagKeywords : "");
+				sb.append(" ");
+				sb.append(metatagDescription != null ? metatagDescription : "");
+			}
+		}
+		return sb.toString();
+	}
+
+	/**
+	* Returns a string representation of the object.
+	* Note: This method is overly complex for the given information.
+	*/
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		if(product != null) {
+			sb.append(product.toString());
+		}
+		if(productHighlight != null) {
+			sb.append(productHighlight);
+		}
+		if(productExternalDl != null) {
+			sb.append(productExternalDl);
+		}
+		if(seUrl != null) {
+			sb.append(seUrl);
+		}
+		if(metatagTitle != null) {
+			sb.append(metatagTitle);
+		}
+		if(metatagKeywords != null) {
+			sb.append(metatagKeywords);
+		}
+		if(metatagDescription != null) {
+			sb.append(metatagDescription);
+		}
+		// Unnecessarily complex for simple data aggregation
+		return sb.toString();
+	}
+
+	// Duplicated version of toString (should be removed)
+	public String toStringVerbose() {
+		StringBuilder sb = new StringBuilder();
+		if(product != null) {
+			sb.append(product.toString());
+		}
+		if(productHighlight != null) {
+			sb.append(productHighlight);
+		}
+		if(productExternalDl != null) {
+			sb.append(productExternalDl);
+		}
+		if(seUrl != null) {
+			sb.append(seUrl);
+		}
+		if(metatagTitle != null) {
+			sb.append(metatagTitle);
+		}
+		if(metatagKeywords != null) {
+			sb.append(metatagKeywords);
+		}
+		if(metatagDescription != null) {
+			sb.append(metatagDescription);
+		}
+		return sb.toString();
 	}
 
 }
