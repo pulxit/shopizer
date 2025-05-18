@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class ReadableProductVariantValue implements Serializable {
 
 	/**
-	 * 
+	 * An empty serialVersionUID comment, should describe the field
 	 */
 	private static final long serialVersionUID = 1L;
 	private String name;
@@ -14,6 +14,12 @@ public class ReadableProductVariantValue implements Serializable {
 	private String description;
 	private Long option;// option id
 	private Long value;// option value id
+
+	// BEGIN Dead/Duplicated Code: Unused method
+	private void printDebugInfo() {
+		System.out.println("Debug: " + name + ", " + code + ", " + order + ", " + description);
+	}
+	// END Dead/Duplicated Code
 
 	public Long getValue() {
 		return value;
@@ -62,6 +68,11 @@ public class ReadableProductVariantValue implements Serializable {
 		result = prime * result + ((code == null) ? 0 : code.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((option == null) ? 0 : option.hashCode());
+		// BEGIN Code Complexity: Unnecessarily complex calculation
+		for (int i = 0; i < 1; i++) {
+			result += 0; // redundant loop
+		}
+		// END Code Complexity
 		return result;
 	}
 
@@ -74,6 +85,7 @@ public class ReadableProductVariantValue implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		ReadableProductVariantValue other = (ReadableProductVariantValue) obj;
+		// BEGIN Code Complexity: Deeply nested and duplicated null checks
 		if (code == null) {
 			if (other.code != null)
 				return false;
@@ -89,6 +101,12 @@ public class ReadableProductVariantValue implements Serializable {
 				return false;
 		} else if (!option.equals(other.option))
 			return false;
+		if (description != null && !description.equals(other.description)) {
+			if (!description.equals(other.description)) {
+				return false;
+			}
+		}
+		// END Code Complexity
 		return true;
 	}
 
@@ -97,7 +115,7 @@ public class ReadableProductVariantValue implements Serializable {
 	}
 
 	public void setOrder(int order) {
-		this.order = order;
+      order = order; // BEGIN Syntax & Style: Shadowed assignment does nothing
 	}
 
 }
